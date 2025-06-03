@@ -1,77 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Journal App</title>
   <style>
     body {
       background-color: #343541;
-      color: #ececf1;
+      color: #ffffff;
       font-family: Arial, sans-serif;
-      text-align: center;
       padding: 20px;
     }
-    input, textarea, button, select {
+    textarea, input, button {
+      margin: 10px 0;
       padding: 10px;
-      margin: 10px;
-      border-radius: 8px;
+      width: 100%;
+      border-radius: 5px;
       border: none;
-      font-size: 16px;
     }
-    textarea {
-      width: 80%;
-      height: 150px;
+    button {
+      background-color: #10a37f;
+      color: white;
+      cursor: pointer;
     }
-    #tabs > button {
-      margin: 5px;
+    #nav-tabs button {
+      margin-right: 10px;
     }
-    .section {
+    #journal-section, #calendar-section, #chatbot-section {
       display: none;
     }
-    .active {
-      display: block;
+    .entry-box, .chat-box {
+      background: #444654;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
     }
   </style>
+</head>
+<body>
+
+  <h1>Welcome to Journal App</h1>
+
+  <!-- Auth Section -->
+  <div id="auth-section">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+  </div>
+
+  <!-- Tab Section -->
+  <div id="main-content" style="display:none;">
+    <div id="nav-tabs">
+      <button onclick="showTab('entry')">Entry</button>
+      <button onclick="showTab('chatbot')">Talk to Buddy</button>
+      <button onclick="showTab('calendar')">Calendar</button>
+    </div>
+
+    <!-- Journal Entry Section -->
+    <div id="journal-section">
+      <textarea id="journal" rows="10" placeholder="Write your thoughts..."></textarea>
+      <button onclick="saveEntry()">Save Entry</button>
+      <p id="status"></p>
+    </div>
+
+    <!-- Calendar Section -->
+    <div id="calendar-section">
+      <h3>Your Entries by Date</h3>
+      <input type="date" id="entryDate" onchange="loadEntryByDate()">
+      <div class="entry-box" id="entryDisplay"></div>
+    </div>
+
+    <!-- Chatbot Section -->
+    <div id="chatbot-section">
+      <h3>Talk to Buddy</h3>
+      <div class="chat-box" id="chatLog"></div>
+      <input type="text" id="userMessage" placeholder="Say something...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-</head>
-<body>
-  <h1>Journal App</h1>
-
-  <div id="auth">
-    <input type="email" id="email" placeholder="Email"><br>
-    <input type="password" id="password" placeholder="Password"><br>
-    <button onclick="login()">Login</button>
-    <button onclick="signup()">Sign Up</button><br>
-    <p id="toggle-msg">Don't have an account? <a href="#" onclick="toggleAuth()">Sign up here</a></p>
-  </div>
-
-  <div id="tabs" style="display:none;">
-    <button onclick="switchTab('entry')">Entry</button>
-    <button onclick="switchTab('calendar')">Calendar</button>
-    <button onclick="switchTab('chat')">Talk to Buddy</button>
-    <button onclick="logout()">Logout</button>
-  </div>
-
-  <div id="entry" class="section">
-    <textarea id="journalEntry" placeholder="Write your thoughts..."></textarea><br>
-    <button onclick="saveEntry()">Save Entry</button>
-    <p id="saveStatus"></p>
-  </div>
-
-  <div id="calendar" class="section">
-    <input type="date" id="datePicker" onchange="loadEntryByDate()">
-    <p id="entryResult"></p>
-  </div>
-
-  <div id="chat" class="section">
-    <div id="chatBox" style="max-height: 200px; overflow-y: auto; margin: 10px auto; width: 80%; background: #444; padding: 10px; border-radius: 10px;"></div>
-    <input id="chatInput" type="text" placeholder="Say something to Buddy..." />
-    <button onclick="sendToBuddy()">Send</button>
-  </div>
-
   <script src="/static/firebase-app.js"></script>
 </body>
 </html>
