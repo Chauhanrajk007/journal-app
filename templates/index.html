@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Journal App</title>
+  <style>
+    body {
+      background-color: #343541;
+      color: #ececf1;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+    textarea, input, button {
+      font-size: 1rem;
+      padding: 10px;
+      margin: 10px;
+      width: 300px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background-color: #10a37f;
+      color: white;
+      cursor: pointer;
+    }
+    #journal-section {
+      display: none;
+    }
+    .form-box {
+      border: 1px solid #555;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #40414f;
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+  <h2>📝 Journal App</h2>
+
+  <div class="form-box" id="signup-box">
+    <h3>Sign Up</h3>
+    <input type="email" id="signup-email" placeholder="Email">
+    <input type="password" id="signup-password" placeholder="Password">
+    <button onclick="signup()">Create Account</button>
+  </div>
+
+  <div class="form-box" id="login-box">
+    <h3>Login</h3>
+    <input type="email" id="login-email" placeholder="Email">
+    <input type="password" id="login-password" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div id="journal-section">
+    <h3>Your Journal</h3>
+    <textarea id="journal" rows="10" placeholder="Write your thoughts..."></textarea>
+    <button onclick="saveEntry()">Save</button>
+    <p id="status"></p>
+  </div>
+
+  <script src="/static/firebase-app.js"></script>
+</body>
+</html>
