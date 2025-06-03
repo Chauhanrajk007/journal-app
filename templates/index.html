@@ -1,130 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Journaling App</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/index.global.min.js">
+  <title>Journal App</title>
+  <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
   <style>
     body {
       background-color: #343541;
-      color: #d1d5db;
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background: #202123;
-      padding: 1rem;
-      font-size: 1.5rem;
-      text-align: center;
-    }
-
-    #main {
-      display: flex;
-      flex-direction: row;
-      gap: 1rem;
-      padding: 1rem;
-    }
-
-    #sidebar {
-      width: 20%;
-      background-color: #2c2f36;
-      padding: 1rem;
-      border-radius: 0.5rem;
-    }
-
-    #entriesList {
-      list-style: none;
-      padding: 0;
-    }
-
-    #entriesList li {
-      cursor: pointer;
-      padding: 0.5rem;
-      border-bottom: 1px solid #3f4148;
-    }
-
-    #entriesList li:hover {
-      background-color: #444654;
-    }
-
-    #contentArea {
-      width: 80%;
-    }
-
-    textarea {
-      width: 100%;
-      height: 150px;
-      border-radius: 0.5rem;
-      border: none;
-      padding: 1rem;
-      background-color: #40414f;
-      color: #d1d5db;
-    }
-
-    button {
-      margin-top: 0.5rem;
-      padding: 0.5rem 1rem;
-      border: none;
-      background-color: #10a37f;
-      color: white;
-      border-radius: 0.5rem;
-      cursor: pointer;
-    }
-
-    #calendar {
-      margin-top: 2rem;
-      background-color: white;
-      color: black;
-      border-radius: 0.5rem;
-    }
-
-    #chatbot {
-      margin-top: 2rem;
-    }
-
-    #chatInput {
-      width: 100%;
-      padding: 0.5rem;
-      background-color: #40414f;
-      border: none;
-      border-radius: 0.5rem;
       color: white;
     }
-
-    #chatBox {
-      background-color: #2c2f36;
-      padding: 1rem;
-      height: 150px;
-      overflow-y: auto;
-      border-radius: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
+    .hidden { display: none; }
+    .tabs { margin-top: 1rem; }
+    .tab-content { margin-top: 2rem; }
+    textarea { width: 100%; height: 150px; }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
 <body>
-  <header>📝 My Journal App</header>
-  <div id="main">
-    <div id="sidebar">
-      <h3>Recent Entries</h3>
-      <ul id="entriesList"></ul>
-    </div>
-    <div id="contentArea">
-      <textarea id="entry" placeholder="Write your thoughts..."></textarea>
-      <button onclick="saveEntry()">Save</button>
-      <div id="calendar"></div>
+  <main class="container">
+    <h1>My Journal</h1>
 
-      <div id="chatbot">
-        <h3>Talk to AI Buddy</h3>
-        <div id="chatBox"></div>
-        <input type="text" id="chatInput" placeholder="Ask something..." onkeydown="handleChat(event)">
+    <!-- Login/Signup Section -->
+    <div id="auth-section">
+      <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="login()">Sign In</button>
+      <button onclick="signup()">Sign Up</button>
+    </div>
+
+    <!-- Tabs Section -->
+    <div id="app-section" class="hidden">
+      <nav class="tabs">
+        <ul>
+          <li><a href="#" onclick="showTab('entry')">Entry</a></li>
+          <li><a href="#" onclick="showTab('calendar')">Calendar</a></li>
+          <li><a href="#" onclick="showTab('buddy')">Talk to Buddy</a></li>
+        </ul>
+      </nav>
+
+      <div id="entry" class="tab-content">
+        <h3>Write your thoughts</h3>
+        <textarea id="journal-text" placeholder="Today I felt..."></textarea><br>
+        <button onclick="saveEntry()">Save Entry</button>
+        <p id="entry-status"></p>
+      </div>
+
+      <div id="calendar" class="tab-content hidden">
+        <h3>Your Journal Calendar</h3>
+        <input type="date" id="calendar-date" onchange="loadEntryByDate()">
+        <p id="calendar-entry"></p>
+      </div>
+
+      <div id="buddy" class="tab-content hidden">
+        <h3>Talk to Your AI Buddy</h3>
+        <div id="chat-box" style="height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem;"></div>
+        <input type="text" id="chat-input" placeholder="Say something...">
+        <button onclick="sendMessage()">Send</button>
       </div>
     </div>
-  </div>
+  </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-  <script src="app.js"></script>
+  <script src="/static/firebase-app.js"></script>
 </body>
 </html>
