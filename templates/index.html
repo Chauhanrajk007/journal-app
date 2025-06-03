@@ -1,125 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Journaling App</title>
-  <style>
-    body {
-      background-color: #343541;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .center {
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
-    }
-    h2, h3 {
-      text-align: center;
-    }
-    input, textarea, select, button {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-    button {
-      background-color: #10a37f;
-      color: white;
-      cursor: pointer;
-    }
-    #main-app {
-      display: none;
-    }
-    .tab {
-      display: none;
-    }
-    .active {
-      display: block;
-    }
-    .dropdown {
-      margin-bottom: 20px;
-    }
-    .chatbox {
-      max-height: 300px;
-      overflow-y: auto;
-      border: 1px solid #555;
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 10px;
-      background-color: #444654;
-    }
-    .user-message {
-      text-align: right;
-      color: #10a37f;
-      margin: 5px 0;
-    }
-    .ai-message {
-      text-align: left;
-      color: #ffffff;
-      margin: 5px 0;
-    }
-  </style>
+  <title>Journal App</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
-<body>
-  <div class="center">
-    <h2>Login</h2>
-    <form id="login-form">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Login / Sign Up</button>
-    </form>
+<body class="has-background-dark has-text-white p-5">
 
-    <div id="main-app">
-      <h3>Journal App</h3>
-      <div class="dropdown">
-        <select id="tab-select">
+  <div class="container">
+    <h1 class="title has-text-white">Journal App</h1>
+
+    <div id="auth-section">
+      <div class="field">
+        <input id="email" class="input" type="email" placeholder="Email">
+      </div>
+      <div class="field">
+        <input id="password" class="input" type="password" placeholder="Password">
+      </div>
+      <button class="button is-link" onclick="login()">Sign In</button>
+      <button class="button is-light" onclick="signup()">Sign Up</button>
+    </div>
+
+    <div id="app-section" style="display:none;">
+      <div class="select mb-4">
+        <select id="tab-select" onchange="switchTab(this.value)">
           <option value="entry">Entry</option>
           <option value="calendar">Calendar</option>
           <option value="chatbot">Talk to Buddy</option>
         </select>
       </div>
 
-      <div id="entry" class="tab active">
-        <h3>Write a New Entry</h3>
-        <textarea id="journal-entry" placeholder="What's on your mind?"></textarea>
-        <button id="save-entry">Save Entry</button>
+      <div id="entry-tab">
+        <textarea id="journal" class="textarea" placeholder="Write your thoughts..."></textarea>
+        <button class="button is-primary mt-2" onclick="saveEntry()">Save Entry</button>
+        <p id="entry-status" class="mt-2"></p>
       </div>
 
-      <div id="calendar" class="tab">
-        <h3>Select a Date</h3>
-        <input type="date" id="calendar-date" />
-        <div id="calendar-entry" style="margin-top: 15px;"></div>
+      <div id="calendar-tab" style="display:none;">
+        <input type="date" id="entry-date" class="input" onchange="loadEntryByDate()">
+        <p id="calendar-entry" class="mt-2"></p>
       </div>
 
-      <div id="chatbot" class="tab">
-        <h3>Talk to AI Buddy</h3>
-        <div class="chatbox" id="chatbox"></div>
-        <input type="text" id="message-input" placeholder="Type your message" />
-        <button id="send-btn">Send</button>
+      <div id="chatbot-tab" style="display:none;">
+        <div id="chatbox" class="box has-background-light" style="max-height: 300px; overflow-y: auto;"></div>
+        <div class="field has-addons mt-2">
+          <input id="user-input" class="input" placeholder="Talk to Buddy">
+          <button class="button is-info" onclick="sendToChatbot()">Send</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
-  <!-- Your JS file -->
-  <script src="script.js"></script>
-
-  <script>
-    // Tab switching
-    document.getElementById("tab-select").addEventListener("change", function () {
-      const tabs = document.querySelectorAll(".tab");
-      tabs.forEach(tab => tab.classList.remove("active"));
-      document.getElementById(this.value).classList.add("active");
-    });
-  </script>
+  <script src="/static/firebase-app.js"></script>
 </body>
 </html>
