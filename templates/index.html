@@ -1,115 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Journal App</title>
-  <script type="module" src="firebase.js"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f0f2f5;
-      color: #333;
-    }
-    #login, #app {
-      max-width: 400px;
-      margin: 100px auto;
-      padding: 2rem;
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-    input[type="email"], textarea {
-      width: 100%;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-    button {
-      background-color: #4a90e2;
-      color: white;
-      border: none;
-      padding: 0.75rem 1.25rem;
-      font-size: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    button:hover {
-      background-color: #357bd8;
-    }
-    #signupLink {
-      color: #4a90e2;
-      text-decoration: none;
-    }
-    #signupLink:hover {
-      text-decoration: underline;
-    }
-    #menu {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    #menuBtn {
-      background: none;
-      font-size: 1.5rem;
-      padding: 0.3rem 0.6rem;
-      color: #333;
-    }
-    #dropdown {
-      display: none;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    #dropdown button {
-      width: 100%;
-      background-color: #f4f4f4;
-      color: #333;
-      border: 1px solid #ccc;
-    }
-    #journalEntry textarea {
-      min-height: 100px;
-    }
-    #calendar {
-      margin-top: 1rem;
-      text-align: center;
-      color: #666;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Journal</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="login">
-    <h2>Sign in - Google Accounts</h2>
-    <input type="email" id="email" placeholder="Email or phone" />
-    <button id="loginBtn">Login</button>
-    <p style="margin-top:1rem; text-align:center;">If you don't have an account, <a href="#" id="signupLink">sign up</a>.</p>
-  </div>
+    <!-- Login/Signup Section -->
+    <div id="auth-section" class="auth-container">
+        <div class="auth-card">
+            <h2 class="auth-title">Personal Journal</h2>
+            
+            <!-- Login Form -->
+            <div id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button class="btn" onclick="login()">Sign In</button>
+                <div class="auth-switch">
+                    Don't have an account? <a href="#" onclick="showSignup()">Sign up</a>
+                </div>
+            </div>
 
-  <div id="app" style="display:none;">
-    <div id="menu">
-      <button id="menuBtn">☰</button>
-      <div id="dropdown">
-        <button id="notesBtn">Notes</button>
-        <button id="chatBtn">Chat</button>
-        <button id="journalBtn">What Happened</button>
-      </div>
+            <!-- Signup Form -->
+            <div id="signup-form" style="display: none;">
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" required>
+                </div>
+                <button class="btn" onclick="signup()">Sign Up</button>
+                <div class="auth-switch">
+                    Already have an account? <a href="#" onclick="showLogin()">Sign in</a>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="journalEntry">
-      <textarea id="entryText" placeholder="What happened today?"></textarea>
-      <button id="saveEntryBtn" style="margin-top: 1rem;">Save Entry</button>
-    </div>
-    <div id="calendar">📅 Your past entries will show here.</div>
-  </div>
 
-  <script src="app.js"></script>
+    <!-- Main App -->
+    <div id="main-app" class="main-app">
+        <div class="container">
+            <header class="header">
+                <h1>My Journal</h1>
+                <div class="header-right">
+                    <div class="menu-toggle" onclick="toggleDropdown()">
+                        ⋯
+                        <div id="dropdown-menu" class="dropdown-menu">
+                            <div class="dropdown-item" onclick="showSection('notes')">📝 Notes</div>
+                            <div class="dropdown-item" onclick="showSection('chat')">💬 Chat</div>
+                            <div class="dropdown-item" onclick="showSection('overview')">📅 Overview</div>
+                        </div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <!-- Notes Section (Journal Writing) -->
+            <div id="notes-section" class="page-section active">
+                <div class="journal-section">
+                    <h2 class="journal-title">What happened today?</h2>
+                    <textarea id="journal-text" class="journal-textarea" placeholder="Write about your day..."></textarea>
+                    <button class="save-btn" onclick="saveJournalEntry()">Save Entry</button>
+                </div>
+            </div>
+
+            <!-- Chat Section -->
+            <div id="chat-section" class="page-section">
+                <div class="chat-container">
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="message bot">
+                            <p>Hello! I'm here to chat with you. How are you feeling today?</p>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Type your message..." onkeypress="handleChatKeyPress(event)">
+                        <button class="send-btn" onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overview Section (Calendar) -->
+            <div id="overview-section" class="page-section">
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="calendar-nav" onclick="previousMonth()">← Previous</button>
+                        <h2 id="calendar-month-year"></h2>
+                        <button class="calendar-nav" onclick="nextMonth()">Next →</button>
+                    </div>
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Calendar will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Entry Modal -->
+    <div id="entry-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-date"></h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modal-entry-content" class="entry-content">
+                <!-- Entry content will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK and Scripts -->
+    <script type="module" src="firebase-config.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
