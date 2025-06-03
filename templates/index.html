@@ -1,86 +1,125 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Journal App</title>
+  <meta charset="UTF-8">
+  <title>Journaling App</title>
   <style>
     body {
       background-color: #343541;
       color: #ffffff;
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .center {
+      max-width: 600px;
+      margin: auto;
       padding: 20px;
     }
-    textarea, input, button {
-      margin: 10px 0;
-      padding: 10px;
+    h2, h3 {
+      text-align: center;
+    }
+    input, textarea, select, button {
       width: 100%;
-      border-radius: 5px;
+      padding: 10px;
+      margin: 8px 0;
       border: none;
+      border-radius: 8px;
+      font-size: 16px;
     }
     button {
       background-color: #10a37f;
       color: white;
       cursor: pointer;
     }
-    #nav-tabs button {
-      margin-right: 10px;
-    }
-    #journal-section, #calendar-section, #chatbot-section {
+    #main-app {
       display: none;
     }
-    .entry-box, .chat-box {
-      background: #444654;
-      padding: 10px;
+    .tab {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    .dropdown {
+      margin-bottom: 20px;
+    }
+    .chatbox {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #555;
       border-radius: 10px;
+      padding: 10px;
       margin-bottom: 10px;
+      background-color: #444654;
+    }
+    .user-message {
+      text-align: right;
+      color: #10a37f;
+      margin: 5px 0;
+    }
+    .ai-message {
+      text-align: left;
+      color: #ffffff;
+      margin: 5px 0;
     }
   </style>
 </head>
 <body>
+  <div class="center">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login / Sign Up</button>
+    </form>
 
-  <h1>Welcome to Journal App</h1>
+    <div id="main-app">
+      <h3>Journal App</h3>
+      <div class="dropdown">
+        <select id="tab-select">
+          <option value="entry">Entry</option>
+          <option value="calendar">Calendar</option>
+          <option value="chatbot">Talk to Buddy</option>
+        </select>
+      </div>
 
-  <!-- Auth Section -->
-  <div id="auth-section">
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <button onclick="signup()">Sign Up</button>
-  </div>
+      <div id="entry" class="tab active">
+        <h3>Write a New Entry</h3>
+        <textarea id="journal-entry" placeholder="What's on your mind?"></textarea>
+        <button id="save-entry">Save Entry</button>
+      </div>
 
-  <!-- Tab Section -->
-  <div id="main-content" style="display:none;">
-    <div id="nav-tabs">
-      <button onclick="showTab('entry')">Entry</button>
-      <button onclick="showTab('chatbot')">Talk to Buddy</button>
-      <button onclick="showTab('calendar')">Calendar</button>
-    </div>
+      <div id="calendar" class="tab">
+        <h3>Select a Date</h3>
+        <input type="date" id="calendar-date" />
+        <div id="calendar-entry" style="margin-top: 15px;"></div>
+      </div>
 
-    <!-- Journal Entry Section -->
-    <div id="journal-section">
-      <textarea id="journal" rows="10" placeholder="Write your thoughts..."></textarea>
-      <button onclick="saveEntry()">Save Entry</button>
-      <p id="status"></p>
-    </div>
-
-    <!-- Calendar Section -->
-    <div id="calendar-section">
-      <h3>Your Entries by Date</h3>
-      <input type="date" id="entryDate" onchange="loadEntryByDate()">
-      <div class="entry-box" id="entryDisplay"></div>
-    </div>
-
-    <!-- Chatbot Section -->
-    <div id="chatbot-section">
-      <h3>Talk to Buddy</h3>
-      <div class="chat-box" id="chatLog"></div>
-      <input type="text" id="userMessage" placeholder="Say something...">
-      <button onclick="sendMessage()">Send</button>
+      <div id="chatbot" class="tab">
+        <h3>Talk to AI Buddy</h3>
+        <div class="chatbox" id="chatbox"></div>
+        <input type="text" id="message-input" placeholder="Type your message" />
+        <button id="send-btn">Send</button>
+      </div>
     </div>
   </div>
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script src="/static/firebase-app.js"></script>
+
+  <!-- Your JS file -->
+  <script src="script.js"></script>
+
+  <script>
+    // Tab switching
+    document.getElementById("tab-select").addEventListener("change", function () {
+      const tabs = document.querySelectorAll(".tab");
+      tabs.forEach(tab => tab.classList.remove("active"));
+      document.getElementById(this.value).classList.add("active");
+    });
+  </script>
 </body>
 </html>
