@@ -1,33 +1,29 @@
 from flask import Flask, render_template, request, jsonify
-from flask_cors import CORS
-import datetime
+import openai
 
-app = Flask(_name_, static_folder='static', template_folder='templates')
-CORS(app)
+app = Flask(_name_)
 
-# Serve the HTML UI
+openai.api_key = "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"
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# Simple AI Chatbot simulation (replace with OpenAI API if needed)
 @app.route('/chat', methods=['POST'])
 def chat():
-    user_message = request.json.get('message', '').strip().lower()
-    if not user_message:
-        return jsonify({"reply": "Please say something!"})
-    
-    # Very basic bot logic
-    if "how are you" in user_message:
-        reply = "I'm doing great! How about you?"
-    elif "hi" in user-message:
-        reply = "I'm doing great! How about you"
-    elif "bye" in user_message:
-        reply = "Goodbye! Come back soon to journal more!"
-    else:
-        reply = "That's interesting! Tell me more."
-
-    return jsonify({"reply": reply})
+    user_message = request.json['message']
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a friendly mental health journaling assistant named Buddy."},
+                {"role": "user", "content": user_message}
+            ]
+        )
+        reply = response['choices'][0]['message']['content']
+        return jsonify({"reply": reply})
+    except Exception as e:
+        return jsonify({"reply": "Oops, something went wrong."})
 
 if _name_ == '_main_':
     app.run(debug=True)
