@@ -1,91 +1,50 @@
+// app.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+// Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDZQL7yNiw9CWhnyY2_HtB-JXZctToD_ng",
-  authDomain: "journal-app-f3d32.firebaseapp.com",
-  databaseURL: "https://journal-app-f3d32-default-rtdb.firebaseio.com/",
-  projectId: "journal-app-f3d32",
-  storageBucket: "journal-app-f3d32.appspot.com",
-  messagingSenderId: "1071713060128",
-  appId: "1:1071713060128:web:9d88c50599e3db0e0a4345"
+    apiKey: "AIzaSyDZQL7yNiw9CWhnyY2_HtB-JXZctToD_ng",
+    authDomain: "journal-app-f3d32.firebaseapp.com",
+    projectId: "journal-app-f3d32",
+    storageBucket: "journal-app-f3d32.firebasestorage.app",
+    messagingSenderId: "1071713060128",
+    appId: "1:1071713060128:web:9d88c50599e3db0e0a4345",
+    measurementId: "G-LP27JD6EJK"
 };
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth();
+const database = getDatabase(app);
 
-// Show tab
-function switchTab(tab) {
-  document.getElementById('entry-tab').style.display = tab === 'entry' ? 'block' : 'none';
-  document.getElementById('calendar-tab').style.display = tab === 'calendar' ? 'block' : 'none';
-  document.getElementById('chatbot-tab').style.display = tab === 'chatbot' ? 'block' : 'none';
-}
+// Login function
+document.getElementById('loginBtn').addEventListener('click', () => {
+    const email = document.getElementById('email').value;
+    signInWithEmailAndPassword(auth, email, 'your_password_here') // Replace with actual password input
+        .then((userCredential) => {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+});
 
-function login() {
-  const email = emailInput.value;
-  const password = passwordInput.value;
-  auth.signInWithEmailAndPassword(email, password).then(() => {
-    document.getElementById("auth-section").style.display = "none";
-    document.getElementById("app-section").style.display = "block";
-    addChatMessage("Buddy", "Hey there! How's your mood today?");
-  }).catch(e => alert(e.message));
-}
+// Save journal entry
+document.getElementById('saveEntryBtn').addEventListener('click', () => {
+    const entryText = document.getElementById('entryText').value;
+    const userId = auth.currentUser .uid; // Get current user ID
+    const date = new Date().toISOString().split('T')[0]; // Get today's date
 
-function signup() {
-  const email = emailInput.value;
-  const password = passwordInput.value;
-  auth.createUserWithEmailAndPassword(email, password).then(() => {
-    alert("Sign up successful. You can now sign in.");
-  }).catch(e => alert(e.message));
-}
-
-function saveEntry() {
-  const user = auth.currentUser;
-  const text = document.getElementById("journal").value;
-  const date = new Date().toISOString().split("T")[0];
-
-  if (user) {
-    db.ref("journals/" + user.uid + "/" + date).set({
-      entry: text,
-      timestamp: new Date().toISOString()
+    set(ref(database, 'users/' + userId + '/journal/' + date), {
+        entry: entryText
     }).then(() => {
-      document.getElementById("entry-status").innerText = "Entry saved!";
+        alert('Entry saved!');
+    }).catch((error) => {
+        console.error(error);
     });
-  }
-}
-
-function loadEntryByDate() {
-  const user = auth.currentUser;
-  const date = document.getElementById("entry-date").value;
-
-  if (user && date) {
-    db.ref("journals/" + user.uid + "/" + date).once("value").then(snapshot => {
-      const data = snapshot.val();
-      document.getElementById("calendar-entry").innerText = data ? data.entry : "No entry on this date.";
-    });
-  }
-}
-
-function sendToChatbot() {
-  const input = document.getElementById("user-input").value;
-  if (!input) return;
-
-  addChatMessage("You", input);
-  document.getElementById("user-input").value = "";
-
-  fetch("/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: input })
-  })
-    .then(res => res.json())
-    .then(data => {
-      addChatMessage("Buddy", data.reply);
-    });
-}
-
-function addChatMessage(sender, message) {
-  const box = document.getElementById("chatbox");
-  const msg = document.createElement("p");
-  msg.innerHTML = <strong>${sender}:</strong> ${message};
-  box.appendChild(msg);
-  box.scrollTop = box.scrollHeight;
-}
+});
