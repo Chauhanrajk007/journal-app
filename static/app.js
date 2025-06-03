@@ -1,32 +1,119 @@
-// Firebase config 
-const firebaseConfig = { apiKey: "AIzaSyDZQL7yNiw9CWhnyY2_HtB-JXZctToD_ng", authDomain: "journal-app-f3d32.firebaseapp.com", databaseURL: "https://journal-app-f3d32-default-rtdb.firebaseio.com/", projectId: "journal-app-f3d32", storageBucket: "journal-app-f3d32.appspot.com", messagingSenderId: "1071713060128", appId: "1:1071713060128:web:9d88c50599e3db0e0a4345" };
+// Firebase config (already replaced with your credentials)
+const firebaseConfig = {
+  apiKey: "AIzaSyCCuEkfBDAAoXZhZoc3XWLTpyytZ7K-mco",
+  authDomain: "journal-app-f3d32.firebaseapp.com",
+  databaseURL: "https://journal-app-f3d32-default-rtdb.firebaseio.com/",
+  projectId: "journal-app-f3d32",
+  storageBucket: "journal-app-f3d32.appspot.com",
+  messagingSenderId: "140692634604",
+  appId: "1:140692634604:web:bfd27df9e62c5cf190da94"
+};
 
-firebase.initializeApp(firebaseConfig); const auth = firebase.auth(); const db = firebase.database();
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const database = firebase.database();
+
+// DOM elements
+const loginForm = document.getElementById("login-form");
+const mainApp = document.getElementById("main-app");
+const journalEntry = document.getElementById("journal-entry");
+const saveEntryBtn = document.getElementById("save-entry");
+const calendarDate = document.getElementById("calendar-date");
+const calendarEntry = document.getElementById("calendar-entry");
+const messageInput = document.getElementById("message-input");
+const sendBtn = document.getElementById("send-btn");
+const chatbox = document.getElementById("chatbox");
 
 let currentUser = null;
 
-function toggleAuth() { document.getElementById('email').value = ''; document.getElementById('password').value = ''; }
+// Listen for login form submit
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-function login() { const email = document.getElementById('email').value; const password = document.getElementById('password').value; auth.signInWithEmailAndPassword(email, password) .then(user => { currentUser = user.user; showApp(); }) .catch(e => alert(e.message)); }
+  try {
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    currentUser = userCredential.user;
+    onLoginSuccess();
+  } catch (error) {
+    // If login fails, try to sign up
+    try {
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      currentUser = userCredential.user;
+      onLoginSuccess();
+    } catch (signupError) {
+      alert("Login/Signup failed: " + signupError.message);
+    }
+  }
+});
 
-function signup() { const email = document.getElementById('email').value; const password = document.getElementById('password').value; auth.createUserWithEmailAndPassword(email, password) .then(user => { alert("Signed up! Please log in."); }) .catch(e => alert(e.message)); }
+function onLoginSuccess() {
+  loginForm.style.display = "none";
+  mainApp.style.display = "block";
+  chatbox.innerHTML = <div class="ai-message">Buddy: How's your mood today?</div>;
+}
 
-function logout() { auth.signOut().then(() => { currentUser = null; location.reload(); }); }
+// Save journal entry
+saveEntryBtn.addEventListener("click", () => {
+  if (!currentUser) return;
+  const text = journalEntry.value.trim();
+  const today = new Date().toISOString().split("T")[0];
+  if (text === "") return;
 
-function showApp() { document.getElementById('auth').style.display = 'none'; document.getElementById('tabs').style.display = 'block'; switchTab('entry'); }
+  const ref = database.ref(users/${currentUser.uid}/entries/${today});
+  ref.set(text)
+    .then(() => {
+      alert("Entry saved!");
+      journalEntry.value = "";
+    })
+    .catch((err) => alert("Save failed: " + err.message));
+});
 
-function switchTab(tabName) { document.querySelectorAll('.section').forEach(div => div.classList.remove('active')); document.getElementById(tabName).classList.add('active'); }
+// Load entry from calendar date
+calendarDate.addEventListener("change", () => {
+  if (!currentUser) return;
+  const selectedDate = calendarDate.value;
+  const ref = database.ref(users/${currentUser.uid}/entries/${selectedDate});
+  ref.once("value")
+    .then((snapshot) => {
+      const text = snapshot.val();
+      calendarEntry.innerHTML = text ? <p>${text}</p> : "<p>No entry for this date.</p>";
+    })
+    .catch((err) => alert("Load failed: " + err.message));
+});
 
-function saveEntry() { const text = document.getElementById('journalEntry').value; const date = new Date().toISOString().split("T")[0]; if (currentUser) { db.ref(journals/${currentUser.uid}/${date}).set({ entry: text, timestamp: new Date().toISOString() }).then(() => { document.getElementById('saveStatus').innerText = "Entry saved!"; }); } }
+// Chatbot
+sendBtn.addEventListener("click", () => {
+  const message = messageInput.value.trim();
+  if (message === "") return;
+  appendMessage("You", message, "user-message");
+  messageInput.value = "";
 
-function loadEntryByDate() { const date = document.getElementById('datePicker').value; if (currentUser && date) { db.ref(journals/${currentUser.uid}/${date}).once('value') .then(snapshot => { const data = snapshot.val(); document.getElementById('entryResult').innerText = data ? data.entry : "No entry found for this date."; }); } }
+  // Simulated AI response
+  setTimeout(() => {
+    const reply = generateAIResponse(message);
+    appendMessage("Buddy", reply, "ai-message");
+  }, 600);
+});
 
-function sendToBuddy() { const msg = document.getElementById('chatInput').value; if (!msg) return;
+function appendMessage(sender, message, className) {
+  const msgDiv = document.createElement("div");
+  msgDiv.className = className;
+  msgDiv.textContent = ${sender}: ${message};
+  chatbox.appendChild(msgDiv);
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
 
-const chatBox = document.getElementById('chatBox'); const userMsg = document.createElement('div'); userMsg.innerText = "You: " + msg; chatBox.appendChild(userMsg);
-
-fetch("https://api.openai.com/v1/chat/completions", { method: "POST", headers: { "Authorization": "Bearer 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", "Content-Type": "application/json" }, body: JSON.stringify({ model: "gpt-3.5-turbo", messages: [{ role: "user", content: msg }] }) }) .then(res => res.json()) .then(data => { const aiReply = data.choices[0].message.content; const botMsg = document.createElement('div'); botMsg.innerText = "Buddy: " + aiReply; chatBox.appendChild(botMsg); chatBox.scrollTop = chatBox.scrollHeight; });
-
-document.getElementById('chatInput').value = ''; }
-
-auth.onAuthStateChanged(user => { if (user) { currentUser = user; showApp(); } });
+function generateAIResponse(userMessage) {
+  // You can enhance this with real OpenAI API later
+  const responses = [
+    "That's interesting!",
+    "Tell me more about that.",
+    "Why do you feel that way?",
+    "Sounds exciting!",
+    "I understand."
+  ];
+  return responses[Math.floor(Math.random() * responses.length)];
+}
