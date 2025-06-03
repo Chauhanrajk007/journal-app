@@ -1,119 +1,91 @@
-// Firebase config (already replaced with your credentials)
 const firebaseConfig = {
-  apiKey: "AIzaSyCCuEkfBDAAoXZhZoc3XWLTpyytZ7K-mco",
+  apiKey: "AIzaSyDZQL7yNiw9CWhnyY2_HtB-JXZctToD_ng",
   authDomain: "journal-app-f3d32.firebaseapp.com",
   databaseURL: "https://journal-app-f3d32-default-rtdb.firebaseio.com/",
   projectId: "journal-app-f3d32",
   storageBucket: "journal-app-f3d32.appspot.com",
-  messagingSenderId: "140692634604",
-  appId: "1:140692634604:web:bfd27df9e62c5cf190da94"
+  messagingSenderId: "1071713060128",
+  appId: "1:1071713060128:web:9d88c50599e3db0e0a4345"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const database = firebase.database();
+const db = firebase.database();
 
-// DOM elements
-const loginForm = document.getElementById("login-form");
-const mainApp = document.getElementById("main-app");
-const journalEntry = document.getElementById("journal-entry");
-const saveEntryBtn = document.getElementById("save-entry");
-const calendarDate = document.getElementById("calendar-date");
-const calendarEntry = document.getElementById("calendar-entry");
-const messageInput = document.getElementById("message-input");
-const sendBtn = document.getElementById("send-btn");
-const chatbox = document.getElementById("chatbox");
+// Show tab
+function switchTab(tab) {
+  document.getElementById('entry-tab').style.display = tab === 'entry' ? 'block' : 'none';
+  document.getElementById('calendar-tab').style.display = tab === 'calendar' ? 'block' : 'none';
+  document.getElementById('chatbot-tab').style.display = tab === 'chatbot' ? 'block' : 'none';
+}
 
-let currentUser = null;
+function login() {
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  auth.signInWithEmailAndPassword(email, password).then(() => {
+    document.getElementById("auth-section").style.display = "none";
+    document.getElementById("app-section").style.display = "block";
+    addChatMessage("Buddy", "Hey there! How's your mood today?");
+  }).catch(e => alert(e.message));
+}
 
-// Listen for login form submit
-loginForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+function signup() {
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  auth.createUserWithEmailAndPassword(email, password).then(() => {
+    alert("Sign up successful. You can now sign in.");
+  }).catch(e => alert(e.message));
+}
 
-  try {
-    const userCredential = await auth.signInWithEmailAndPassword(email, password);
-    currentUser = userCredential.user;
-    onLoginSuccess();
-  } catch (error) {
-    // If login fails, try to sign up
-    try {
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      currentUser = userCredential.user;
-      onLoginSuccess();
-    } catch (signupError) {
-      alert("Login/Signup failed: " + signupError.message);
-    }
+function saveEntry() {
+  const user = auth.currentUser;
+  const text = document.getElementById("journal").value;
+  const date = new Date().toISOString().split("T")[0];
+
+  if (user) {
+    db.ref("journals/" + user.uid + "/" + date).set({
+      entry: text,
+      timestamp: new Date().toISOString()
+    }).then(() => {
+      document.getElementById("entry-status").innerText = "Entry saved!";
+    });
   }
-});
-
-function onLoginSuccess() {
-  loginForm.style.display = "none";
-  mainApp.style.display = "block";
-  chatbox.innerHTML = <div class="ai-message">Buddy: How's your mood today?</div>;
 }
 
-// Save journal entry
-saveEntryBtn.addEventListener("click", () => {
-  if (!currentUser) return;
-  const text = journalEntry.value.trim();
-  const today = new Date().toISOString().split("T")[0];
-  if (text === "") return;
+function loadEntryByDate() {
+  const user = auth.currentUser;
+  const date = document.getElementById("entry-date").value;
 
-  const ref = database.ref(users/${currentUser.uid}/entries/${today});
-  ref.set(text)
-    .then(() => {
-      alert("Entry saved!");
-      journalEntry.value = "";
-    })
-    .catch((err) => alert("Save failed: " + err.message));
-});
-
-// Load entry from calendar date
-calendarDate.addEventListener("change", () => {
-  if (!currentUser) return;
-  const selectedDate = calendarDate.value;
-  const ref = database.ref(users/${currentUser.uid}/entries/${selectedDate});
-  ref.once("value")
-    .then((snapshot) => {
-      const text = snapshot.val();
-      calendarEntry.innerHTML = text ? <p>${text}</p> : "<p>No entry for this date.</p>";
-    })
-    .catch((err) => alert("Load failed: " + err.message));
-});
-
-// Chatbot
-sendBtn.addEventListener("click", () => {
-  const message = messageInput.value.trim();
-  if (message === "") return;
-  appendMessage("You", message, "user-message");
-  messageInput.value = "";
-
-  // Simulated AI response
-  setTimeout(() => {
-    const reply = generateAIResponse(message);
-    appendMessage("Buddy", reply, "ai-message");
-  }, 600);
-});
-
-function appendMessage(sender, message, className) {
-  const msgDiv = document.createElement("div");
-  msgDiv.className = className;
-  msgDiv.textContent = ${sender}: ${message};
-  chatbox.appendChild(msgDiv);
-  chatbox.scrollTop = chatbox.scrollHeight;
+  if (user && date) {
+    db.ref("journals/" + user.uid + "/" + date).once("value").then(snapshot => {
+      const data = snapshot.val();
+      document.getElementById("calendar-entry").innerText = data ? data.entry : "No entry on this date.";
+    });
+  }
 }
 
-function generateAIResponse(userMessage) {
-  // You can enhance this with real OpenAI API later
-  const responses = [
-    "That's interesting!",
-    "Tell me more about that.",
-    "Why do you feel that way?",
-    "Sounds exciting!",
-    "I understand."
-  ];
-  return responses[Math.floor(Math.random() * responses.length)];
+function sendToChatbot() {
+  const input = document.getElementById("user-input").value;
+  if (!input) return;
+
+  addChatMessage("You", input);
+  document.getElementById("user-input").value = "";
+
+  fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: input })
+  })
+    .then(res => res.json())
+    .then(data => {
+      addChatMessage("Buddy", data.reply);
+    });
+}
+
+function addChatMessage(sender, message) {
+  const box = document.getElementById("chatbox");
+  const msg = document.createElement("p");
+  msg.innerHTML = <strong>${sender}:</strong> ${message};
+  box.appendChild(msg);
+  box.scrollTop = box.scrollHeight;
 }
