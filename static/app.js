@@ -1,72 +1,90 @@
-const db = {}; // Use Firebase or localStorage in real use
-const entriesList = document.getElementById("entriesList");
-const calendarEl = document.getElementById("calendar");
-const chatBox = document.getElementById("chatBox");
+const firebaseConfig = {
+  apiKey: "AIzaSyDZQL7yNiw9CWhnyY2_HtB-JXZctToD_ng",
+  authDomain: "journal-app-f3d32.firebaseapp.com",
+  databaseURL: "https://journal-app-f3d32.firebaseio.com",
+  projectId: "journal-app-f3d32",
+  storageBucket: "journal-app-f3d32.appspot.com",
+  messagingSenderId: "1071713060128",
+  appId: "1:1071713060128:web:9d88c50599e3db0e0a4345"
+};
 
-// Save Journal Entry
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+
+function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => {
+      document.getElementById("auth-section").classList.add("hidden");
+      document.getElementById("app-section").classList.remove("hidden");
+    })
+    .catch(err => alert(err.message));
+}
+
+function signup() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(() => alert("Signed up! Please login."))
+    .catch(err => alert(err.message));
+}
+
 function saveEntry() {
-  const entry = document.getElementById("entry").value;
-  if (!entry.trim()) return alert("Entry cannot be empty");
+  const text = document.getElementById("journal-text").value;
+  const user = auth.currentUser;
+  const date = new Date().toISOString().split('T')[0];
 
-  const today = new Date().toISOString().split("T")[0];
-
-  // Save to localStorage for now
-  localStorage.setItem(today, entry);
-  loadEntries();
-  alert("Entry saved!");
-
-  document.getElementById("entry").value = "";
-}
-
-// Load Entries to Sidebar
-function loadEntries() {
-  entriesList.innerHTML = "";
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    const entry = localStorage.getItem(key);
-
-    const li = document.createElement("li");
-    li.innerText = ${key} - ${entry.slice(0, 15)}...;
-    li.onclick = () => {
-      document.getElementById("entry").value = entry;
-    };
-    entriesList.appendChild(li);
+  if (user) {
+    db.ref("entries/" + user.uid + "/" + date).set({
+      text: text,
+      timestamp: new Date().toISOString()
+    }).then(() => {
+      document.getElementById("entry-status").innerText = "Saved!";
+    });
   }
 }
 
-// Calendar Setup
-document.addEventListener("DOMContentLoaded", function () {
-  const calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: "dayGridMonth",
-    dateClick: function (info) {
-      const entry = localStorage.getItem(info.dateStr);
-      if (entry) {
-        alert(Journal on ${info.dateStr}:\n\n${entry});
-      } else {
-        alert("No entry found on this date.");
-      }
-    }
-  });
-  calendar.render();
-  loadEntries();
-});
+function loadEntryByDate() {
+  const date = document.getElementById("calendar-date").value;
+  const user = auth.currentUser;
+  if (user) {
+    db.ref("entries/" + user.uid + "/" + date).once("value", snapshot => {
+      const data = snapshot.val();
+      document.getElementById("calendar-entry").innerText = data ? data.text : "No entry found for this date.";
+    });
+  }
+}
 
-// Basic AI Chatbot
-function handleChat(e) {
-  if (e.key === "Enter") {
-    const input = e.target.value;
-    const reply = simpleAI(input);
-    chatBox.innerHTML += <p><b>You:</b> ${input}</p>;
-    chatBox.innerHTML += <p><b>AI:</b> ${reply}</p>;
+function showTab(tabId) {
+  const tabs = ['entry', 'calendar', 'buddy'];
+  tabs.forEach(id => document.getElementById(id).classList.add("hidden"));
+  document.getElementById(tabId).classList.remove("hidden");
+}
+
+function sendMessage() {
+  const input = document.getElementById("chat-input");
+  const msg = input.value.trim();
+  if (msg === "") return;
+  
+  const chatBox = document.getElementById("chat-box");
+  const userDiv = document.createElement("div");
+  userDiv.textContent = "You: " + msg;
+  chatBox.appendChild(userDiv);
+
+  fetch("/chat", {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: msg })
+  })
+  .then(res => res.json())
+  .then(data => {
+    const botDiv = document.createElement("div");
+    botDiv.textContent = "Buddy: " + data.reply;
+    chatBox.appendChild(botDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
-    e.target.value = "";
-  }
-}
+  });
 
-function simpleAI(message) {
-  const lower = message.toLowerCase();
-  if (lower.includes("hello")) return "Hi there! How are you feeling today?";
-  if (lower.includes("sad")) return "It's okay to feel sad. Want to talk about it?";
-  if (lower.includes("happy")) return "That's great! What made you happy?";
-  return "Tell me more about it.";
+  input.value = "";
 }
