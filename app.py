@@ -5,7 +5,7 @@ from firebase_admin import credentials, auth, db
 import tempfile
 import json
 
-app = Flask(_name_)
+app = Flask(__name__)
 CORS(app)
 
 
