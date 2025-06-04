@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let entries = [];
   let currentIndex = -1;
-  let calendar; // declare at higher scope
+  let calendar;
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const userId = user.uid;
 
-    async function getEntries() {
+    const getEntries = async () => {
       const q = query(collection(db, 'journals'), where('uid', '==', userId));
       const querySnapshot = await getDocs(q);
       entries = [];
@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
         entries.push({ date: doc.data().date, content: doc.data().content });
       });
       entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-    }
+    };
 
-    await getEntries(); // load entries before rendering calendar
+    await getEntries();
 
     calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'dayGridMonth',
@@ -46,13 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
       dateClick: function (info) {
         const selectedDate = info.dateStr;
         const entry = entries.find(e => e.date === selectedDate);
+
         if (entry) {
           entryDisplay.value = entry.content;
           currentIndex = entries.findIndex(e => e.date === selectedDate);
-        } else {
-          entryDisplay.value = 'No entry for this date.';
-          currentIndex = -1;
         }
+        // else do nothing (no redirection or message)
       }
     });
 
