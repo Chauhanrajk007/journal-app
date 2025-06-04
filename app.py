@@ -80,5 +80,5 @@ def chatbot():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if _name_ == '_main_':
+if __name__ == '_main_':
     app.run(debug=True)
