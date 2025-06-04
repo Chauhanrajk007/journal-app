@@ -1,0 +1,91 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Caveat', cursive;
+  background: #ede0c8; /* book-like background */
+  color: #4e3b2c;
+  height: 100vh;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  font-size: 3rem;
+  color: #5a4331;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.journal {
+  width: 100%;
+  max-width: 800px;
+  background-color: #f5efe0;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 25px rgba(100, 80, 50, 0.3);
+}
+
+.journal textarea {
+  width: 100%;
+  height: 70vh;
+  padding:10px 20px 0 20px;
+  font-family: 'Caveat', cursive;
+  font-size: 24px;
+  line-height: 40px;  /* text spacing */
+  color: #4e3b2c;
+  background: repeating-linear-gradient(
+    to bottom,
+    #f5efe0,
+    #f5efe0 39px,
+    #d7cbb2 40px,
+    #f5efe0 40px
+  );
+  border: 1px solid #d4c4aa;
+  border-radius: 8px;
+  resize: vertical;
+  outline: none;
+}
+
+.journal textarea::placeholder {
+  color: #a99a87;
+}
+
+button {
+  margin-top: 20px;
+  padding: 14px 0;
+  font-size: 18px;
+  background-color: #7a5c3d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 0 10px rgba(122, 92, 61, 0.3);
+}
+
+button:hover {
+  background-color: #5e452d;
+}
+
+#message {
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  min-height: 24px;
+}

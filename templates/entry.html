@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Digital Diary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="diary.css" />
+</head>
+<body>
+  <header>
+    <h1>My Digital Diary</h1>
+  </header>
+  <main>
+    <div class="journal">
+      <textarea id="entry" placeholder="Dear Diary..."></textarea>
+      <button id="saveBtn">Save Entry</button>
+      <p id="message"></p>
+    </div>
+  </main>
+
+  <script>
+    const saveBtn = document.getElementById('saveBtn');
+    const entry = document.getElementById('entry');
+    const message = document.getElementById('message');
+
+    saveBtn.addEventListener('click', () => {
+      if (entry.value.trim() === '') {
+        message.textContent = 'Please write something.';
+        message.style.color = 'red';
+      } else {
+        message.textContent = 'Entry saved!';
+        message.style.color = 'green';
+        entry.value = '';
+      }
+    });
+  </script>
+</body>
+</html>

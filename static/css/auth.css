@@ -1,0 +1,100 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f5efe0;
+  font-family: 'Caveat', cursive;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  animation: fadeIn 1s ease;
+}
+
+.auth-box {
+  background: #fff8e7;
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: slideUp 0.8s ease forwards;
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.hidden {
+  display: none;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #4e3b2c;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #7a5b3e;
+}
+
+form input {
+  width: 100%;
+  padding: 10px 15px;
+  margin-top: 10px;
+  border: 1px solid #d4c4aa;
+  border-radius: 8px;
+  font-size: 18px;
+  font-family: 'Caveat', cursive;
+  background-color: #fefaf1;
+  color: #4e3b2c;
+  outline: none;
+  box-sizing: border-box;
+}
+
+form button, .btn-group button {
+  margin-top: 15px;
+  padding: 12px 30px;
+  font-size: 20px;
+  font-family: 'Caveat', cursive;
+  background-color: #7a5b3e;
+  color: #fffbe9;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+form button:hover, .btn-group button:hover {
+  background-color: #5d422d;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.switch-link {
+  font-size: 16px;
+  color: #7a5b3e;
+  cursor: pointer;
+  margin-top: 10px;
+  text-decoration: underline;
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
