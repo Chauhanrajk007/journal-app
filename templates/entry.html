@@ -19,21 +19,45 @@
     </div>
   </main>
 
-  <script>
-    const saveBtn = document.getElementById('saveBtn');
-    const entry = document.getElementById('entry');
-    const message = document.getElementById('message');
+ <script type="module">
+  import { auth, db } from "{{ url_for('static', filename='js/firebase-config.js') }}";
+  import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-    saveBtn.addEventListener('click', () => {
-      if (entry.value.trim() === '') {
-        message.textContent = 'Please write something.';
-        message.style.color = 'red';
-      } else {
-        message.textContent = 'Entry saved!';
-        message.style.color = 'green';
-        entry.value = '';
-      }
-    });
-  </script>
+  const saveBtn = document.getElementById('saveBtn');
+  const entry = document.getElementById('entry');
+  const message = document.getElementById('message');
+
+  saveBtn.addEventListener('click', async () => {
+    if (entry.value.trim() === '') {
+      message.textContent = 'Please write something.';
+      message.style.color = 'red';
+      return;
+    }
+
+    const user = auth.currentUser;
+    if (!user) {
+      message.textContent = 'Not logged in!';
+      message.style.color = 'red';
+      return;
+    }
+
+    const dateKey = new Date().toISOString().split('T')[0]; // e.g. "2025-06-04"
+
+    try {
+      await setDoc(doc(db, "journals", user.uid + "_" + dateKey), {
+        content: entry.value,
+        date: dateKey,
+        uid: user.uid
+      });
+      message.textContent = 'Entry saved!';
+      message.style.color = 'green';
+      entry.value = '';
+    } catch (error) {
+      message.textContent = 'Error saving: ' + error.message;
+      message.style.color = 'red';
+    }
+  });
+</script>
+
 </body>
 </html>
