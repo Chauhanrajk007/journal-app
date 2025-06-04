@@ -31,6 +31,28 @@ main {
   align-items: flex-start;
 }
 
+.profile-menu {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#logoutBtn {
+  background-color: #c77;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#logoutBtn:hover {
+  background-color: #a55;
+}
+
 .top-left-nav {
   position: absolute;
   top: 20px;
