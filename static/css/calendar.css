@@ -33,7 +33,9 @@ main {
 
 #calendar {
   width: 50%;
+  height: 750px; 
 }
+
 
 .diary-page {
   width: 50%;
