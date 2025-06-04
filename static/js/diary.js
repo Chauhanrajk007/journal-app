@@ -10,7 +10,7 @@ import {
 
 document.addEventListener("DOMContentLoaded", () => {
   const saveBtn = document.getElementById("saveBtn");
-  const textarea = document.getElementById("journalEntry");
+  const textarea = document.getElementById("entry");
 
   onAuthStateChanged(auth, (user) => {
     if (!user) {
