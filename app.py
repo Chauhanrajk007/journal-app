@@ -8,32 +8,15 @@ import json
 app = Flask(_name_)
 CORS(app)
 
-# Firebase config as dictionary
-firebase_config = {
-    "type": "service_account",
-    "project_id": "journal-app-f3d32",
-    "private_key_id": "YOUR_PRIVATE_KEY_ID",
-    "private_key": "-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY\n-----END PRIVATE KEY-----\n",
-    "client_email": "firebase-adminsdk-9h9ei@journal-app-f3d32.iam.gserviceaccount.com",
-    "client_id": "YOUR_CLIENT_ID",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-9h9ei%40journal-app-f3d32.iam.gserviceaccount.com"
-}
 
 # Initialize Firebase Admin SDK
 try:
-    with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.json') as tmp_file:
-        json.dump(firebase_config, tmp_file)
-        tmp_file.flush()
-        cred = credentials.Certificate(tmp_file.name)
-        firebase_admin.initialize_app(cred, {
-            'databaseURL': 'https://journal-app-f3d32-default-rtdb.firebaseio.com/'
-        })
+    cred = credentials.Certificate("journal-app-f3d32-firebase-adminsdk-fbsvc-4f21630aea.json")
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://journal-app-f3d32-default-rtdb.firebaseio.com/'
+    })
 except Exception as e:
     print(f"Firebase initialization error: {e}")
-
 # API ROUTES
 
 @app.route('/signup', methods=['POST'])
