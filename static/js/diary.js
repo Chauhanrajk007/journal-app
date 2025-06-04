@@ -6,13 +6,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const textarea = document.getElementById("entry");
   const logoutBtn = document.getElementById("logoutBtn");
   const userEmail = document.getElementById("user-email");
   const journal = document.querySelector(".journal");
-  let pageCount = 1;
 
-  // Display user email
   onAuthStateChanged(auth, (user) => {
     if (!user) {
       alert("Not logged in.");
@@ -22,23 +19,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Logout
   logoutBtn.addEventListener("click", () => {
     signOut(auth).then(() => window.location.href = "/");
   });
 
-  // Animate book opening on first focus
-  textarea.addEventListener("focus", () => {
-    journal.classList.add("open-book");
-  }, { once: true });
+  // Watch all textareas for input
+  function handleInput(event) {
+    autoSave(event.target);
+    handlePageOverflow(event.target);
+  }
 
-  // Auto-save after every word
-  textarea.addEventListener("input", () => {
-    autoSave();
-    handlePageOverflow();
-  });
+  function bindInputToPage(page) {
+    page.addEventListener("input", handleInput);
+    page.addEventListener("focus", () => {
+      journal.classList.add("open-book");
+    }, { once: true });
+  }
 
-  async function autoSave() {
+  // Bind first page
+  const firstPage = document.getElementById("entry");
+  bindInputToPage(firstPage);
+
+  async function autoSave(textarea) {
     const content = textarea.value.trim();
     const dateKey = new Date().toISOString().split('T')[0];
 
@@ -50,24 +52,26 @@ document.addEventListener("DOMContentLoaded", () => {
         date: dateKey,
         uid: auth.currentUser.uid
       });
-      console.log("Auto-saved!");
       journal.classList.add("close-book");
-      setTimeout(() => journal.classList.remove("close-book"), 1000);
+      setTimeout(() => journal.classList.remove("close-book"), 800);
     } catch (err) {
       console.error("Auto-save error:", err.message);
     }
   }
 
-  function handlePageOverflow() {
-    if (textarea.scrollHeight > textarea.clientHeight + 40) {
+  function handlePageOverflow(textarea) {
+    const padding = 40;
+    const hasOverflowed = textarea.scrollHeight > textarea.clientHeight + padding;
+    const isLast = journal.lastElementChild === textarea;
+
+    if (hasOverflowed && isLast) {
       const newPage = document.createElement("textarea");
       newPage.placeholder = "Next Page...";
       newPage.className = "extra-page";
       newPage.style.animation = "flip-page 0.7s ease-in-out";
       journal.appendChild(newPage);
+      bindInputToPage(newPage);
       newPage.focus();
-
-      newPage.addEventListener("input", autoSave);
     }
   }
 });
