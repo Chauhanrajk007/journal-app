@@ -1,4 +1,4 @@
-/* Base Reset */
+/* Basic reset and font */
 * {
   margin: 0;
   padding: 0;
@@ -6,125 +6,84 @@
 }
 
 body {
-  font-family: 'Special Elite', cursive;
-  background: #f0e6d2;
-  color: #3e2f24;
-  padding: 30px;
-  min-height: 100vh;
+  font-family: 'Caveat', cursive;
+  background: #ede0c8;
+  color: #4e3b2c;
+  height: 100vh;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
 }
 
 header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 header h1 {
   font-size: 3rem;
-  color: #4a3826;
-}
-
-header p {
-  font-style: italic;
-  color: #6e5943;
-  margin-top: 10px;
+  color: #5a4331;
 }
 
 main {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+}
+
+#calendar {
+  width: 50%;
+}
+
+.diary-page {
+  width: 50%;
+  background-color: #f5efe0;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 25px rgba(100, 80, 50, 0.3);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* Calendar Section */
-.calendar-section {
-  margin-bottom: 20px;
-  font-size: 1.2rem;
-}
-
-#datePicker {
-  padding: 8px 12px;
-  font-size: 1rem;
-  margin-left: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-/* Flipbook Styles */
-.flipbook {
-  perspective: 1500px;
-  width: 90%;
-  max-width: 800px;
-  height: 500px;
-  position: relative;
-  transform-style: preserve-3d;
-}
-
-.page {
-  position: absolute;
+.paper textarea {
   width: 100%;
-  height: 100%;
-  transition: transform 1s ease;
-  backface-visibility: hidden;
-}
-
-.page.front {
-  z-index: 2;
-  transform: rotateY(0deg);
-}
-
-.page.back {
-  transform: rotateY(180deg);
-}
-
-.flipbook.flipped .front {
-  transform: rotateY(-180deg);
-}
-
-.flipbook.flipped .back {
-  transform: rotateY(0deg);
-}
-
-/* Paper Look */
-.paper {
-  background: #fdf5e6;
-  border: 1px solid #bba98f;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(80, 60, 40, 0.4);
-  padding: 25px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-textarea#entryDisplay {
-  flex: 1;
+  height: 70vh;
+  padding: 10px 20px 0 20px;
   font-family: 'Caveat', cursive;
   font-size: 24px;
-  line-height: 36px;
+  line-height: 40px;
+  color: #4e3b2c;
   background: repeating-linear-gradient(
     to bottom,
-    #fdf5e6,
-    #fdf5e6 39px,
-    #e4d8c3 40px,
-    #fdf5e6 40px
+    #f5efe0,
+    #f5efe0 39px,
+    #d7cbb2 40px,
+    #f5efe0 40px
   );
-  color: #3e2f24;
-  border: none;
-  outline: none;
-  resize: none;
-  padding: 10px 20px;
+  border: 1px solid #d4c4aa;
   border-radius: 8px;
+  resize: vertical;
+  outline: none;
 }
 
-textarea::placeholder {
-  color: #a18d77;
+.navigation-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
 }
 
-.hint {
-  margin-top: auto;
-  font-style: italic;
-  text-align: center;
-  color: #86755e;
-  font-size: 1rem;
+.navigation-buttons button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #7a5c3d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.navigation-buttons button:hover {
+  background-color: #5e452d;
 }
