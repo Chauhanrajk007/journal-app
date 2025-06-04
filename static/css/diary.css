@@ -30,29 +30,31 @@ main {
   justify-content: center;
   align-items: flex-start;
 }
-.top-right {
+
+.top-left-nav {
   position: absolute;
   top: 20px;
-  right: 30px;
-  z-index: 10;
+  left: 20px;
+  z-index: 1000;
 }
 
 .nav-btn {
-  padding: 10px 18px;
-  font-size: 18px;
+  padding: 10px 15px;
+  font-size: 16px;
   font-family: 'Caveat', cursive;
-  background-color: #6b4f3b;
-  color: #fff;
+  background-color: #7a5c3d;
+  color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  box-shadow: 0 0 10px rgba(122, 92, 61, 0.3);
   transition: background-color 0.3s ease;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
 .nav-btn:hover {
-  background-color: #543c2a;
+  background-color: #5e452d;
 }
+
 
 .journal {
   width: 100%;
