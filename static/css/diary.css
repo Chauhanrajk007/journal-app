@@ -191,6 +191,29 @@ button:hover {
   background-color: #5e452d;
 }
 
+.book-wrapper {
+  perspective: 1500px;
+}
+
+.book {
+  display: flex;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1s ease;
+}
+
+.book.opening {
+  transform: rotateY(-30deg);
+}
+
+.binding {
+  width: 30px;
+  background: #6e5843;
+  border-right: 3px solid #4e3b2c;
+  border-radius: 5px 0 0 5px;
+  box-shadow: inset -5px 0 10px rgba(0, 0, 0, 0.2);
+}
+
 #message {
   margin-top: 15px;
   font-size: 16px;
