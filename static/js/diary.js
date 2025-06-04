@@ -9,7 +9,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const saveBtn = document.getElementById("saveEntry");
+  const saveBtn = document.getElementById("saveBtn");
   const textarea = document.getElementById("journalEntry");
 
   onAuthStateChanged(auth, (user) => {
