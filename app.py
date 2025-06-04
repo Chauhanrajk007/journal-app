@@ -17,9 +17,9 @@ def auth_page():
 def diary_page():
     return render_template('entry.html')
 
-@app.route('/past-entries')
-def past_entries():
-    return render_template('past_entries.html')
+@app.route('/calendar')
+def calendar():
+    return render_template('calendar.html')
 
 
 @app.route('/verify_token', methods=['POST'])
