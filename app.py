@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render-template, request, jsonify
 from flask_cors import CORS
 import firebase_admin
 from firebase_admin import credentials, auth, db
@@ -19,6 +19,10 @@ except Exception as e:
     print(f"Firebase initialization error: {e}")
 # API ROUTES
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+    
 @app.route('/signup', methods=['POST'])
 def signup():
     try:
