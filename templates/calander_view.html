@@ -21,9 +21,17 @@
       </select>
     </div>
 
-    <div class="diary-page">
-      <div class="paper">
-        <textarea id="entryDisplay" readonly placeholder="Your memory will appear here..."></textarea>
+    <!-- Flipbook container -->
+    <div class="flipbook">
+      <div class="page front">
+        <div class="paper">
+          <textarea id="entryDisplay" readonly placeholder="Your memory will appear here..."></textarea>
+        </div>
+      </div>
+      <div class="page back">
+        <div class="paper">
+          <p class="hint">Select another date to flip back in time...</p>
+        </div>
       </div>
     </div>
   </main>
