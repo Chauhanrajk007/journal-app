@@ -1,19 +1,34 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 import firebase_admin
-from firebase_admin import credentials, firestore, auth
+from firebase_admin import credentials, auth, firestore
 
 app = Flask(__name__)
 
 # Initialize Firebase
-cred = credentials.Certificate("firebase_config.json")  # JSON key from Firebase
+cred = credentials.Certificate("firebase_config.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 @app.route('/')
-def home():
-    return render_template('entry.html')
+def auth_page():
+    return render_template('auth.html')
 
-@app.route('/save', methods=['POST'])
+@app.route('/diary')
+def diary_page():
+    return render_template('diary.html')
+
+@app.route('/verify_token', methods=['POST'])
+def verify_token():
+    data = request.json
+    id_token = data.get('idToken')
+    try:
+        decoded_token = auth.verify_id_token(id_token)
+        uid = decoded_token['uid']
+        return jsonify({"status": "success", "uid": uid})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 401
+
+@app.route('/save_entry', methods=['POST'])
 def save_entry():
     data = request.json
     uid = data.get('uid')
