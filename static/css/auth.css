@@ -24,7 +24,7 @@ body {
   gap: 15px;
 }
 
-.hidden {
+.auth-box hidden {
   display: none;
 }
 
