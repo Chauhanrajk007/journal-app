@@ -1,0 +1,41 @@
+body {
+  font-family: 'Caveat', cursive;
+  background-color: #fefaf1;
+  padding: 20px;
+  text-align: center;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: #fff8e7;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+button, select {
+  font-family: 'Caveat', cursive;
+  font-size: 20px;
+  margin: 15px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background-color: #7a5b3e;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover, select:hover {
+  background-color: #5d422d;
+}
+
+.entry-box {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #d4c4aa;
+  background: #fff;
+  border-radius: 10px;
+  min-height: 100px;
+  text-align: left;
+}
