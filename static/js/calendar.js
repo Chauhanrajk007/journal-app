@@ -1,64 +1,67 @@
-import { auth, db } from './firebase-config.js';
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { db } from './firebase-config.js';
+import { collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
 
-// References
-const datePicker = document.getElementById("datePicker");
-const entryDisplay = document.getElementById("entryDisplay");
-const flipbook = document.querySelector(".flipbook");
+document.addEventListener('DOMContentLoaded', function () {
+  const calendarEl = document.getElementById('calendar');
+  const entryDisplay = document.getElementById('entryDisplay');
+  const prevEntryBtn = document.getElementById('prevEntry');
+  const nextEntryBtn = document.getElementById('nextEntry');
 
-// Load user's journal dates
-auth.onAuthStateChanged(async (user) => {
-  if (!user) {
-    alert("Please log in to view past entries.");
-    window.location.href = "/"; // redirect if not logged in
-    return;
-  }
+  let entries = [];
+  let currentIndex = -1;
 
-  const journalRef = collection(db, "journals");
-  const q = query(journalRef, where("uid", "==", user.uid));
-  const querySnapshot = await getDocs(q);
-
-  const dates = [];
-  querySnapshot.forEach(doc => {
-    dates.push(doc.data().date);
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    dateClick: async function (info) {
+      const selectedDate = info.dateStr;
+      const entry = await getEntryByDate(selectedDate);
+      if (entry) {
+        entryDisplay.value = entry.content;
+        currentIndex = entries.findIndex(e => e.date === selectedDate);
+      } else {
+        entryDisplay.value = 'No entry for this date.';
+        currentIndex = -1;
+      }
+    }
   });
 
-  // Sort descending
-  dates.sort((a, b) => new Date(b) - new Date(a));
+  calendar.render();
 
-  // Populate dropdown
-  dates.forEach(date => {
-    const option = document.createElement("option");
-    option.value = date;
-    option.textContent = date;
-    datePicker.appendChild(option);
-  });
-});
-
-// Show entry with flip animation
-datePicker.addEventListener("change", async () => {
-  const selectedDate = datePicker.value;
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const docRef = doc(db, "journals", `${user.uid}_${selectedDate}`);
-  const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
-    entryDisplay.value = docSnap.data().content;
-
-    // Trigger flip animation
-    flipbook.classList.remove("flipped"); // reset
-    void flipbook.offsetWidth; // force reflow
-    flipbook.classList.add("flipped");
-  } else {
-    entryDisplay.value = "No entry found for this date.";
+  async function getEntries() {
+    const q = query(collection(db, 'entries'));
+    const querySnapshot = await getDocs(q);
+    entries = [];
+    querySnapshot.forEach((doc) => {
+      entries.push({ date: doc.id, content: doc.data().content });
+    });
+    entries.sort((a, b) => new Date(a.date) - new Date(b.date));
   }
+
+  async function getEntryByDate(date) {
+    if (entries.length === 0) {
+      await getEntries();
+    }
+    return entries.find(entry => entry.date === date);
+  }
+
+  prevEntryBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      const entry = entries[currentIndex];
+      entryDisplay.value = entry.content;
+      calendar.gotoDate(entry.date);
+    }
+  });
+
+  nextEntryBtn.addEventListener('click', () => {
+    if (currentIndex < entries.length - 1) {
+      currentIndex++;
+      const entry = entries[currentIndex];
+      entryDisplay.value = entry.content;
+      calendar.gotoDate(entry.date);
+    }
+  });
+
+  // Initial load
+  getEntries();
 });
