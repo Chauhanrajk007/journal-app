@@ -1,7 +1,12 @@
-import { db } from './firebase-config.js';
-import { collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
+import { auth, db } from './firebase-config.js';
+import {
+  collection,
+  query,
+  where,
+  getDocs
+} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
   const calendarEl = document.getElementById('calendar');
   const entryDisplay = document.getElementById('entryDisplay');
   const prevEntryBtn = document.getElementById('prevEntry');
@@ -10,11 +15,24 @@ document.addEventListener('DOMContentLoaded', function () {
   let entries = [];
   let currentIndex = -1;
 
+  // Wait for auth to initialize and get current user
+  const waitForAuth = () =>
+    new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (auth.currentUser) {
+          clearInterval(interval);
+          resolve(auth.currentUser.uid);
+        }
+      }, 100);
+    });
+
+  const userId = await waitForAuth();
+
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
-    dateClick: async function (info) {
+    dateClick: function (info) {
       const selectedDate = info.dateStr;
-      const entry = await getEntryByDate(selectedDate);
+      const entry = entries.find(e => e.date === selectedDate);
       if (entry) {
         entryDisplay.value = entry.content;
         currentIndex = entries.findIndex(e => e.date === selectedDate);
@@ -28,20 +46,13 @@ document.addEventListener('DOMContentLoaded', function () {
   calendar.render();
 
   async function getEntries() {
-    const q = query(collection(db, 'entries'));
+    const q = query(collection(db, 'journals'), where('uid', '==', userId));
     const querySnapshot = await getDocs(q);
     entries = [];
     querySnapshot.forEach((doc) => {
-      entries.push({ date: doc.id, content: doc.data().content });
+      entries.push({ date: doc.data().date, content: doc.data().content });
     });
     entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-  }
-
-  async function getEntryByDate(date) {
-    if (entries.length === 0) {
-      await getEntries();
-    }
-    return entries.find(entry => entry.date === date);
   }
 
   prevEntryBtn.addEventListener('click', () => {
@@ -62,6 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Initial load
-  getEntries();
+  // Load entries on startup
+  await getEntries();
 });
