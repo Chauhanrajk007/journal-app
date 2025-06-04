@@ -1,50 +1,64 @@
-// static/js/calendar.js
 import { auth, db } from './firebase-config.js';
 import {
   collection,
+  getDocs,
   query,
   where,
-  getDocs
+  doc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-const datePicker = document.getElementById('datePicker');
-const entryDisplay = document.getElementById('entryDisplay');
+// References
+const datePicker = document.getElementById("datePicker");
+const entryDisplay = document.getElementById("entryDisplay");
+const flipbook = document.querySelector(".flipbook");
 
-let entries = [];
-
-window.addEventListener("DOMContentLoaded", async () => {
-  const user = auth.currentUser;
-
+// Load user's journal dates
+auth.onAuthStateChanged(async (user) => {
   if (!user) {
-    alert("Please login to view your diaries.");
-    window.location.href = "/";
+    alert("Please log in to view past entries.");
+    window.location.href = "/"; // redirect if not logged in
     return;
   }
 
-  const q = query(collection(db, "journals"), where("uid", "==", user.uid));
-  const snapshot = await getDocs(q);
+  const journalRef = collection(db, "journals");
+  const q = query(journalRef, where("uid", "==", user.uid));
+  const querySnapshot = await getDocs(q);
 
-  snapshot.forEach(docSnap => {
-    const data = docSnap.data();
-    entries.push({
-      id: docSnap.id,
-      date: data.date,
-      content: data.content
-    });
+  const dates = [];
+  querySnapshot.forEach(doc => {
+    dates.push(doc.data().date);
   });
 
-  entries.sort((a, b) => new Date(a.date) - new Date(b.date)); // oldest first
+  // Sort descending
+  dates.sort((a, b) => new Date(b) - new Date(a));
 
-  entries.forEach(entry => {
+  // Populate dropdown
+  dates.forEach(date => {
     const option = document.createElement("option");
-    option.value = entry.id;
-    option.textContent = entry.date;
+    option.value = date;
+    option.textContent = date;
     datePicker.appendChild(option);
   });
 });
 
-datePicker.addEventListener("change", () => {
-  const entryId = datePicker.value;
-  const entry = entries.find(e => e.id === entryId);
-  entryDisplay.value = entry ? entry.content : "No entry found for this date.";
+// Show entry with flip animation
+datePicker.addEventListener("change", async () => {
+  const selectedDate = datePicker.value;
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const docRef = doc(db, "journals", `${user.uid}_${selectedDate}`);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    entryDisplay.value = docSnap.data().content;
+
+    // Trigger flip animation
+    flipbook.classList.remove("flipped"); // reset
+    void flipbook.offsetWidth; // force reflow
+    flipbook.classList.add("flipped");
+  } else {
+    entryDisplay.value = "No entry found for this date.";
+  }
 });
