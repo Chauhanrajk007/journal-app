@@ -34,6 +34,10 @@ main {
 #calendar {
   width: 50%;
   height: 750px; 
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  padding: 10px;
 }
 
 
