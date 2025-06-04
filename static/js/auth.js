@@ -32,8 +32,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert("Login successful!");
-      window.location.href = "/diary";
+      Swal.fire({
+  icon: 'success',
+  title: 'Welcome back!',
+  text: 'You have logged in successfully 🎉',
+  showConfirmButton: false,
+  timer: 2000
+}).then(() => {
+  window.location.href = "/diary";
+});
     } catch (err) {
       alert("Login error: " + err.message);
     }
