@@ -6,28 +6,48 @@
   <title>My Digital Diary</title>
   <link href="https://fonts.googleapis.com/css2?family=Caveat&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/diary.css') }}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/page-flip/dist/css/page-flip.min.css" />
 </head>
 <body>
   <header>
     <div class="profile-menu">
-  <span id="user-email">👤</span>
-  <button id="logoutBtn">Logout</button>
-</div>
-
+      <span id="user-email">👤</span>
+      <button id="logoutBtn">Logout</button>
+    </div>
     <h1>My Digital Diary</h1>
   </header>
+
   <main>
-    <div class="journal">
-      <textarea id="entry" placeholder="Dear Diary..."></textarea>
-      <button id="saveBtn">Save Entry</button>
-      <p id="journalEntry"></p>
+    <div class="flipbook-container">
+      <div class="flip-book" id="diaryBook">
+        <!-- Front Cover -->
+        <div class="page page-cover page-cover-top" data-density="hard">
+          <div class="page-content center-text">
+            <h2>📔 My Journal</h2>
+            <p>Click to begin writing...</p>
+          </div>
+        </div>
+
+        <!-- Dynamic Pages will be inserted via JS -->
+
+        <!-- Back Cover -->
+        <div class="page page-cover page-cover-bottom" data-density="hard">
+          <div class="page-content center-text">
+            <h2>📕 The End</h2>
+          </div>
+        </div>
+      </div>
+
+      <button id="closeBookBtn">Close Journal</button>
     </div>
+
     <div class="top-left-nav">
-  <button onclick="window.location.href='/calendar'" class="nav-btn">
-    📅 View Calendar
-  </button>
-</div>
-</main>
-<script type="module" src="{{ url_for('static', filename='js/diary.js') }}"></script>
+      <button onclick="window.location.href='/calendar'" class="nav-btn">📅 View Calendar</button>
+      <button onclick="window.location.href='/timeline'" class="nav-btn">📖 View Timeline</button>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
+  <script type="module" src="{{ url_for('static', filename='js/diary.js') }}"></script>
 </body>
 </html>
