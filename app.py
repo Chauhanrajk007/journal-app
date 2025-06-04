@@ -15,7 +15,7 @@ def auth_page():
 
 @app.route('/diary')
 def diary_page():
-    return render_template('diary.html')
+    return render_template('entry.html')
 
 @app.route('/verify_token', methods=['POST'])
 def verify_token():
