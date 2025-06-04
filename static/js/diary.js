@@ -1,25 +1,43 @@
+// diary.js
 import { auth, db } from './firebase-config.js';
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import {
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-document.getElementById("saveEntry").addEventListener("click", async () => {
-  const entry = document.getElementById("journalEntry").value;
-  const user = auth.currentUser;
+document.addEventListener("DOMContentLoaded", () => {
+  const saveBtn = document.getElementById("saveEntry");
+  const textarea = document.getElementById("journalEntry");
 
-  if (!user) {
-    alert("Not logged in!");
-    return;
-  }
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      alert("Not logged in.");
+      window.location.href = "/";
+    } else {
+      saveBtn.addEventListener("click", async () => {
+        const content = textarea.value.trim();
+        const dateKey = new Date().toISOString().split('T')[0];
 
-  const dateKey = new Date().toISOString().split('T')[0]; // e.g., "2025-06-04"
+        if (!content) {
+          alert("Write something first!");
+          return;
+        }
 
-  try {
-    await setDoc(doc(db, "journals", user.uid + "_" + dateKey), {
-      content: entry,
-      date: dateKey,
-      uid: user.uid
-    });
-    alert("Journal entry saved!");
-  } catch (err) {
-    alert("Failed to save: " + err.message);
-  }
+        try {
+          await setDoc(doc(db, "journals", user.uid + "_" + dateKey), {
+            content,
+            date: dateKey,
+            uid: user.uid
+          });
+          alert("Journal entry saved!");
+          textarea.value = "";
+        } catch (err) {
+          alert("Error saving journal: " + err.message);
+        }
+      });
+    }
+  });
 });
