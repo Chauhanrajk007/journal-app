@@ -54,7 +54,7 @@ def login():
 
 
 @app.route('/')
-def index():
+def something():
     return jsonify({"message": "Journal App Backend is Running"}), 200
 @app.route('/chatbot', methods=['POST'])
 def chatbot():
