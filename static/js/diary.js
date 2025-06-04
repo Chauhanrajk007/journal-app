@@ -1,4 +1,45 @@
 // diary.js
+import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+import { auth } from "./firebase-config.js";
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  signOut(auth).then(() => {
+    window.location.href = "/";
+  }).catch((error) => {
+    alert("Logout failed: " + error.message);
+  });
+});
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById("user-email").textContent = user.email || "👤";
+  }
+});
+let autoSaveTimer;
+textarea.addEventListener("input", () => {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(saveEntry, 3000); // 3 seconds of inactivity
+});
+
+async function saveEntry() {
+  const content = textarea.value.trim();
+  const dateKey = new Date().toISOString().split('T')[0];
+
+  if (!auth.currentUser || !content) return;
+
+  try {
+    await setDoc(doc(db, "journals", auth.currentUser.uid + "_" + dateKey), {
+      content,
+      date: dateKey,
+      uid: auth.currentUser.uid
+    });
+    console.log("Auto-saved!");
+  } catch (err) {
+    console.error("Auto-save error:", err.message);
+  }
+}
+
+
 import { auth, db } from './firebase-config.js';
 import {
   doc,
