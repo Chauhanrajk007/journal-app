@@ -1,3 +1,4 @@
+/* === Global Styles === */
 body {
   font-family: 'Caveat', cursive;
   background: #f5efe0;
@@ -49,117 +50,81 @@ body {
   margin: 0 auto 20px;
 }
 
-/* Make each journal look like a full A4 page */
+/* === Journal Card === */
 .entry-card {
-  background: linear-gradient(to bottom, #fdf7e3 0%, #fdf7e3 100%),
-              repeating-linear-gradient(to bottom, transparent 0px, transparent 24px, #d4c4aa 25px);
+  background: repeating-linear-gradient(
+    to bottom,
+    #f5efe0,
+    #f5efe0 39px,
+    #d7cbb2 40px,
+    #f5efe0 40px
+  );
   border: 1px solid #d4c4aa;
   border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.15);
+  padding: 25px 30px;
+  margin: 40px auto;
+  box-shadow: 0 0 15px rgba(100, 80, 50, 0.2);
+  position: relative;
+  width: 794px;              /* A4 width at 96 DPI */
+  min-height: 1123px;        /* A4 height at 96 DPI */
+  box-sizing: border-box;
+  page-break-after: always;
   font-family: 'Caveat', cursive;
   font-size: 1.2rem;
-  color: #4e3b2c;
   line-height: 1.7;
   white-space: pre-wrap;
-  width: 794px;   /* A4 width at 96 DPI */
-  min-height: 1123px; /* A4 height at 96 DPI */
-  margin: 40px auto;
-  padding: 50px 40px;
-  box-sizing: border-box;
-  position: relative;
-  page-break-after: always;
 }
 
-
+/* === Date + Header === */
+.entry-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
 .entry-date {
   font-size: 1.8rem;
-  margin-bottom: 25px;
-  text-align: left;           /* <-- Align to the left */
-  padding-left: 0;            /* <-- No left padding */
   font-weight: bold;
+  text-align: left;
+  padding-left: 0;
+  margin: 0;
 }
 
+/* === Entry Text === */
 .entry-content {
   font-size: 1.3rem;
   line-height: 1.8;
 }
 
+/* === Buttons === */
 .download-btn {
-  background-color: #7a5c3d;
-  color: white;
-  border: none;
+  margin-top: 20px;
   padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 1rem;
+  border: none;
+  background-color: #a68560;
+  color: white;
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  border-radius: 8px;
   cursor: pointer;
   position: absolute;
   right: 20px;
   bottom: 20px;
 }
 
-#error-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+.hide-entry-btn {
+  position: absolute;
+  top: 12px;
+  right: 24px;
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  color: #9c8b73;
+  cursor: pointer;
 }
 
-#error-modal.hidden {
-  display: none;
-}
-
-.modal-content {
-  background: white;
-  padding: 25px;
-  border-radius: 10px;
-  max-width: 500px;
-  width: 90%;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@media (max-width: 768px) {
-  body {
-    padding: 15px;
-  }
-
-  #page-title {
-    font-size: 2rem;
-  }
-
-  .entry-card {
-    padding: 20px;
-  }
-
-  .entry-date {
-    font-size: 1.3rem;
-  }
-
-  .entry-content {
-    font-size: 1.1rem;
-  }
-}
-
-@media print {
-  body {
-    background: white;
-    margin: 0;
-  }
-
-  .download-btn, #back-button, #page-title {
-    display: none;
-  }
-}
+/* === Search Bar === */
 .search-bar-container {
   width: 100%;
   max-width: 800px;
@@ -193,52 +158,7 @@ body {
   font-family: 'Caveat', cursive;
 }
 
-.entry-card {
-  background: repeating-linear-gradient(
-    to bottom,
-    #f5efe0,
-    #f5efe0 39px,
-    #d7cbb2 40px,
-    #f5efe0 40px
-  );
-  border: 1px solid #d4c4aa;
-  border-radius: 10px;
-  padding: 25px 30px;
-  margin: 40px auto;
-  box-shadow: 0 0 15px rgba(100, 80, 50, 0.2);
-  position: relative;
-  width: 794px;
-  min-height: 1123px;
-  box-sizing: border-box;
-  page-break-after: always;
-  font-family: 'Caveat', cursive;
-  font-size: 1.2rem;
-  line-height: 1.7;
-  white-space: pre-wrap;
-}
-
-.hide-entry-btn {
-  position: absolute;
-  top: 12px;
-  right: 24px;
-  background: transparent;
-  border: none;
-  font-size: 1.4rem;
-  color: #9c8b73;
-  cursor: pointer;
-}
-
-.download-btn {
-  margin-top: 20px;
-  padding: 8px 16px;
-  border: none;
-  background-color: #a68560;
-  color: white;
-  font-family: 'Caveat', cursive;
-  font-size: 1.1rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
+/* === Modals === */
 .modal {
   position: fixed;
   top: 0;
@@ -291,9 +211,44 @@ body {
   font-family: 'Caveat', cursive;
   margin: 8px;
 }
-.entry-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+
+/* === Spinner Animation === */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
+/* === Responsive Styles === */
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+
+  #page-title {
+    font-size: 2rem;
+  }
+
+  .entry-card {
+    padding: 20px;
+  }
+
+  .entry-date {
+    font-size: 1.3rem;
+  }
+
+  .entry-content {
+    font-size: 1.1rem;
+  }
+}
+
+/* === Print Styles === */
+@media print {
+  body {
+    background: white;
+    margin: 0;
+  }
+
+  .download-btn, #back-button, #page-title {
+    display: none;
+  }
+}
