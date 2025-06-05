@@ -74,7 +74,43 @@ main {
   position: relative;
   transition: transform 0.3s ease;
 }
+/* Loading and error states */
+.loading-state, .empty-state, .error-state {
+  text-align: center;
+  padding: 40px;
+  font-size: 24px;
+}
 
+.loading-state .spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #7a5c3d;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-state button, .error-state button {
+  background-color: #7a5c3d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-top: 20px;
+  cursor: pointer;
+  font-family: 'Caveat', cursive;
+  font-size: 20px;
+}
+
+.error-state {
+  color: #d32f2f;
+}
 .entry-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(100, 80, 50, 0.2);
