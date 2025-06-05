@@ -115,9 +115,8 @@ main {
   background: repeating-linear-gradient(
     to bottom,
     #f5efe0,
-    #f5efe0 39px,
-    #d7cbb2 40px,
-    #f5efe0 40px
+    #f5efe0 36px,
+    #d7cbb2 37px
   );
   border: 1px solid #d4c4aa;
   border-radius: 10px;
@@ -127,10 +126,22 @@ main {
   min-height: 1123px;
   page-break-after: always;
   font-size: 1.3rem;
-  line-height: 1.8;
+  line-height: 36px; /* Must match the line spacing above */
   white-space: pre-wrap;
   position: relative;
   box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .entry-card {
+    background: repeating-linear-gradient(
+      to bottom,
+      #f5efe0,
+      #f5efe0 32px,
+      #d7cbb2 33px
+    );
+    line-height: 32px;
+  }
 }
 
 /* === Entry Header and Date === */
