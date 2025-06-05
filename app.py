@@ -21,6 +21,22 @@ def diary_page():
 def past_entries():
     return render_template('past_entries.html') 
 
+@app.route('/get_entries', methods=['GET'])
+def get_entries():
+    uid = request.args.get('uid')  # Get user ID from frontend
+    if not uid:
+        return jsonify({"error": "User ID missing"}), 400
+
+    try:
+        # Query entries for the current user, sorted by date
+        entries_ref = db.collection('journals').where('uid', '==', uid).order_by('date', direction=firestore.Query.DESCENDING)
+        entries = [doc.to_dict() for doc in entries_ref.stream()]
+        
+        return jsonify({"status": "success", "entries": entries})
+    
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 
 @app.route('/verify_token', methods=['POST'])
 def verify_token():
