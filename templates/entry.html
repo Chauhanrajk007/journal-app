@@ -4,22 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>My Digital Diary</title>
+  <!-- Handwriting font for a journal feel -->
   <link href="https://fonts.googleapis.com/css2?family=Caveat&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/css/diary.css" />
+  <!-- Your custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/diary.css') }}" />
+  <!-- PageFlip library CSS (for realistic page turning) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/page-flip/dist/css/page-flip.min.css" />
 </head>
 <body>
   <header>
+    <!-- Profile menu: hover shows Gmail via `title` attribute -->
     <div class="profile-menu">
-      <span id="user-email">👤</span>
+      <span id="user-email" title="Not logged in">👤</span>
       <button id="logoutBtn">Logout</button>
     </div>
     <h1>My Digital Diary</h1>
   </header>
 
   <main>
+    <!-- Flipbook container -->
     <div class="flipbook-container">
-      <div class="flip-book" id="diaryBook">
+      <div id="diaryBook" class="flip-book">
         <!-- Front Cover -->
         <div class="page page-cover page-cover-top" data-density="hard">
           <div class="page-content center-text">
@@ -28,7 +33,7 @@
           </div>
         </div>
 
-        <!-- Pages injected via JS -->
+        <!-- Dynamic pages will be inserted here via JS -->
 
         <!-- Back Cover -->
         <div class="page page-cover page-cover-bottom" data-density="hard">
@@ -37,10 +42,17 @@
           </div>
         </div>
       </div>
+
+      <!-- Navigation arrows are removed; swipe or click to flip only -->
+
+      <!-- Close Journal button: closes the book and redirects -->
+      <button id="closeBookBtn">Close Journal</button>
     </div>
   </main>
 
+  <!-- PageFlip library (for realistic page turning) -->
   <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
-  <script type="module" src="/static/js/diary.js"></script>
+  <!-- Your custom JS logic -->
+  <script type="module" src="{{ url_for('static', filename='js/diary.js') }}"></script>
 </body>
 </html>
