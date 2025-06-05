@@ -1,238 +1,83 @@
 import { auth, db } from './firebase-config.js';
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  doc,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-const container = document.getElementById("entries-container");
+const textarea = document.getElementById("journalEntry");
+const message = document.getElementById("message");
+const emailDisplay = document.getElementById("email-display");
+const logoutBtn = document.getElementById("logoutBtn");
+const saveBtn = document.getElementById("saveBtn");
 
-// Secret modals
-const setSecretModal = document.getElementById("setSecretModal");
-const secretInput = document.getElementById("secretInput");
-const saveSecretBtn = document.getElementById("saveSecretBtn");
+let lastSavedContent = "";
+let isEditing = false;
 
-const confirmHideModal = document.getElementById("confirmHideModal");
-const confirmHideYes = document.getElementById("confirmHideYes");
-const confirmHideNo = document.getElementById("confirmHideNo");
+onAuthStateChanged(auth, user => {
+  if (user) {
+    emailDisplay.textContent = user.email || "Unknown user";
 
-const searchInput = document.getElementById("searchBar");
-
-let allEntries = [];
-let selectedCardToHide = null;
-
-// Save secret phrase
-if (saveSecretBtn) {
-  saveSecretBtn.addEventListener("click", () => {
-    const phrase = secretInput.value.trim();
-    if (phrase.length >= 3) {
-      localStorage.setItem("journalSecret", phrase);
-      setSecretModal.classList.add("hidden");
-      alert("Secret saved. You can now hide entries.");
-    } else {
-      alert("Please enter at least 3 characters.");
+    // Restore draft if exists
+    const draft = localStorage.getItem(`draft_${user.uid}`);
+    if (draft) {
+      textarea.value = draft;
+      saveBtn.disabled = false;
+      isEditing = true;
+      message.textContent = "Unsaved draft restored ✏️";
     }
-  });
-}
-
-// Confirm hide entry
-if (confirmHideYes) {
-  confirmHideYes.addEventListener("click", async () => {
-    if (selectedCardToHide) {
-      const docId = selectedCardToHide.dataset.docId;
-      const entryRef = doc(db, "journals", docId);
-
-      await updateDoc(entryRef, { hidden: true });
-
-      selectedCardToHide.remove();
-
-      selectedCardToHide = null;
-    }
-    confirmHideModal.classList.add("hidden");
-  });
-}
-
-if (confirmHideNo) {
-  confirmHideNo.addEventListener("click", () => {
-    confirmHideModal.classList.add("hidden");
-  });
-}
-
-function showSetSecretPopup() {
-  setSecretModal.classList.remove("hidden");
-}
-
-function showConfirmHidePopup(card) {
-  selectedCardToHide = card;
-  confirmHideModal.classList.remove("hidden");
-}
-
-// Add hide button to a card
-function addHideButtonToCard(card) {
-  const hideBtn = document.createElement("button");
-  hideBtn.className = "hide-entry-btn";
-  hideBtn.textContent = "👁️";
-
-  hideBtn.addEventListener("click", () => {
-    const existingSecret = localStorage.getItem("journalSecret");
-    if (!existingSecret) {
-      showSetSecretPopup();
-    } else {
-      showConfirmHidePopup(card);
-    }
-  });
-
-  card.appendChild(hideBtn);
-}
-
-// Search functionality and redirect
-if (searchInput) {
-  searchInput.addEventListener("input", () => {
-    const queryStr = searchInput.value.toLowerCase();
-    const savedSecret = localStorage.getItem("journalSecret");
-
-    // Redirect to hidden.html if search input matches secret
-    if (savedSecret && queryStr === savedSecret.toLowerCase()) {
-      window.location.href = "hidden.html";
-      return;
-    }
-
-    container.innerHTML = '';
-
-    const filtered = allEntries.filter(entry =>
-      (entry.data.content && entry.data.content.toLowerCase().includes(queryStr)) ||
-      entry.dateStr.toLowerCase().includes(queryStr)
-    );
-
-    if (filtered.length === 0) {
-      container.innerHTML = "<p>No matching entries found.</p>";
-    } else {
-      filtered.forEach(({ data, dateStr }) => {
-        const card = createEntryCard(data, dateStr);
-        container.appendChild(card);
-      });
-    }
-  });
-}
-
-// Create journal entry card
-function createEntryCard(data, dateStr) {
-  const card = document.createElement("div");
-  card.className = "entry-card";
-
-  const header = document.createElement("div");
-  header.className = "entry-header";
-
-  const dateElem = document.createElement("h3");
-  dateElem.className = "entry-date";
-  dateElem.textContent = dateStr;
-
-  header.appendChild(dateElem);
-  card.appendChild(header);
-
-  // NEW: Eye icon for toggling content visibility
-  const eyeIcon = document.createElement("span");
-  eyeIcon.className = "eye-icon";
-  eyeIcon.textContent = "👁️";
-  header.appendChild(eyeIcon);
-
-  const contentElem = document.createElement("p");
-  contentElem.className = "entry-content entry-text";
-  contentElem.textContent = data.content;
-
-  const downloadBtn = document.createElement("button");
-  downloadBtn.className = "download-btn";
-  downloadBtn.textContent = "Download PDF";
-
-  downloadBtn.addEventListener("click", () => {
-    const printable = document.createElement("div");
-    printable.className = "entry-card";
-    printable.innerHTML = `
-      <div class="entry-header">
-        <h3 class="entry-date">${dateStr}</h3>
-      </div>
-      <p class="entry-content">${data.content}</p>
-    `;
-
-    printable.style.background = card.style.background;
-
-    const opt = {
-      margin: 0,
-      filename: `Journal_${dateStr.replace(/\//g, "-")}.pdf`,
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
-    };
-
-    // Hide UI before PDF
-    document.querySelectorAll(".hide-entry-btn, .download-btn, #searchBar, #back-button, #page-title")
-      .forEach(el => el.style.display = "none");
-
-    window.html2pdf().from(printable).set(opt).save().then(() => {
-      // Restore UI
-      document.querySelectorAll(".hide-entry-btn, .download-btn, #searchBar, #back-button, #page-title")
-        .forEach(el => el.style.display = "");
-    });
-  });
-
-  card.appendChild(contentElem);
-  card.appendChild(downloadBtn);
-  addHideButtonToCard(card);
-
-  return card;
-}
-
-// Load journal entries
-auth.onAuthStateChanged(async user => {
-  if (!user) {
+  } else {
     window.location.href = "/";
-    return;
-  }
-
-  try {
-    const q = query(
-      collection(db, "journals"),
-      where("uid", "==", user.uid),
-      orderBy("date", "desc")
-    );
-
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
-      container.innerHTML = "<p>No entries found</p>";
-      return;
-    }
-
-    container.innerHTML = '';
-    allEntries = [];
-
-    querySnapshot.forEach(docSnap => {
-      const data = docSnap.data();
-      const dateObj = new Date(data.date);
-      const dateStr = `${dateObj.toLocaleDateString()} - ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-
-      const card = createEntryCard(data, dateStr);
-      card.dataset.docId = docSnap.id;
-      container.appendChild(card);
-
-      allEntries.push({ data, dateStr });
-    });
-
-  } catch (error) {
-    console.error("Error:", error);
-    container.innerHTML = `<p>Error loading entries: ${error.message}</p>`;
   }
 });
 
-// === NEW CODE: Toggle entry text visibility on eye icon click ===
-document.addEventListener("click", (e) => {
-  if (e.target.classList.contains("eye-icon")) {
-    const entryText = e.target.closest(".entry-card").querySelector(".entry-text");
-    if (entryText) {
-      entryText.classList.toggle("hidden");  // Toggle visibility
-    }
+logoutBtn.addEventListener("click", () => {
+  signOut(auth).then(() => {
+    window.location.href = "/";
+  });
+});
+
+// Enable save when user types
+textarea.addEventListener("input", () => {
+  isEditing = true;
+  saveBtn.disabled = false;
+  message.textContent = "Unsaved changes...";
+
+  const user = auth.currentUser;
+  if (user) {
+    localStorage.setItem(`draft_${user.uid}`, textarea.value);
+  }
+});
+
+// Manual Save
+saveBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  const content = textarea.value.trim();
+  const dateKey = new Date().toISOString().split('T')[0];
+
+  if (!user || !content || content === lastSavedContent) return;
+
+  try {
+    const docRef = doc(db, "journals", `${user.uid}_${dateKey}`);
+    await setDoc(docRef, {
+      content,
+      date: dateKey,
+      uid: user.uid,
+      updatedAt: new Date().toISOString()
+    });
+
+    lastSavedContent = content;
+    isEditing = false;
+    saveBtn.disabled = true;
+    localStorage.removeItem(`draft_${user.uid}`);
+    message.textContent = "Saved ✔️";
+  } catch (err) {
+    console.error("Save failed:", err);
+    message.textContent = "Failed to save ❌";
+  }
+});
+
+// Warn before closing tab if there are unsaved changes
+window.addEventListener("beforeunload", (e) => {
+  if (isEditing) {
+    e.preventDefault();
+    e.returnValue = "";
   }
 });
