@@ -11,7 +11,7 @@ auth.onAuthStateChanged(async user => {
     window.location.href = "/";
     return;
   }
-
+console.log("Current user UID:", user.uid);
   try {
     const q = query(
       collection(db, "journals"),
