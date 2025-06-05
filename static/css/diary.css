@@ -123,10 +123,9 @@ main {
 }
 
 #saveBtn:disabled {
-  background-color: #d8cbb8;
+  background-color: #a99a87; /* Lighter brown when disabled */
   cursor: not-allowed;
 }
-
 #message {
   margin-top: 15px;
   font-size: 16px;
