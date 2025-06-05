@@ -27,7 +27,10 @@
     <form id="loginForm">
       <input type="email" id="loginEmail" placeholder="Email" required />
       <input type="password" id="loginPassword" placeholder="Password" required />
-      <div id="auth-error" class="hidden error-box"></div>
+      <div id="auth-error" class="hidden error-box">
+  <span id="error-text"></span>
+  <button onclick="this.parentElement.classList.add('hidden')" style="margin-top:10px;">Dismiss</button>
+</div>
       <button type="submit">Login</button>
     </form>
     <p class="switch-link" onclick="backToWelcome()">← Back</p>
@@ -40,7 +43,10 @@
       <input type="email" id="signupEmail" placeholder="Email" required />
       <input type="password" id="signupPassword" placeholder="Password" required />
       <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
-      <div id="auth-error" class="hidden error-box"></div>
+      <div id="auth-error" class="hidden error-box">
+  <span id="error-text"></span>
+  <button onclick="this.parentElement.classList.add('hidden')" style="margin-top:10px;">Dismiss</button>
+</div>
       <button type="submit">Sign Up</button>
     </form>
     <p class="switch-link" onclick="backToWelcome()">← Back</p>
