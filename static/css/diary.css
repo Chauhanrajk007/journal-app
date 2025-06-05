@@ -1,4 +1,4 @@
-/* Reset and base */
+/* -------------------- RESET & BASE -------------------- */
 * {
   margin: 0;
   padding: 0;
@@ -7,21 +7,22 @@
 
 body {
   font-family: 'Caveat', cursive;
-  background: #ede0c8; /* Soft, paper-like background */
+  background: #ede0c8; /* Warm paper‐like background */
   color: #4e3b2c;
-  overflow: hidden;   /* Prevent scrolling; flipbook fills viewport */
+  overflow: hidden; /* Prevent scrollbars; the flipbook fills the viewport */
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Header styling */
+/* -------------------- HEADER -------------------- */
 header {
   text-align: center;
   background: #f5efe0;
   padding: 15px 0;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: relative;
+  user-select: none;
 }
 
 header h1 {
@@ -29,20 +30,22 @@ header h1 {
   color: #5a4331;
 }
 
-/* Profile menu (hover shows email via `title`) */
+/* Profile menu in top‐right */
 .profile-menu {
   position: absolute;
   top: 10px;
   right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .profile-menu span {
-  font-size: 1.5rem;
-  cursor: default; /* Hover to reveal email tooltip */
+  font-size: 1.5rem; 
+  cursor: default; /* Hover to see email in tooltip */
 }
 
 .profile-menu #logoutBtn {
-  margin-left: 10px;
   background: #c77;
   color: #fff;
   border: none;
@@ -57,7 +60,7 @@ header h1 {
   background: #a55;
 }
 
-/* Flipbook container */
+/* -------------------- FLIPBOOK LAYOUT -------------------- */
 .flipbook-container {
   flex: 1;
   display: flex;
@@ -66,23 +69,25 @@ header h1 {
   justify-content: center;
 }
 
-/* The element that PageFlip attaches to */
+/* This is where PageFlip renders the book */
 .flip-book {
   width: 500px;
   height: 700px;
   margin-bottom: 20px;
+  transform-origin: center;
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
-/* Each page’s content */
+/* -------------------- PAGE CONTENT -------------------- */
 .page-content {
   padding: 30px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 100%;
 }
 
-/* Lined-paper style for textareas */
+/* The writing area (textarea): lined, paper‐like style */
 .page textarea {
   width: 100%;
   height: 100%;
@@ -104,19 +109,24 @@ header h1 {
   color: #4e3b2c;
 }
 
-/* Center text for covers */
-.center-text {
-  text-align: center;
+.page textarea::placeholder {
+  color: #a99a87;
 }
 
-/* Zoom-in effect when writing */
+/* Centered text (covers) */
+.center-text {
+  text-align: center;
+  margin: auto;
+}
+
+/* Zoom‐in effect when you focus a page’s textarea */
 .zoomed {
   transform: scale(1.1);
   transition: transform 0.3s ease-in-out;
   z-index: 10;
 }
 
-/* Pulse animation on auto-save */
+/* Small “pulse” animation on auto‐save */
 .pulse-save {
   animation: pulse 0.5s ease-in-out;
 }
@@ -127,14 +137,12 @@ header h1 {
   100% { transform: scale(1); }
 }
 
-/* Book open/close animations */
-.page-cover {
-  /* Covers are solid color, so no textarea here */
-  background: #d1bfa3;
-}
+/* Opening animation for the covers */
 .flip-book.open-book .page-cover {
   animation: book-open 1s ease-in-out forwards;
 }
+
+/* Closing animation for the covers */
 .flip-book.close-book .page-cover {
   animation: book-close 0.8s ease-in-out forwards;
 }
@@ -143,12 +151,13 @@ header h1 {
   0%   { transform: scaleX(0.2); opacity: 0; }
   100% { transform: scaleX(1); opacity: 1; }
 }
+
 @keyframes book-close {
   0%   { transform: scaleX(1); }
   100% { transform: scaleX(0.9); opacity: 0.7; }
 }
 
-/* Close button */
+/* “Close Journal” button style */
 #closeBookBtn {
   background: #a55;
   color: #fff;
