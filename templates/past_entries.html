@@ -14,14 +14,14 @@
   </header>
 
   <main id="main-content">
-<div class="search-bar-container">
-  <input
-    type="text"
-    id="searchBar"
-    placeholder="🔍 Search entries by date or words...."
-    oninput="handleSearch(this.value)"
-  />
-
+    <div class="search-bar-container">
+      <input
+        type="text"
+        id="searchBar"
+        placeholder="🔍 Search entries by date or words...."
+        oninput="handleSearch(this.value)"
+      />
+    </div>
 
     <div id="entries-container">
       <div id="loading-state">
@@ -32,7 +32,7 @@
   </main>
 
   <!-- Error modal -->
-  <div id="error-modal" class="hidden">
+  <div id="error-modal" class="modal hidden">
     <div class="modal-content">
       <h3>Error</h3>
       <p id="error-message"></p>
