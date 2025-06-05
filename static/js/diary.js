@@ -26,7 +26,7 @@ logoutBtn.addEventListener("click", () => {
 textarea.addEventListener("input", () => {
   clearTimeout(saveTimeout);
   message.textContent = "Saving...";
-  saveTimeout = setTimeout(autoSave, 1000);
+  saveTimeout = setTimeout(autoSave, 100);
 });
 
 async function autoSave() {
