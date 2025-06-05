@@ -8,6 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const container = document.getElementById("entries-container");
+const allEntries = [];
 
 auth.onAuthStateChanged(async user => {
   if (!user) {
@@ -35,49 +36,15 @@ auth.onAuthStateChanged(async user => {
 
     querySnapshot.forEach(doc => {
       const data = doc.data();
-      const card = document.createElement("div");
-      card.className = "entry-card";
-
-      // Format timestamp correctly
       const formattedDate = new Date(data.date).toLocaleDateString();
 
-      // Create inner content
-      const dateElem = document.createElement("h3");
-      dateElem.className = "entry-date";
-      dateElem.textContent = formattedDate;
+      const entryObj = {
+        date: formattedDate,
+        content: data.content
+      };
 
-      const contentElem = document.createElement("p");
-      contentElem.className = "entry-content";
-      contentElem.textContent = data.content;
-
-      const downloadBtn = document.createElement("button");
-      downloadBtn.className = "download-btn";
-      downloadBtn.textContent = "Download PDF";
-
-      downloadBtn.addEventListener("click", () => {
-        // Clone a clean version of the content for export
-        const printable = document.createElement("div");
-        printable.className = "entry-card";
-        printable.style.background = card.style.background; // for ruled effect
-        printable.innerHTML = `
-          <h3 class="entry-date">${formattedDate}</h3>
-          <p class="entry-content">${data.content}</p>
-        `;
-
-        const opt = {
-          margin: 0,
-          filename: `Journal_${formattedDate}.pdf`,
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
-        };
-
-        window.html2pdf().from(printable).set(opt).save();
-      });
-
-      card.appendChild(dateElem);
-      card.appendChild(contentElem);
-      card.appendChild(downloadBtn);
-      container.appendChild(card);
+      allEntries.push(entryObj);
+      renderEntry(entryObj);
     });
 
   } catch (error) {
@@ -85,3 +52,77 @@ auth.onAuthStateChanged(async user => {
     container.innerHTML = `<p>Error loading entries: ${error.message}</p>`;
   }
 });
+
+function renderEntry(entry) {
+  const card = document.createElement("div");
+  card.className = "entry-card";
+
+  const dateElem = document.createElement("h3");
+  dateElem.className = "entry-date";
+  dateElem.textContent = entry.date;
+
+  const contentElem = document.createElement("p");
+  contentElem.className = "entry-content";
+  contentElem.textContent = entry.content;
+
+  const downloadBtn = document.createElement("button");
+  downloadBtn.className = "download-btn";
+  downloadBtn.textContent = "Download PDF";
+
+  downloadBtn.addEventListener("click", () => {
+    const printable = document.createElement("div");
+    printable.className = "entry-card";
+    printable.innerHTML = `
+      <h3 class="entry-date">${entry.date}</h3>
+      <p class="entry-content">${entry.content}</p>
+    `;
+
+    const opt = {
+      margin: 0,
+      filename: `Journal_${entry.date}.pdf`,
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+    };
+
+    window.html2pdf().from(printable).set(opt).save();
+  });
+
+  card.appendChild(dateElem);
+  card.appendChild(contentElem);
+  card.appendChild(downloadBtn);
+  container.appendChild(card);
+}
+
+// 🔍 Live search + secret phrase unlock
+window.handleSearch = function (query) {
+  const lowerQuery = query.trim().toLowerCase();
+  const noResults = document.getElementById("no-results");
+
+  if (!lowerQuery) {
+    noResults.classList.add("hidden");
+    container.innerHTML = "";
+    allEntries.forEach(renderEntry);
+    return;
+  }
+
+  const secret = localStorage.getItem("secretKey");
+  if (secret && lowerQuery === secret.toLowerCase()) {
+    window.location.href = "/hidden-journal.html";
+    return;
+  }
+
+  const filtered = allEntries.filter(entry =>
+    entry.content.toLowerCase().includes(lowerQuery) ||
+    entry.date.toLowerCase().includes(lowerQuery)
+  );
+
+  container.innerHTML = "";
+
+  if (filtered.length === 0) {
+    noResults.classList.remove("hidden");
+    return;
+  }
+
+  noResults.classList.add("hidden");
+  filtered.forEach(renderEntry);
+};
