@@ -107,6 +107,23 @@ main {
   font-family: 'Caveat', cursive;
   font-size: 20px;
 }
+.entry-date-header {
+  color: #5a4331;
+  margin: 30px 0 15px 0;
+  padding-bottom: 5px;
+  border-bottom: 1px dashed #d4c4aa;
+  width: 100%;
+}
+
+.entry-time {
+  color: #7a5c3d;
+  font-size: 0.9em;
+  font-style: italic;
+}
+
+.entry-header {
+  margin-bottom: 10px;
+}
 
 .error-state {
   color: #d32f2f;
