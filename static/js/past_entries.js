@@ -41,7 +41,15 @@ if (saveSecretBtn) {
 if (confirmHideYes) {
   confirmHideYes.addEventListener("click", () => {
     if (selectedCardToHide) {
-      selectedCardToHide.style.display = "none";
+      import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+const docId = selectedCardToHide.dataset.docId;
+const entryRef = doc(db, "journals", docId);
+
+await updateDoc(entryRef, { hidden: true });
+
+selectedCardToHide.remove();
+
       selectedCardToHide = null;
     }
     confirmHideModal.classList.add("hidden");
