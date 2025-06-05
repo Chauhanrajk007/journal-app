@@ -1,0 +1,81 @@
+body {
+  font-family: 'Caveat', cursive;
+  background: #f5efe0;
+  color: #4e3b2c;
+  padding: 20px;
+}
+
+#page-title {
+  font-size: 2.5rem;
+  color: #5a4331;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.entry-card {
+  background: repeating-linear-gradient(to bottom, #f5efe0, #f5efe0 39px, #d7cbb2 40px, #f5efe0 40px);
+  border: 1px solid #d4c4aa;
+  border-radius: 10px;
+  padding: 30px;
+  margin: 40px auto;
+  box-shadow: 0 0 15px rgba(100, 80, 50, 0.2);
+  width: 794px;
+  min-height: 1123px;
+  box-sizing: border-box;
+  position: relative;
+  font-size: 1.2rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.entry-date {
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-align: left;
+  margin: 0;
+}
+
+.entry-content {
+  font-size: 1.3rem;
+  line-height: 1.8;
+}
+
+.unhide-btn {
+  font-size: 1.4rem;
+  background: transparent;
+  border: none;
+  color: #9c8b73;
+  cursor: pointer;
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #fff9ed;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
