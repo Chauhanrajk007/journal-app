@@ -248,3 +248,21 @@ main {
     font-size: 1.1rem;
   }
 }
+#back-button {
+  display: inline-block;
+  margin: 20px auto;
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  color: white;
+  background: linear-gradient(to right, #7a5c3d, #5a4331);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.3s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+#back-button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(to right, #8b6849, #6d4f3b);
+}
