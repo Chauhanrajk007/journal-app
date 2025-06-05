@@ -291,4 +291,9 @@ body {
   font-family: 'Caveat', cursive;
   margin: 8px;
 }
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
