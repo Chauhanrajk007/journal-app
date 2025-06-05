@@ -137,3 +137,26 @@ body {
     font-size: 1.1rem;
   }
 }
+/* Make each journal look like a full A4 page */
+.entry-card {
+  background-color: #fff;
+  width: 794px;   /* A4 width at 96 DPI */
+  min-height: 1123px; /* A4 height at 96 DPI */
+  margin: 40px auto;
+  padding: 50px 40px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.15);
+  box-sizing: border-box;
+  position: relative;
+  page-break-after: always;
+}
+
+.entry-date {
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+}
+
+.entry-content {
+  font-size: 1.3rem;
+  line-height: 1.8;
+}
+
