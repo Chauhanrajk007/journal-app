@@ -198,7 +198,7 @@ auth.onAuthStateChanged(async user => {
     querySnapshot.forEach(doc => {
       const data = doc.data();
       const dateObj = new Date(data.date);
-      const dateStr = dateObj.toLocaleDateString();
+      const dateStr = `${dateObj.toLocaleDateString()} - ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
       const card = createEntryCard(data, dateStr);
       container.appendChild(card);
