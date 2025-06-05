@@ -51,16 +51,26 @@ body {
 
 /* Make each journal look like a full A4 page */
 .entry-card {
-  background-color: #fff;
+  background: linear-gradient(to bottom, #fdf7e3 0%, #fdf7e3 100%),
+              repeating-linear-gradient(to bottom, transparent 0px, transparent 24px, #d4c4aa 25px);
+  border: 1px solid #d4c4aa;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.15);
+  font-family: 'Caveat', cursive;
+  font-size: 1.2rem;
+  color: #4e3b2c;
+  line-height: 1.7;
+  white-space: pre-wrap;
   width: 794px;   /* A4 width at 96 DPI */
   min-height: 1123px; /* A4 height at 96 DPI */
   margin: 40px auto;
   padding: 50px 40px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.15);
   box-sizing: border-box;
   position: relative;
   page-break-after: always;
 }
+
+
 
 .entry-date {
   font-size: 1.8rem;
