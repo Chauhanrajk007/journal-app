@@ -37,7 +37,7 @@ auth.onAuthStateChanged(async user => {
       card.className = "entry-card";
 
       // Format Firestore Timestamp to string
-      const formattedDate = data.date.toDate().toLocaleDateString();
+      const formattedDate = new Date(data.date).toLocaleDateString();
 
       card.innerHTML = `
         <h3 class="entry-date">${formattedDate}</h3>
