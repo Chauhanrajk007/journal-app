@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>My Digital Diary</title>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/diary.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/diary.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/page-flip/dist/css/page-flip.min.css" />
 </head>
 <body>
@@ -19,21 +19,28 @@
 
   <main>
     <div class="flipbook-container">
-      <div id="diaryBook" class="flip-book"></div>
-      <div class="nav-buttons">
-        <button id="prevPage">⬅</button>
-        <button id="nextPage">➡</button>
-      </div>
-      <button id="closeBookBtn">Close Journal</button>
-    </div>
+      <div class="flip-book" id="diaryBook">
+        <!-- Front Cover -->
+        <div class="page page-cover page-cover-top" data-density="hard">
+          <div class="page-content center-text">
+            <h2>📔 My Journal</h2>
+            <p>Touch or click to begin writing...</p>
+          </div>
+        </div>
 
-    <div class="top-left-nav">
-      <button onclick="window.location.href='/calendar'" class="nav-btn">📅 View Calendar</button>
-      <button onclick="window.location.href='/timeline'" class="nav-btn">📖 View Timeline</button>
+        <!-- Pages injected via JS -->
+
+        <!-- Back Cover -->
+        <div class="page page-cover page-cover-bottom" data-density="hard">
+          <div class="page-content center-text">
+            <h2>📕 The End</h2>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
-  <script type="module" src="{{ url_for('static', filename='js/diary.js') }}"></script>
+  <script type="module" src="/static/js/diary.js"></script>
 </body>
 </html>
