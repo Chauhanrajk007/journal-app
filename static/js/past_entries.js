@@ -145,7 +145,7 @@ onAuthStateChanged(auth, async user => {
         <div class="entry-header flex justify-between items-center">
           <div class="entry-date">${data.date}</div>
           <div class="space-x-2">
-            <button class="hide-entry-btn" title="Hide Entry">🙈</button>
+            <button class="hide-entry-btn" title="Hide Entry">🔒</button>
             <button class="download-entry-btn" title="Download PDF">📥</button>
           </div>
         </div>
