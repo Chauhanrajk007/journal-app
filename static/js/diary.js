@@ -6,13 +6,23 @@ const textarea = document.getElementById("journalEntry");
 const message = document.getElementById("message");
 const emailDisplay = document.getElementById("email-display");
 const logoutBtn = document.getElementById("logoutBtn");
+const saveBtn = document.getElementById("saveBtn");
 
-let saveTimeout;
 let lastSavedContent = "";
+let isEditing = false;
 
 onAuthStateChanged(auth, user => {
   if (user) {
     emailDisplay.textContent = user.email || "Unknown user";
+
+    // Restore draft if exists
+    const draft = localStorage.getItem(`draft_${user.uid}`);
+    if (draft) {
+      textarea.value = draft;
+      saveBtn.disabled = false;
+      isEditing = true;
+      message.textContent = "Unsaved draft restored ✏️";
+    }
   } else {
     window.location.href = "/";
   }
@@ -24,16 +34,22 @@ logoutBtn.addEventListener("click", () => {
   });
 });
 
+// Enable Save button on input
 textarea.addEventListener("input", () => {
-  clearTimeout(saveTimeout);
-  message.textContent = "Saving...";
-  saveTimeout = setTimeout(autoSave, 800); // Delay reduced to minimize spam
+  isEditing = true;
+  saveBtn.disabled = false;
+  message.textContent = "Unsaved changes...";
+  const user = auth.currentUser;
+  if (user) {
+    localStorage.setItem(`draft_${user.uid}`, textarea.value);
+  }
 });
 
-async function autoSave() {
+// Save Button Click
+saveBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   const content = textarea.value.trim();
-  const dateKey = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
+  const dateKey = new Date().toISOString().split('T')[0];
 
   if (!user || !content || content === lastSavedContent) return;
 
@@ -47,9 +63,21 @@ async function autoSave() {
     });
 
     lastSavedContent = content;
+    isEditing = false;
+    saveBtn.disabled = true;
+    textarea.value = ""; // ✅ Clear textarea
+    localStorage.removeItem(`draft_${user.uid}`);
     message.textContent = "Saved ✔️";
   } catch (err) {
     console.error("Save failed:", err);
     message.textContent = "Failed to save ❌";
   }
-}
+});
+
+// Warn before unload
+window.addEventListener("beforeunload", (e) => {
+  if (isEditing) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});
