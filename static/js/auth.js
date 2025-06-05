@@ -66,6 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (message.includes("auth/wrong-password")) return "Incorrect password.";
     if (message.includes("auth/email-already-in-use")) return "Email is already in use.";
     if (message.includes("auth/weak-password")) return "Password should be at least 6 characters.";
+     if (message.includes("auth/missing-password")) return "Password is required.";
+  if (message.includes("auth/too-many-requests")) return "Too many login attempts. Try again later.";
     return "Something went wrong. Please try again.";
   }
 });
