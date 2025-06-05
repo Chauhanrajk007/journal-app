@@ -98,29 +98,9 @@ form button:hover, .btn-group button:hover {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-.error-box {
-  background: #fdf3d5;
-  border: 2px dashed #8b5e3c;
-  color: #5a3e2b;
-  padding: 20px;
-  border-radius: 12px;
+.error-message {
+  color: #c0392b;
+  font-size: 0.95rem;
+  margin-top: 6px;
   font-family: 'Caveat', cursive;
-  font-size: 1.3rem;
-  max-width: 500px;
-  margin: 20px auto;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-  white-space: pre-wrap;
-  text-align: center;
-  display:none;
-  transition: opacity 0.3s ease;
 }
-.error-box.show {
-  display: block;
-  opacity:1;
-}
-.error-box.hidden {
-  display: none;
-}
-
-
-
