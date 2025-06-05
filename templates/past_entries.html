@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Past Entries</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/past_entries.css') }}" />
+</head>
+<body>
+  <header>
+    <h1>📜 Past Journal Entries</h1>
+    <button onclick="window.location.href='/diary'" class="back-btn">← Back to Diary</button>
+  </header>
+
+  <main>
+    <div id="entriesContainer">
+      <!-- Entries will be dynamically inserted here -->
+    </div>
+  </main>
+
+  <script type="module" src="{{ url_for('static', filename='js/past_entries.js') }}"></script>
+</body>
+</html>
