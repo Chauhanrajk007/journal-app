@@ -4,57 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>My Digital Diary</title>
-  <!-- Handwriting font -->
-  <link href="https://fonts.googleapis.com/css2?family=Caveat&display=swap" rel="stylesheet" />
-  <!-- Your custom CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/diary.css') }}" />
-  <!-- PageFlip library CSS (for realistic page turning) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/page-flip/dist/css/page-flip.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/diary.css') }}">
 </head>
 <body>
   <header>
-    <!-- Profile icon: Gmail appears on hover via title attribute -->
-    <div class="profile-menu">
-      <span id="user-email" title="Not logged in">👤</span>
-      <button id="logoutBtn">Logout</button>
-    </div>
     <h1>My Digital Diary</h1>
+    <div class="profile-dropdown">
+      <span id="user-email" title="Hover to view email">👤</span>
+      <div class="dropdown-content">
+        <p id="email-display">Loading...</p>
+        <a href="/timeline">📅 Timeline</a>
+        <a href="/chatbot">🤖 Chatbot</a>
+        <a href="/past-entries">📂 Past Entries</a>
+        <a href="/" id="logoutBtn">🚪 Logout</a>
+      </div>
+    </div>
   </header>
 
   <main>
-    <div class="flipbook-container">
-      <div id="diaryBook" class="flip-book">
-        <!-- 1) FRONT COVER -->
-        <div class="page page-cover page-cover-top" data-density="hard">
-          <div class="page-content center-text">
-            <h2>📔 My Journal</h2>
-            <p>Tap or click to begin writing…</p>
-          </div>
-        </div>
-
-        <!-- 2) INITIAL WRITABLE PAGE -->
-        <div class="page">
-          <div class="page-content">
-            <textarea id="entry" placeholder="Start writing your story…"></textarea>
-          </div>
-        </div>
-
-        <!-- 3) BACK COVER -->
-        <div class="page page-cover page-cover-bottom" data-density="hard">
-          <div class="page-content center-text">
-            <h2>📕 The End</h2>
-          </div>
-        </div>
-      </div>
-
-      <!-- “Close Journal” button (only closes when clicked) -->
-      <button id="closeBookBtn">Close Journal</button>
+    <div class="journal">
+      <textarea id="journalEntry" placeholder="Dear Diary..."></textarea>
+      <p id="message"></p>
     </div>
   </main>
 
-  <!-- PageFlip library (for realistic page turns) -->
-  <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
-  <!-- Your custom JS logic -->
   <script type="module" src="{{ url_for('static', filename='js/diary.js') }}"></script>
 </body>
 </html>
