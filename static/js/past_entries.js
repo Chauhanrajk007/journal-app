@@ -9,7 +9,7 @@ import {
 
 const container = document.getElementById("entries-container");
 
-// Secret phrase modals
+// Secret modals
 const setSecretModal = document.getElementById("setSecretModal");
 const secretInput = document.getElementById("secretInput");
 const saveSecretBtn = document.getElementById("saveSecretBtn");
@@ -20,32 +20,39 @@ const confirmHideNo = document.getElementById("confirmHideNo");
 
 const searchInput = document.getElementById("searchBar");
 
-let allEntries = []; // store for search
+let allEntries = [];
 let selectedCardToHide = null;
 
-// SECRET LOGIC
-saveSecretBtn.addEventListener("click", () => {
-  const phrase = secretInput.value.trim();
-  if (phrase.length >= 3) {
-    localStorage.setItem("journalSecret", phrase);
-    setSecretModal.classList.add("hidden");
-    alert("Secret saved. You can now hide entries.");
-  } else {
-    alert("Please enter at least 3 characters.");
-  }
-});
+// Save secret phrase
+if (saveSecretBtn) {
+  saveSecretBtn.addEventListener("click", () => {
+    const phrase = secretInput.value.trim();
+    if (phrase.length >= 3) {
+      localStorage.setItem("journalSecret", phrase);
+      setSecretModal.classList.add("hidden");
+      alert("Secret saved. You can now hide entries.");
+    } else {
+      alert("Please enter at least 3 characters.");
+    }
+  });
+}
 
-confirmHideYes.addEventListener("click", () => {
-  if (selectedCardToHide) {
-    selectedCardToHide.style.display = "none";
-    selectedCardToHide = null;
-  }
-  confirmHideModal.classList.add("hidden");
-});
+// Confirm hide entry
+if (confirmHideYes) {
+  confirmHideYes.addEventListener("click", () => {
+    if (selectedCardToHide) {
+      selectedCardToHide.style.display = "none";
+      selectedCardToHide = null;
+    }
+    confirmHideModal.classList.add("hidden");
+  });
+}
 
-confirmHideNo.addEventListener("click", () => {
-  confirmHideModal.classList.add("hidden");
-});
+if (confirmHideNo) {
+  confirmHideNo.addEventListener("click", () => {
+    confirmHideModal.classList.add("hidden");
+  });
+}
 
 function showSetSecretPopup() {
   setSecretModal.classList.remove("hidden");
@@ -56,7 +63,7 @@ function showConfirmHidePopup(card) {
   confirmHideModal.classList.remove("hidden");
 }
 
-// HIDE BUTTON
+// Add hide button to a card
 function addHideButtonToCard(card) {
   const hideBtn = document.createElement("button");
   hideBtn.className = "hide-entry-btn";
@@ -74,41 +81,50 @@ function addHideButtonToCard(card) {
   card.appendChild(hideBtn);
 }
 
-// SEARCH
-searchInput.addEventListener("input", () => {
-  const query = searchInput.value.toLowerCase();
-  container.innerHTML = '';
+// Search functionality and redirect
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.toLowerCase();
+    const savedSecret = localStorage.getItem("journalSecret");
 
-  const filtered = allEntries.filter(entry =>
-    entry.content.toLowerCase().includes(query) ||
-    entry.dateStr.toLowerCase().includes(query)
-  );
+    // Redirect to hidden.html if search input matches secret
+    if (savedSecret && query === savedSecret.toLowerCase()) {
+      window.location.href = "hidden.html";
+      return;
+    }
 
-  if (filtered.length === 0) {
-    container.innerHTML = "<p>No matching entries found.</p>";
-  } else {
-    filtered.forEach(({ data, dateStr }) => {
-      const card = createEntryCard(data, dateStr);
-      container.appendChild(card);
-    });
-  }
-});
+    container.innerHTML = '';
 
-// CREATE CARD
+    const filtered = allEntries.filter(entry =>
+      entry.content.toLowerCase().includes(query) ||
+      entry.dateStr.toLowerCase().includes(query)
+    );
+
+    if (filtered.length === 0) {
+      container.innerHTML = "<p>No matching entries found.</p>";
+    } else {
+      filtered.forEach(({ data, dateStr }) => {
+        const card = createEntryCard(data, dateStr);
+        container.appendChild(card);
+      });
+    }
+  });
+}
+
+// Create journal entry card
 function createEntryCard(data, dateStr) {
   const card = document.createElement("div");
   card.className = "entry-card";
 
   const header = document.createElement("div");
-header.className = "entry-header";
+  header.className = "entry-header";
 
-const dateElem = document.createElement("h3");
-dateElem.className = "entry-date";
-dateElem.textContent = dateStr;
+  const dateElem = document.createElement("h3");
+  dateElem.className = "entry-date";
+  dateElem.textContent = dateStr;
 
-header.appendChild(dateElem);
-card.appendChild(header);
-
+  header.appendChild(dateElem);
+  card.appendChild(header);
 
   const contentElem = document.createElement("p");
   contentElem.className = "entry-content";
@@ -122,11 +138,11 @@ card.appendChild(header);
     const printable = document.createElement("div");
     printable.className = "entry-card";
     printable.innerHTML = `
-  <div class="entry-header">
-    <h3 class="entry-date">${dateStr}</h3>
-  </div>
-  <p class="entry-content">${data.content}</p>
-`;
+      <div class="entry-header">
+        <h3 class="entry-date">${dateStr}</h3>
+      </div>
+      <p class="entry-content">${data.content}</p>
+    `;
 
     printable.style.background = card.style.background;
 
@@ -137,7 +153,7 @@ card.appendChild(header);
       jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
     };
 
-    // Hide UI elements before printing
+    // Hide UI before PDF
     document.querySelectorAll(".hide-entry-btn, .download-btn, #searchBar, #back-button, #page-title")
       .forEach(el => el.style.display = "none");
 
@@ -148,7 +164,6 @@ card.appendChild(header);
     });
   });
 
-  card.appendChild(dateElem);
   card.appendChild(contentElem);
   card.appendChild(downloadBtn);
   addHideButtonToCard(card);
@@ -156,7 +171,7 @@ card.appendChild(header);
   return card;
 }
 
-// FIREBASE LOAD
+// Load journal entries
 auth.onAuthStateChanged(async user => {
   if (!user) {
     window.location.href = "/";
