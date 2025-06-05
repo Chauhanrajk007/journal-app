@@ -1,19 +1,27 @@
+// Update your past_entries.js with this more robust version
 import { auth, db } from './firebase-config.js';
 import { collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import html2pdf from "https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js";
 
 const container = document.getElementById("entriesContainer");
 
+// Enhanced loading message
+container.innerHTML = `
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading your journal entries...</p>
+  </div>
+`;
+
 auth.onAuthStateChanged(async user => {
   if (!user) {
-    console.log("User not logged in. Redirecting...");
+    console.error("No user logged in - redirecting");
     window.location.href = "/";
     return;
   }
 
-  console.log("User logged in:", user.uid);
-  container.innerHTML = "<p style='text-align: center;'>Loading entries...</p>";
-
+  console.log("User authenticated:", user.uid);
+  
   try {
     const q = query(
       collection(db, "journals"),
@@ -22,66 +30,71 @@ auth.onAuthStateChanged(async user => {
     );
 
     const querySnapshot = await getDocs(q);
-    console.log("Entries found:", querySnapshot.size);
+    console.log("Found", querySnapshot.size, "entries");
 
     if (querySnapshot.empty) {
-      container.innerHTML = "<p style='font-size: 24px; text-align: center;'>No entries found.</p>";
+      container.innerHTML = `
+        <div class="empty-state">
+          <p>No journal entries found</p>
+          <button onclick="window.location.href='/diary'">Create your first entry</button>
+        </div>
+      `;
       return;
     }
 
-    // Clear container once before adding all cards
-    container.innerHTML = "";
+    container.innerHTML = ''; // Clear loading state
 
-    querySnapshot.forEach(docSnap => {
-      const data = docSnap.data();
-      console.log("Loaded entry:", data);
-
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
+      console.log("Entry data:", data);
+      
       const card = document.createElement("div");
       card.className = "entry-card";
-      
-      // Better structure for PDF generation
       card.innerHTML = `
-        <div class="card-content">
-          <h3>${formatDate(data.date)}</h3>
-          <div class="entry-content">${data.content}</div>
-        </div>
+        <h3>${formatDate(data.date)}</h3>
+        <div class="entry-content">${data.content || ''}</div>
         <button class="download-btn">Download PDF</button>
       `;
-
-      card.querySelector(".download-btn").addEventListener("click", () => {
-        const opt = {
-          margin: 0.5,
-          filename: `Journal_Entry_${data.date}.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { 
-            scale: 2,
-            logging: true,
-            useCORS: true
-          },
-          jsPDF: { 
-            unit: 'in', 
-            format: 'letter', 
-            orientation: 'portrait' 
-          }
-        };
-        
-        // Clone the card to avoid modifying the original
-        const cardClone = card.cloneNode(true);
-        cardClone.querySelector('.download-btn').remove();
-        html2pdf().set(opt).from(cardClone).save();
+      
+      // Add event listener for PDF download
+      card.querySelector('.download-btn').addEventListener('click', () => {
+        generatePDF(card, formatDate(data.date));
       });
-
+      
       container.appendChild(card);
     });
+
   } catch (error) {
     console.error("Error loading entries:", error);
-    container.innerHTML = `<p style='color: red; text-align: center;'>Error loading entries: ${error.message}</p>`;
+    container.innerHTML = `
+      <div class="error-state">
+        <p>Error loading entries</p>
+        <button onclick="window.location.reload()">Try again</button>
+      </div>
+    `;
   }
 });
 
-// Helper function to format date
 function formatDate(dateString) {
-  if (!dateString) return 'No date';
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return new Date(dateString).toLocaleDateString(undefined, options);
+  try {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  } catch {
+    return "Undated entry";
+  }
+}
+
+function generatePDF(element, date) {
+  const opt = {
+    margin: 1,
+    filename: `Journal_Entry_${date.replace(/[/\\?%*:|"<>]/g, '-')}.pdf`,
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  
+  // Clone element to avoid modifying original
+  const clone = element.cloneNode(true);
+  clone.querySelector('.download-btn').remove();
+  
+  html2pdf().from(clone).set(opt).save();
 }
