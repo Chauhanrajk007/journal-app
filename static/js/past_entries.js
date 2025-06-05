@@ -13,10 +13,20 @@ const closeModalBtn = document.getElementById("close-modal");
 
 // Error Modal
 function showError(message) {
-  errorMessage.textContent = message;
-  errorModal.classList.remove("hidden");
+  if (errorModal && errorMessage) {
+    errorMessage.textContent = message;
+    errorModal.classList.remove("hidden");
+  } else {
+    alert(message);
+  }
 }
-closeModalBtn?.addEventListener("click", () => errorModal.classList.add("hidden"));
+
+if (closeModalBtn) {
+  closeModalBtn.addEventListener("click", () => {
+    errorModal.classList.add("hidden");
+  });
+}
+
 
 // Show hide confirm popup near button
 function confirmHide(entryEl, docId, btnEl) {
