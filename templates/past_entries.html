@@ -14,14 +14,17 @@
   </header>
 
   <main id="main-content">
-    <div class="search-section">
+<div class="search-bar-container">
   <input
     type="text"
     id="searchBar"
     placeholder="🔍 Search entries by date or words...."
     oninput="handleSearch(this.value)"
   />
-  <div id="no-results" class="hidden">No matching entries found.</div>
+</div>
+<div id="secret-reveal" class="hidden">
+  <p>✨ Secret mode activated!</p>
+  <button onclick="window.location.href='/hidden-journal.html'">Go to Secret Journal</button>
 </div>
 
     <div id="entries-container">
