@@ -1,7 +1,7 @@
 import { auth, db } from './firebase-config.js';
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 
-const container = document.getElementById("entriesContainer");
+const container = document.getElementById("entries-container");
 
 auth.onAuthStateChanged(async user => {
   if (!user) return window.location.href = "/";
@@ -27,7 +27,16 @@ auth.onAuthStateChanged(async user => {
       container.innerHTML = `<p>No entries found for user ${normalizedUid}</p>`;
       return;
     }
-
+function showError(message) {
+  const modal = document.getElementById("error-modal");
+  const errorMessage = document.getElementById("error-message");
+  errorMessage.textContent = message;
+  modal.classList.remove("hidden");
+  
+  document.getElementById("close-modal").addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
+}
     // Render entries
     snapshot.forEach(doc => {
       const data = doc.data();
