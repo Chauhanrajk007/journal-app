@@ -1,5 +1,4 @@
-// --- journal.js (Main Logic for All Features: Set Secret Code, Hide Entries, Redirect, Download) ---
-
+// --- past_entries.js ---
 import { auth, db } from './firebase-config.js';
 import {
   collection, getDocs, getDoc, setDoc, doc, query, where, orderBy
@@ -30,33 +29,6 @@ if (closeModalBtn) {
   });
 }
 
-// Prompt for secret code
-async function promptForSecretCode(uid) {
-  const modal = document.createElement("div");
-  modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
-  modal.innerHTML = `
-    <div class="bg-white rounded-xl p-6 shadow-lg max-w-sm w-full animate-fade-in">
-      <h2 class="text-lg font-semibold mb-4">Set your secret code</h2>
-      <input type="text" id="secretCodeInput" class="w-full border px-3 py-2 rounded-md mb-4" placeholder="Enter secret code">
-      <button id="saveCodeBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">Save</button>
-    </div>
-  `;
-  document.body.appendChild(modal);
-
-  return new Promise(resolve => {
-    document.getElementById("saveCodeBtn").addEventListener("click", async () => {
-      const value = document.getElementById("secretCodeInput").value.trim();
-      if (value) {
-        const settingsRef = doc(db, "users", uid, "settings", "secretCode");
-        await setDoc(settingsRef, { value });
-        secretCode = value;
-        modal.remove();
-        resolve();
-      }
-    });
-  });
-}
-
 // Confirm hide popup
 function confirmHide(entryEl, docId) {
   const overlay = document.createElement("div");
@@ -81,13 +53,8 @@ function confirmHide(entryEl, docId) {
   };
 }
 
-// Handle search
+// Search functionality
 window.handleSearch = function (term) {
-  if (term === secretCode && secretCode) {
-    window.location.href = "/hidden";
-    return;
-  }
-
   const entries = document.querySelectorAll(".entry");
   entries.forEach(entry => {
     const text = entry.textContent.toLowerCase();
@@ -95,7 +62,7 @@ window.handleSearch = function (term) {
   });
 };
 
-// Download entry as PDF
+// Download as PDF
 function downloadAsPDF(content, date) {
   const element = document.createElement("a");
   const blob = new Blob([content], { type: 'application/pdf' });
@@ -111,20 +78,10 @@ onAuthStateChanged(auth, async user => {
     return;
   }
 
-  const settingsRef = doc(db, "users", user.uid, "settings", "secretCode");
-  const settingsSnap = await getDoc(settingsRef);
-
-  if (settingsSnap.exists()) {
-    secretCode = settingsSnap.data().value;
-  } else {
-    await promptForSecretCode(user.uid);
-  }
-
   try {
     const q = query(
       collection(db, "journals"),
       where("uid", "==", user.uid),
-      where("hidden", "==", false),
       orderBy("date", "desc")
     );
 
@@ -138,6 +95,8 @@ onAuthStateChanged(auth, async user => {
 
     querySnapshot.forEach(docSnap => {
       const data = docSnap.data();
+      if (data.hidden) return;
+
       const entryEl = document.createElement("div");
       entryEl.className = "entry entry-card";
 
