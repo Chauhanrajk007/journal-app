@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
       Swal.fire({
   icon: 'success',
   title: 'Welcome back!',
-  text: 'You have logged in successfully 🎉',
+  text: 'You have logged in successfully ',
   showConfirmButton: false,
   timer: 2000
 }).then(() => {
