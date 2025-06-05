@@ -1,33 +1,18 @@
 import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 import { auth, db } from './firebase-config.js';
-import {
-  doc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { PageFlip } from "https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js";
 
-import { PageFlip } from 'https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js';
+document.addEventListener("DOMContentLoaded", () => {
+  const diaryBookEl = document.getElementById("diaryBook");
+  const userEmailEl = document.getElementById("user-email");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const closeBookBtn = document.getElementById("closeBookBtn");
 
-const flipBook = document.getElementById("diaryBook");
-const logoutBtn = document.getElementById("logoutBtn");
-const userEmail = document.getElementById("user-email");
+  let pageFlip;
 
-let pageFlip;
-
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    alert("Not logged in.");
-    window.location.href = "/";
-  } else {
-    userEmail.textContent = user.email || "👤";
-  }
-});
-
-logoutBtn.addEventListener("click", () => {
-  closeBook().then(() => signOut(auth).then(() => window.location.href = "/"));
-});
-
-document.addEventListener("DOMContentLoaded", async () => {
-  pageFlip = new PageFlip(flipBook, {
+  // 1) Initialize PageFlip on our container
+  pageFlip = new PageFlip(diaryBookEl, {
     width: 500,
     height: 700,
     size: "stretch",
@@ -37,74 +22,132 @@ document.addEventListener("DOMContentLoaded", async () => {
     maxHeight: 1500,
     showCover: true,
     mobileScrollSupport: true,
-    swipeDistance: 30,
+    swipeDistance: 30
   });
 
-  pageFlip.loadFromHTML(document.querySelectorAll(".page"));
-
-  addNewPage(); // Inject first editable page
-
-  openBook(); // Animation
-});
-
-function addNewPage() {
-  const wrapper = document.createElement("div");
-  wrapper.className = "page";
-  wrapper.innerHTML = `
-    <div class="page-content">
-      <textarea placeholder="Start writing your story..."></textarea>
-    </div>
-  `;
-
-  flipBook.insertBefore(wrapper, flipBook.children[flipBook.children.length - 1]);
-  pageFlip.loadFromHTML(document.querySelectorAll(".page"));
-
-  const textarea = wrapper.querySelector("textarea");
-  bindTextareaEvents(textarea);
-}
-
-function bindTextareaEvents(textarea) {
-  textarea.addEventListener("focus", () => {
-    textarea.classList.add("zoomed");
+  // 2) Firebase Auth check: show email tooltip on hover
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      alert("Not logged in.");
+      window.location.href = "/";
+    } else {
+      // Put actual email into title so hovering shows the Gmail
+      userEmailEl.textContent = user.email ? "👤" : "👤";
+      userEmailEl.title = user.email || "";
+    }
   });
 
-  textarea.addEventListener("blur", () => {
-    textarea.classList.remove("zoomed");
+  // 3) Logout logic
+  logoutBtn.addEventListener("click", () => {
+    // Close the book, then sign out and redirect
+    pageFlip.getBook().classList.add("close-book");
+    setTimeout(() => {
+      signOut(auth).then(() => window.location.href = "/");
+    }, 800);
   });
 
-  textarea.addEventListener("input", async () => {
+  // 4) Add the three “seed” pages: front cover, one blank page, back cover
+  const seedPages = [
+    // FRONT COVER
+    `<div class="page page-cover page-cover-top" data-density="hard">
+       <div class="page-content center-text">
+         <h2>📔 My Journal</h2>
+         <p>Touch or click to begin writing...</p>
+       </div>
+     </div>`,
+
+    // INITIAL BLANK PAGE (user writes here)
+    `<div class="page">
+       <div class="page-content">
+         <textarea placeholder="Start writing your story..."></textarea>
+       </div>
+     </div>`,
+
+    // BACK COVER
+    `<div class="page page-cover page-cover-bottom" data-density="hard">
+       <div class="page-content center-text">
+         <h2>📕 The End</h2>
+       </div>
+     </div>`
+  ];
+
+  pageFlip.loadFromHTML(seedPages);
+
+  // 5) Bind events on the initial textarea
+  bindTextareas();
+
+  // 6) Auto-open the book (opening animation)
+  setTimeout(() => {
+    diaryBookEl.classList.add("open-book");
+  }, 200);
+
+  // 7) Close book on clicking “Close Journal”
+  closeBookBtn.addEventListener("click", () => {
+    diaryBookEl.classList.add("close-book");
+    setTimeout(() => {
+      window.location.href = "/timeline";  // Or any other page
+    }, 800);
+  });
+  
+  // 8) Helper: Attach event handlers to all textareas
+  function bindTextareas() {
+    // Query all current <textarea> elements inside pages
+    const textareas = diaryBookEl.querySelectorAll("textarea");
+    textareas.forEach(textarea => {
+      textarea.addEventListener("focus", () => {
+        textarea.classList.add("zoomed");
+      });
+      textarea.addEventListener("blur", () => {
+        textarea.classList.remove("zoomed");
+      });
+      textarea.addEventListener("input", async () => {
+        // Auto-save
+        await autoSave(textarea);
+
+        // If the user has typed enough that the textarea overflows, insert a new page
+        if (textarea.scrollHeight > textarea.clientHeight + 40) {
+          addNewPage("Continue writing...");
+        }
+      });
+    });
+  }
+
+  // 9) Auto-Save Function: saves the union of all textareas (or just last page)
+  async function autoSave(textarea) {
     const content = textarea.value.trim();
-    const dateKey = new Date().toISOString().split('T')[0];
+    const dateKey = new Date().toISOString().split("T")[0];
 
     if (!auth.currentUser || !content) return;
 
     try {
+      // Save under document ID = uid + "_" + date
       await setDoc(doc(db, "journals", auth.currentUser.uid + "_" + dateKey), {
-        content,
-        date: dateKey,
-        uid: auth.currentUser.uid
+        content, date: dateKey, uid: auth.currentUser.uid
       });
-
-      if (textarea.scrollHeight > textarea.clientHeight + 40) {
-        addNewPage();
-      }
-
+      // Show a pulse animation on the flipbook
+      diaryBookEl.classList.add("pulse-save");
+      setTimeout(() => diaryBookEl.classList.remove("pulse-save"), 500);
     } catch (err) {
-      console.error("Auto-save error:", err.message);
+      console.error("Auto-save error:", err);
     }
-  });
-}
+  }
 
-function openBook() {
-  flipBook.classList.add("open-book");
-}
+  // 10) Add a new page just before the back cover
+  function addNewPage(placeholder = "") {
+    // Build new page HTML
+    const newPageHTML = `
+      <div class="page">
+        <div class="page-content">
+          <textarea placeholder="${placeholder}"></textarea>
+        </div>
+      </div>`;
 
-function closeBook() {
-  return new Promise((resolve) => {
-    flipBook.classList.add("close-book");
-    setTimeout(() => {
-      flipBook.classList.remove("close-book");
-      resolve();
-    }, 800);
-  });
-}
+    // Insert it before the last (back cover) page
+    const pages = diaryBookEl.querySelectorAll(".page");
+    const backCoverIndex = pages.length - 1;  // last index
+    pageFlip.loadFromHTML([newPageHTML], "insertBefore", backCoverIndex);
+
+    // Re-bind events (so the new textarea is recognized)
+    setTimeout(bindTextareas, 200);
+  }
+});
