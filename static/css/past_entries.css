@@ -49,28 +49,27 @@ body {
   margin: 0 auto 20px;
 }
 
+/* Make each journal look like a full A4 page */
 .entry-card {
-  background-color: #fdf7e3;
-  border: 1px solid #d4c4aa;
-  border-radius: 10px;
-  padding: 25px;
-  margin-bottom: 25px;
+  background-color: #fff;
+  width: 794px;   /* A4 width at 96 DPI */
+  min-height: 1123px; /* A4 height at 96 DPI */
+  margin: 40px auto;
+  padding: 50px 40px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.15);
+  box-sizing: border-box;
   position: relative;
+  page-break-after: always;
 }
 
 .entry-date {
-  color: #6a5032;
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-  border-bottom: 1px dashed #d4c4aa;
-  padding-bottom: 8px;
+  font-size: 1.8rem;
+  margin-bottom: 25px;
 }
 
 .entry-content {
-  font-size: 1.2rem;
-  line-height: 1.7;
-  white-space: pre-wrap;
-  margin-bottom: 20px;
+  font-size: 1.3rem;
+  line-height: 1.8;
 }
 
 .download-btn {
@@ -137,26 +136,5 @@ body {
     font-size: 1.1rem;
   }
 }
-/* Make each journal look like a full A4 page */
-.entry-card {
-  background-color: #fff;
-  width: 794px;   /* A4 width at 96 DPI */
-  min-height: 1123px; /* A4 height at 96 DPI */
-  margin: 40px auto;
-  padding: 50px 40px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.15);
-  box-sizing: border-box;
-  position: relative;
-  page-break-after: always;
-}
 
-.entry-date {
-  font-size: 1.8rem;
-  margin-bottom: 25px;
-}
-
-.entry-content {
-  font-size: 1.3rem;
-  line-height: 1.8;
-}
 
