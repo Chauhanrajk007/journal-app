@@ -28,13 +28,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loginForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    loginError.textContent = ''; // Clear any previous error
+    loginError.textContent = '';
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = "/diary";
+      Swal.fire({
+        icon: 'success',
+        title: 'Welcome back!',
+        text: 'You have logged in successfully.',
+        showConfirmButton: false,
+        timer: 1500
+      }).then(() => {
+        window.location.href = "/diary";
+      });
     } catch (err) {
       loginError.textContent = formatAuthError(err.message);
     }
@@ -42,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   signupForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    signupError.textContent = ''; // Clear previous error
+    signupError.textContent = '';
     const email = document.getElementById("signupEmail").value;
     const password = document.getElementById("signupPassword").value;
     const confirm = document.getElementById("confirmPassword").value;
@@ -54,7 +62,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      window.location.href = "/diary";
+      Swal.fire({
+        icon: 'success',
+        title: 'Account created!',
+        text: 'Redirecting to your diary...',
+        showConfirmButton: false,
+        timer: 1500
+      }).then(() => {
+        window.location.href = "/diary";
+      });
     } catch (err) {
       signupError.textContent = formatAuthError(err.message);
     }
@@ -69,24 +85,4 @@ document.addEventListener("DOMContentLoaded", () => {
     if (message.includes("auth/too-many-requests")) return "Too many login attempts. Try again later.";
     return "Something went wrong. Please try again.";
   }
-});
-await signInWithEmailAndPassword(auth, email, password);
-Swal.fire({
-  icon: 'success',
-  title: 'Welcome back!',
-  text: 'You have logged in successfully.',
-  showConfirmButton: false,
-  timer: 2000
-}).then(() => {
-  window.location.href = "/diary";
-});
-await createUserWithEmailAndPassword(auth, email, password);
-Swal.fire({
-  icon: 'success',
-  title: 'Account created!',
-  text: 'Redirecting to your diary...',
-  showConfirmButton: false,
-  timer: 2000
-}).then(() => {
-  window.location.href = "/diary";
 });
