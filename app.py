@@ -17,9 +17,9 @@ def auth_page():
 def diary_page():
     return render_template('entry.html')
 
-@app.route('/timeline')
-def timeline():
-    return render_template('timeline.html') 
+@app.route('/past_entries')
+def past_entries():
+    return render_template('past_entries.html') 
 
 
 @app.route('/verify_token', methods=['POST'])
