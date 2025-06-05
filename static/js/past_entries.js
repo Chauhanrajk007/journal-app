@@ -4,7 +4,9 @@ import {
   getDocs,
   query,
   where,
-  orderBy
+  orderBy,
+  doc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const container = document.getElementById("entries-container");
@@ -39,16 +41,14 @@ if (saveSecretBtn) {
 
 // Confirm hide entry
 if (confirmHideYes) {
-  confirmHideYes.addEventListener("click", () => {
+  confirmHideYes.addEventListener("click", async () => {
     if (selectedCardToHide) {
-      import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+      const docId = selectedCardToHide.dataset.docId;
+      const entryRef = doc(db, "journals", docId);
 
-const docId = selectedCardToHide.dataset.docId;
-const entryRef = doc(db, "journals", docId);
+      await updateDoc(entryRef, { hidden: true });
 
-await updateDoc(entryRef, { hidden: true });
-
-selectedCardToHide.remove();
+      selectedCardToHide.remove();
 
       selectedCardToHide = null;
     }
@@ -92,11 +92,11 @@ function addHideButtonToCard(card) {
 // Search functionality and redirect
 if (searchInput) {
   searchInput.addEventListener("input", () => {
-    const query = searchInput.value.toLowerCase();
+    const queryStr = searchInput.value.toLowerCase();
     const savedSecret = localStorage.getItem("journalSecret");
 
     // Redirect to hidden.html if search input matches secret
-    if (savedSecret && query === savedSecret.toLowerCase()) {
+    if (savedSecret && queryStr === savedSecret.toLowerCase()) {
       window.location.href = "hidden.html";
       return;
     }
@@ -104,8 +104,8 @@ if (searchInput) {
     container.innerHTML = '';
 
     const filtered = allEntries.filter(entry =>
-      entry.content.toLowerCase().includes(query) ||
-      entry.dateStr.toLowerCase().includes(query)
+      (entry.data.content && entry.data.content.toLowerCase().includes(queryStr)) ||
+      entry.dateStr.toLowerCase().includes(queryStr)
     );
 
     if (filtered.length === 0) {
@@ -203,12 +203,13 @@ auth.onAuthStateChanged(async user => {
     container.innerHTML = '';
     allEntries = [];
 
-    querySnapshot.forEach(doc => {
-      const data = doc.data();
+    querySnapshot.forEach(docSnap => {
+      const data = docSnap.data();
       const dateObj = new Date(data.date);
       const dateStr = `${dateObj.toLocaleDateString()} - ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
       const card = createEntryCard(data, dateStr);
+      card.dataset.docId = docSnap.id;
       container.appendChild(card);
 
       allEntries.push({ data, dateStr });
