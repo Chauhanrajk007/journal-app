@@ -110,6 +110,23 @@ main {
   color: #a99a87;
 }
 
+#saveBtn {
+  margin-top: 10px;
+  padding: 8px 20px;
+  font-size: 18px;
+  background-color: #bfa78a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#saveBtn:disabled {
+  background-color: #d8cbb8;
+  cursor: not-allowed;
+}
+
 #message {
   margin-top: 15px;
   font-size: 16px;
