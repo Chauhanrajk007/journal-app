@@ -4,7 +4,7 @@ import { collection, getDocs, query, where, orderBy } from "https://www.gstatic.
 // Remove the html2pdf import from here
 // Add the script tag to your HTML instead as shown above
 
-const container = document.getElementById("entriesContainer");
+const container = document.getElementById("entries-container");
 
 auth.onAuthStateChanged(async user => {
   if (!user) {
