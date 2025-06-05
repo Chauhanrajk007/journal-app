@@ -163,4 +163,32 @@ body {
     page-break-after: always;
   }
 }
+.search-section {
+  width: 100%;
+  max-width: 800px;
+  margin: 30px auto 10px auto;
+  text-align: center;
+}
+
+#searchBar {
+  width: 90%;
+  padding: 12px 18px;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  border: 2px solid #d4c4aa;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+#searchBar:focus {
+  border-color: #5a4331;
+}
+
+#no-results {
+  margin-top: 10px;
+  font-style: italic;
+  color: #a94442;
+  font-size: 1rem;
+}
 
