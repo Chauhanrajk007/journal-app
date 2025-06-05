@@ -1,4 +1,3 @@
-// auth.js
 import { auth } from './firebase-config.js';
 import {
   createUserWithEmailAndPassword,
@@ -9,6 +8,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
   const signupForm = document.getElementById("signupForm");
 
+  // Error box helper
+  function showError(message) {
+    const box = document.getElementById("auth-error");
+    const text = document.getElementById("error-text");
+    if (!box || !text) return;
+
+    text.textContent = message;
+    box.classList.remove("hidden");
+    box.classList.add("show");
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      if (box.classList.contains("show")) {
+        box.classList.remove("show");
+        box.classList.add("hidden");
+      }
+    }, 5000);
+  }
+
+  // UI Navigation
   window.showLogin = () => {
     document.getElementById("welcome-section").classList.add("hidden");
     document.getElementById("login-section").classList.remove("hidden");
@@ -25,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("welcome-section").classList.remove("hidden");
   };
 
+  // Login handler
   loginForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("loginEmail").value;
@@ -33,19 +53,20 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       Swal.fire({
-  icon: 'success',
-  title: 'Welcome back!',
-  text: 'You have logged in successfully ',
-  showConfirmButton: false,
-  timer: 2000
-}).then(() => {
-  window.location.href = "/diary";
-});
+        icon: 'success',
+        title: 'Welcome back!',
+        text: 'You have logged in successfully.',
+        showConfirmButton: false,
+        timer: 2000
+      }).then(() => {
+        window.location.href = "/diary";
+      });
     } catch (err) {
-      alert("Login error: " + err.message);
+      showError("Login failed: " + err.message);
     }
   });
 
+  // Signup handler
   signupForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("signupEmail").value;
@@ -53,16 +74,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const confirm = document.getElementById("confirmPassword").value;
 
     if (password !== confirm) {
-      alert("Passwords do not match!");
+      showError("Passwords do not match!");
       return;
     }
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      alert("Account created successfully!");
-      window.location.href = "/diary";
+      Swal.fire({
+        icon: 'success',
+        title: 'Account Created!',
+        text: 'You’ve joined the journal guild 📖✨',
+        showConfirmButton: false,
+        timer: 2000
+      }).then(() => {
+        window.location.href = "/diary";
+      });
     } catch (err) {
-      alert("Signup error: " + err.message);
+      showError("Signup failed: " + err.message);
     }
   });
 });
