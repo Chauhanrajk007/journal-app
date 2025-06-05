@@ -279,3 +279,15 @@ body {
     display: none;
   }
 }
+.eye-icon {
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: inline-block;
+  margin-top: 10px;
+  transition: transform 0.2s;
+  text-align: center;
+}
+
+.eye-icon:hover {
+  transform: scale(1.1);
+}
