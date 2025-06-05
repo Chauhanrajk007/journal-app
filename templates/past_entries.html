@@ -2,45 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Past Entries</title>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/past_entries.css') }}" />
-  <!-- Add this for better PDF styling -->
-  <style>
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      .entry-card, .entry-card * {
-        visibility: visible;
-      }
-      .entry-card {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        margin: 0;
-        padding: 20px;
-        box-shadow: none;
-      }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Past Journal Entries</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="past_entries.css" />
 </head>
 <body>
   <header>
-    <h1>📜 Past Journal Entries</h1>
-    <button onclick="window.location.href='/diary'" class="back-btn">← Back to Diary</button>
+    <h1>📓 Past Journal Entries</h1>
+    <button class="back-btn" onclick="window.location.href='/diary'">← Back to Diary</button>
   </header>
 
   <main>
     <div id="entriesContainer">
-      <p>Loading your entries...</p>
+      <p class="loading">Loading your entries...</p>
     </div>
   </main>
 
-  <!-- Add these script imports at the bottom -->
-  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
-  <script type="module" src="{{ url_for('static', filename='js/past_entries.js') }}"></script>
+  <script type="module" src="past_entries.js"></script>
 </body>
 </html>
