@@ -1,6 +1,10 @@
 import { auth, db } from './firebase-config.js';
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+import {
+  collection, addDoc
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import {
+  onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
 const textarea = document.getElementById("journalEntry");
 const message = document.getElementById("message");
@@ -11,6 +15,7 @@ const saveBtn = document.getElementById("saveBtn");
 let lastSavedContent = "";
 let isEditing = false;
 
+// Monitor auth state
 onAuthStateChanged(auth, user => {
   if (user) {
     emailDisplay.textContent = user.email || "Unknown user";
@@ -28,6 +33,7 @@ onAuthStateChanged(auth, user => {
   }
 });
 
+// Logout
 logoutBtn.addEventListener("click", () => {
   signOut(auth).then(() => {
     window.location.href = "/";
@@ -45,27 +51,29 @@ textarea.addEventListener("input", () => {
   }
 });
 
-// Save Button Click
+// Save new journal entry
 saveBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   const content = textarea.value.trim();
-  const dateKey = new Date().toISOString().split('T')[0];
 
   if (!user || !content || content === lastSavedContent) return;
 
   try {
-    const docRef = doc(db, "journals", `${user.uid}_${dateKey}`);
-    await setDoc(docRef, {
+    const now = new Date();
+    const dateKey = now.toISOString().split('T')[0];
+
+    await addDoc(collection(db, "journals"), {
       content,
       date: dateKey,
       uid: user.uid,
-      updatedAt: new Date().toISOString()
+      updatedAt: now.toISOString(),
+      hidden: false
     });
 
     lastSavedContent = content;
     isEditing = false;
     saveBtn.disabled = true;
-    textarea.value = ""; // ✅ Clear textarea
+    textarea.value = ""; // Clear input
     localStorage.removeItem(`draft_${user.uid}`);
     message.textContent = "Saved ✔️";
   } catch (err) {
@@ -74,7 +82,7 @@ saveBtn.addEventListener("click", async () => {
   }
 });
 
-// Warn before unload
+// Warn before unload if editing
 window.addEventListener("beforeunload", (e) => {
   if (isEditing) {
     e.preventDefault();
