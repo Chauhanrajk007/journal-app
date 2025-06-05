@@ -137,4 +137,20 @@ body {
   }
 }
 
+@media print {
+  body {
+    background: white;
+    margin: 0;
+  }
+
+  .download-btn, #back-button, #page-title {
+    display: none;
+  }
+
+  .entry-card {
+    box-shadow: none;
+    margin: 0 auto;
+    page-break-after: always;
+  }
+}
 
