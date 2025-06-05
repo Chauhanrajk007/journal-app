@@ -19,7 +19,7 @@ auth.onAuthStateChanged(async user => {
     const q = query(
       collection(db, "journals"),
       where("uid", "==", user.uid),
-      orderBy("date", "desc")
+      orderBy("createdAt", "desc")  // 🔄 use timestamp for reliable sorting
     );
 
     const querySnapshot = await getDocs(q);
@@ -29,7 +29,7 @@ auth.onAuthStateChanged(async user => {
       return;
     }
 
-    container.innerHTML = ""; // Clear loading text
+    container.innerHTML = ""; // Clear "loading..." text
 
     querySnapshot.forEach(docSnap => {
       const data = docSnap.data();
@@ -37,8 +37,10 @@ auth.onAuthStateChanged(async user => {
       const card = document.createElement("div");
       card.className = "entry-card";
 
+      const readableDate = data.date || new Date(data.createdAt).toISOString().split("T")[0];
+
       card.innerHTML = `
-        <h2>🗓️ ${data.date}</h2>
+        <h2>🗓️ ${readableDate}</h2>
         <div class="entry-content">${escapeHTML(data.content)}</div>
         <hr />
       `;
@@ -52,8 +54,9 @@ auth.onAuthStateChanged(async user => {
   }
 });
 
-// Optional: prevent XSS if you're using raw HTML
+// Prevent XSS from journal content
 function escapeHTML(str) {
+  if (!str) return "";
   return str.replace(/[&<>'"]/g, tag => ({
     '&': '&amp;',
     '<': '&lt;',
