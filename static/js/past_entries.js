@@ -1,8 +1,11 @@
 import { auth, db } from './firebase-config.js';
-import { collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-// Remove the html2pdf import from here
-// Add the script tag to your HTML instead as shown above
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const container = document.getElementById("entries-container");
 
@@ -11,12 +14,13 @@ auth.onAuthStateChanged(async user => {
     window.location.href = "/";
     return;
   }
-console.log("Current user UID:", user.uid);
+
+  console.log("Current user UID:", user.uid);
   try {
     const q = query(
       collection(db, "journals"),
       where("uid", "==", user.uid),
-      orderBy("date", "desc")
+      orderBy("date", "desc") // Assumes 'date' is stored as Firestore Timestamp
     );
 
     const querySnapshot = await getDocs(q);
@@ -31,22 +35,33 @@ console.log("Current user UID:", user.uid);
       const data = doc.data();
       const card = document.createElement("div");
       card.className = "entry-card";
+
+      // Format Firestore Timestamp to string
+      const formattedDate = data.date.toDate().toLocaleDateString();
+
       card.innerHTML = `
-        <h3>${data.date}</h3>
-        <p>${data.content}</p>
+        <h3 class="entry-date">${formattedDate}</h3>
+        <p class="entry-content">${data.content}</p>
         <button class="download-btn">Download PDF</button>
       `;
 
       card.querySelector(".download-btn").addEventListener("click", () => {
+        const contentToPrint = document.createElement("div");
+        contentToPrint.innerHTML = `
+          <div style="font-family: sans-serif; padding: 20px;">
+            <h2 style="color: #5a4331;">${formattedDate}</h2>
+            <p style="font-size: 14pt; line-height: 1.6;">${data.content}</p>
+          </div>
+        `;
+
         const opt = {
           margin: 1,
-          filename: `Journal_${data.date}.pdf`,
+          filename: `Journal_${formattedDate}.pdf`,
           html2canvas: { scale: 2 },
           jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
-        
-        // Use window.html2pdf instead
-        window.html2pdf().from(card).set(opt).save();
+
+        window.html2pdf().from(contentToPrint).set(opt).save();
       });
 
       container.appendChild(card);
