@@ -1,206 +1,88 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  font-family: 'Caveat', cursive;
-  background: #f5efe0;
-  color: #4e3b2c;
-  padding: 40px;
-  min-height: 100vh;
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  background: #f7f4ef;
+  color: #333;
 }
 
 header {
   text-align: center;
-  margin-bottom: 30px;
-  position: relative;
+  padding: 2rem 1rem;
+  background-color: #fff8ef;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 header h1 {
-  font-size: 3rem;
-  color: #5a4331;
-  margin-bottom: 10px;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  font-family: 'Caveat', cursive;
+  font-size: 2.5rem;
+  color: #7a4b2d;
 }
 
 .back-btn {
-  background-color: #7a5c3d;
+  background-color: #7a4b2d;
   color: white;
-  padding: 10px 18px;
+  padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 5px;
+  margin-top: 1rem;
   cursor: pointer;
-  margin-top: 10px;
-  transition: all 0.3s ease;
-  font-family: 'Caveat', cursive;
-  font-weight: bold;
-}
-
-.back-btn:hover {
-  background-color: #6a4c2d;
-  transform: translateY(-2px);
+  font-size: 1rem;
 }
 
 main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-#entriesContainer {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-#entriesContainer > p {
-  font-size: 24px;
-  color: #7a5c3d;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
 .entry-card {
-  width: 90%;
-  max-width: 800px;
-  background-color: #fdf7e3;
-  border: 1px solid #d4c4aa;
-  padding: 30px;
-  margin-bottom: 30px;
+  background: #fff;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
   border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(100, 80, 50, 0.15);
-  position: relative;
-  transition: transform 0.3s ease;
-}
-/* Loading and error states */
-.loading-state, .empty-state, .error-state {
-  text-align: center;
-  padding: 40px;
-  font-size: 24px;
-}
-
-.loading-state .spinner {
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #7a5c3d;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.empty-state button, .error-state button {
-  background-color: #7a5c3d;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  margin-top: 20px;
-  cursor: pointer;
-  font-family: 'Caveat', cursive;
-  font-size: 20px;
-}
-.entry-date-header {
-  color: #5a4331;
-  margin: 30px 0 15px 0;
-  padding-bottom: 5px;
-  border-bottom: 1px dashed #d4c4aa;
-  width: 100%;
-}
-
-.entry-time {
-  color: #7a5c3d;
-  font-size: 0.9em;
-  font-style: italic;
-}
-
-.entry-header {
-  margin-bottom: 10px;
-}
-
-.error-state {
-  color: #d32f2f;
-}
-.entry-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(100, 80, 50, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .entry-card h3 {
-  font-size: 28px;
-  margin-bottom: 20px;
-  color: #6a5032;
-  border-bottom: 1px dashed #d4c4aa;
-  padding-bottom: 10px;
+  margin-top: 0;
+  color: #5a3921;
 }
 
-.entry-content {
-  font-size: 22px;
+.entry-card p {
+  line-height: 1.6;
   white-space: pre-wrap;
-  line-height: 1.8;
-  margin-bottom: 40px;
+  margin: 1rem 0;
 }
 
 .download-btn {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  background-color: #7a5c3d;
+  background-color: #f0a500;
   color: white;
-  padding: 10px 16px;
+  padding: 0.4rem 0.8rem;
   border: none;
-  border-radius: 6px;
-  font-size: 18px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Caveat', cursive;
 }
 
 .download-btn:hover {
-  background-color: #5a3c1d;
-  transform: scale(1.05);
+  background-color: #d68f00;
 }
 
-/* Loading and error states */
-.loading-message, .error-message {
-  font-size: 24px;
+.loading {
   text-align: center;
-  margin-top: 50px;
-  color: #7a5c3d;
+  font-size: 1.2rem;
+  font-style: italic;
+  margin-top: 2rem;
+  color: #666;
 }
 
-.error-message {
-  color: #a52a2a;
-}
-
-/* Print styles for PDF generation */
-@media print {
-  body * {
-    visibility: hidden;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  .entry-card, .entry-card * {
-    visibility: visible;
-  }
-  .entry-card {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: auto;
-    margin: 0;
-    padding: 30px;
-    box-shadow: none;
-    border: none;
-    page-break-after: always;
-  }
-  .download-btn {
-    display: none;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
