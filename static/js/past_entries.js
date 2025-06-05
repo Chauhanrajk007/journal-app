@@ -61,13 +61,26 @@ onAuthStateChanged(auth, async user => {
     querySnapshot.forEach(doc => {
       const data = doc.data();
       const entryEl = document.createElement("div");
-      entryEl.className = "entry";
+      entryEl.className = "entry entry-card";
+
       entryEl.innerHTML = `
-        <h3>${data.date}</h3>
-        <pre>${data.content}</pre>
+        <div class="entry-header">
+          <div class="entry-date">${data.date}</div>
+          <button class="hide-entry-btn" title="Hide Entry"></button>
+        </div>
+        <div class="entry-content">${data.content.replace(/\n/g, "<br>")}</div>
         <small>Last updated: ${new Date(data.updatedAt).toLocaleString()}</small>
-        <hr />
       `;
+
+      // Add toggle feature
+      const hideBtn = entryEl.querySelector(".hide-entry-btn");
+      const contentEl = entryEl.querySelector(".entry-content");
+
+      hideBtn.addEventListener("click", () => {
+        const isHidden = contentEl.style.display === "none";
+        contentEl.style.display = isHidden ? "block" : "none";
+      });
+
       entriesContainer.appendChild(entryEl);
     });
   } catch (err) {
