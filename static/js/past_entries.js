@@ -1,67 +1,49 @@
 import { auth, db } from './firebase-config.js';
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 
 const container = document.getElementById("entriesContainer");
 
 auth.onAuthStateChanged(async user => {
-  if (!user) {
-    window.location.href = "/";
-    return;
-  }
-
+  if (!user) return window.location.href = "/";
+  
+  // Debug UID
+  console.log("Current user UID:", user.uid);
+  
   try {
+    // Normalize UID by trimming
+    const normalizedUid = user.uid.trim();
+    
     const q = query(
       collection(db, "journals"),
-      where("uid", "==", user.uid),
-      orderBy("createdAt", "desc")  // 🔄 use timestamp for reliable sorting
+      where("uid", "==", normalizedUid),
+      orderBy("date", "desc")
     );
 
-    const querySnapshot = await getDocs(q);
+    const snapshot = await getDocs(q);
+    console.log("Matching documents:", 
+      snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
-    if (querySnapshot.empty) {
-      container.innerHTML = "<p style='font-size: 20px; text-align: center;'>No entries found.</p>";
+    if (snapshot.empty) {
+      container.innerHTML = `<p>No entries found for user ${normalizedUid}</p>`;
       return;
     }
 
-    container.innerHTML = ""; // Clear "loading..." text
-
-    querySnapshot.forEach(docSnap => {
-      const data = docSnap.data();
-
+    // Render entries
+    snapshot.forEach(doc => {
+      const data = doc.data();
       const card = document.createElement("div");
-      card.className = "entry-card";
-
-      const readableDate = data.date || new Date(data.createdAt).toISOString().split("T")[0];
-
       card.innerHTML = `
-        <h2>🗓️ ${readableDate}</h2>
-        <div class="entry-content">${escapeHTML(data.content)}</div>
-        <hr />
+        <h3>${data.date}</h3>
+        <p>${data.content}</p>
       `;
-
       container.appendChild(card);
     });
 
   } catch (error) {
-    console.error("Error fetching entries:", error);
-    container.innerHTML = "<p style='color: red;'>Failed to load entries.</p>";
+    console.error("Full error:", error);
+    container.innerHTML = `
+      <p>Error loading data</p>
+      <small>${error.message}</small>
+    `;
   }
 });
-
-// Prevent XSS from journal content
-function escapeHTML(str) {
-  if (!str) return "";
-  return str.replace(/[&<>'"]/g, tag => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    "'": '&#39;',
-    '"': '&quot;'
-  }[tag]));
-}
