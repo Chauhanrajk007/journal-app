@@ -1,83 +1,77 @@
 import { auth, db } from './firebase-config.js';
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+import { collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-const textarea = document.getElementById("journalEntry");
-const message = document.getElementById("message");
-const emailDisplay = document.getElementById("email-display");
-const logoutBtn = document.getElementById("logoutBtn");
-const saveBtn = document.getElementById("saveBtn");
+// DOM elements
+const entriesContainer = document.getElementById("entries-container");
+const loadingState = document.getElementById("loading-state");
+const searchBar = document.getElementById("searchBar");
+const errorModal = document.getElementById("error-modal");
+const errorMessage = document.getElementById("error-message");
+const closeModalBtn = document.getElementById("close-modal");
 
-let lastSavedContent = "";
-let isEditing = false;
-
-onAuthStateChanged(auth, user => {
-  if (user) {
-    emailDisplay.textContent = user.email || "Unknown user";
-
-    // Restore draft if exists
-    const draft = localStorage.getItem(`draft_${user.uid}`);
-    if (draft) {
-      textarea.value = draft;
-      saveBtn.disabled = false;
-      isEditing = true;
-      message.textContent = "Unsaved draft restored ✏️";
-    }
+// Error modal
+function showError(message) {
+  if (errorModal && errorMessage) {
+    errorMessage.textContent = message;
+    errorModal.classList.remove("hidden");
   } else {
-    window.location.href = "/";
+    alert(message); // Fallback
   }
-});
+}
 
-logoutBtn.addEventListener("click", () => {
-  signOut(auth).then(() => {
-    window.location.href = "/";
+// Close modal button
+if (closeModalBtn) {
+  closeModalBtn.addEventListener("click", () => {
+    errorModal.classList.add("hidden");
   });
-});
+}
 
-// Enable save when user types
-textarea.addEventListener("input", () => {
-  isEditing = true;
-  saveBtn.disabled = false;
-  message.textContent = "Unsaved changes...";
+// Handle search
+window.handleSearch = function (searchTerm) {
+  const entries = document.querySelectorAll(".entry");
+  entries.forEach(entry => {
+    const text = entry.textContent.toLowerCase();
+    entry.style.display = text.includes(searchTerm.toLowerCase()) ? "block" : "none";
+  });
+};
 
-  const user = auth.currentUser;
-  if (user) {
-    localStorage.setItem(`draft_${user.uid}`, textarea.value);
+// Load past entries
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    window.location.href = "/";
+    return;
   }
-});
-
-// Manual Save
-saveBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  const content = textarea.value.trim();
-  const dateKey = new Date().toISOString().split('T')[0];
-
-  if (!user || !content || content === lastSavedContent) return;
 
   try {
-    const docRef = doc(db, "journals", `${user.uid}_${dateKey}`);
-    await setDoc(docRef, {
-      content,
-      date: dateKey,
-      uid: user.uid,
-      updatedAt: new Date().toISOString()
+    const q = query(
+      collection(db, "journals"),
+      where("uid", "==", user.uid),
+      orderBy("date", "desc")
+    );
+
+    const querySnapshot = await getDocs(q);
+    entriesContainer.innerHTML = ""; // Clear loading
+
+    if (querySnapshot.empty) {
+      entriesContainer.innerHTML = "<p>No journal entries found.</p>";
+      return;
+    }
+
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
+      const entryEl = document.createElement("div");
+      entryEl.className = "entry";
+      entryEl.innerHTML = `
+        <h3>${data.date}</h3>
+        <pre>${data.content}</pre>
+        <small>Last updated: ${new Date(data.updatedAt).toLocaleString()}</small>
+        <hr />
+      `;
+      entriesContainer.appendChild(entryEl);
     });
-
-    lastSavedContent = content;
-    isEditing = false;
-    saveBtn.disabled = true;
-    localStorage.removeItem(`draft_${user.uid}`);
-    message.textContent = "Saved ✔️";
   } catch (err) {
-    console.error("Save failed:", err);
-    message.textContent = "Failed to save ❌";
-  }
-});
-
-// Warn before closing tab if there are unsaved changes
-window.addEventListener("beforeunload", (e) => {
-  if (isEditing) {
-    e.preventDefault();
-    e.returnValue = "";
+    console.error("Error loading entries:", err);
+    showError("Failed to load journal entries. Please try again.");
   }
 });
