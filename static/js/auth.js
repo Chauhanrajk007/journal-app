@@ -70,3 +70,23 @@ document.addEventListener("DOMContentLoaded", () => {
     return "Something went wrong. Please try again.";
   }
 });
+await signInWithEmailAndPassword(auth, email, password);
+Swal.fire({
+  icon: 'success',
+  title: 'Welcome back!',
+  text: 'You have logged in successfully.',
+  showConfirmButton: false,
+  timer: 2000
+}).then(() => {
+  window.location.href = "/diary";
+});
+await createUserWithEmailAndPassword(auth, email, password);
+Swal.fire({
+  icon: 'success',
+  title: 'Account created!',
+  text: 'Redirecting to your diary...',
+  showConfirmButton: false,
+  timer: 2000
+}).then(() => {
+  window.location.href = "/diary";
+});
