@@ -39,7 +39,7 @@ auth.onAuthStateChanged(async user => {
       card.className = "entry-card";
 
       // Format timestamp correctly
-      const formattedDate = data.date.toDate().toLocaleDateString();
+      const formattedDate = new Date(data.date).toLocaleDateString();
 
       // Create inner content
       const dateElem = document.createElement("h3");
