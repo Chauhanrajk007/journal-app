@@ -3,97 +3,8 @@ import { collection, getDocs, query, where, orderBy } from "https://www.gstatic.
 import html2pdf from "https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js";
 
 const container = document.getElementById("entriesContainer");
-import { auth, db } from './firebase-config.js';
-import { collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-const container = document.getElementById("entriesContainer");
-
-// Debugging starter
-console.log("Script loaded - initializing...");
-container.innerHTML = '<p style="color: #7a5c3d">Loading entries...</p>';
-
-auth.onAuthStateChanged(async user => {
-  if (!user) {
-    console.log("No user - redirecting");
-    window.location.href = "/";
-    return;
-  }
-
-  console.log("User UID:", user.uid); // Verify this matches your Firestore UID
-
-  try {
-    // 1. Query with explicit debugging
-    const q = query(
-      collection(db, "journals"),
-      where("uid", "==", user.uid),
-      orderBy("date", "desc")
-    );
-    console.log("Query constructed:", q);
-
-    // 2. Execute query
-    const snapshot = await getDocs(q);
-    console.log("Query results:", snapshot.size, "entries found");
-    
-    // 3. Clear container only AFTER successful query
-    container.innerHTML = '';
-
-    if (snapshot.empty) {
-      container.innerHTML = `
-        <div style="text-align: center; padding: 20px;">
-          <p>No entries yet!</p>
-          <button onclick="window.location.href='/diary'" 
-                  style="background: #7a5c3d; color: white; padding: 8px 16px; border: none; border-radius: 4px;">
-            Create First Entry
-          </button>
-        </div>
-      `;
-      return;
-    }
-
-    // 4. Render each entry with UID verification
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      console.log("Processing entry:", data); // Debug raw data
-
-      // Verify UID match
-      if (data.uid !== user.uid) {
-        console.warn("UID mismatch - skipping:", data.uid, "vs", user.uid);
-        return;
-      }
-
-      const card = document.createElement("div");
-      card.style.background = "#fdf7e3";
-      card.style.padding = "20px";
-      card.style.margin = "15px 0";
-      card.style.borderRadius = "8px";
-      
-      card.innerHTML = `
-        <h3 style="color: #5a4331; margin-bottom: 10px;">
-          ${data.date || "No date"}
-        </h3>
-        <p style="white-space: pre-wrap;">${data.content || ""}</p>
-      `;
-      
-      container.appendChild(card);
-    });
-
-  } catch (error) {
-    console.error("Full error:", error);
-    container.innerHTML = `
-      <div style="color: red; text-align: center;">
-        <p>Error loading entries</p>
-        <small>${error.message}</small>
-        <button onclick="location.reload()" 
-                style="background: #7a5c3d; color: white; padding: 8px 16px; margin-top: 10px; border: none; border-radius: 4px;">
-          Retry
-        </button>
-      </div>
-    `;
-  }
-});
-// Initialize with enhanced loading state
-showLoadingState();
-
+// Auth state listener
 auth.onAuthStateChanged(async user => {
   if (!user) {
     console.error("No user logged in - redirecting");
@@ -102,7 +13,6 @@ auth.onAuthStateChanged(async user => {
   }
 
   console.log("User authenticated:", user.uid);
-  
   try {
     await loadUserEntries(user.uid);
   } catch (error) {
@@ -112,7 +22,7 @@ auth.onAuthStateChanged(async user => {
 
 async function loadUserEntries(userId) {
   showLoadingState();
-  
+
   const q = query(
     collection(db, "journals"),
     where("uid", "==", userId),
@@ -136,7 +46,7 @@ function renderEntries(querySnapshot) {
   querySnapshot.forEach(doc => {
     const data = doc.data();
     console.log("Rendering entry:", data);
-    
+
     const card = createEntryCard(data);
     container.appendChild(card);
   });
@@ -150,12 +60,12 @@ function createEntryCard(entryData) {
     <div class="entry-content">${entryData.content || ''}</div>
     <button class="download-btn">Download PDF</button>
   `;
-  
+
   // Add PDF download functionality
   card.querySelector('.download-btn').addEventListener('click', () => {
     generatePDF(card, formatDate(entryData.date));
   });
-  
+
   return card;
 }
 
@@ -184,11 +94,11 @@ function generatePDF(element, date) {
       orientation: 'portrait' 
     }
   };
-  
+
   // Clone element to avoid modifying original
   const clone = element.cloneNode(true);
   clone.querySelector('.download-btn').remove();
-  
+
   // Add temporary PDF-specific styling
   const style = document.createElement('style');
   style.innerHTML = `
@@ -203,7 +113,7 @@ function generatePDF(element, date) {
     }
   `;
   clone.appendChild(style);
-  
+
   html2pdf().set(opt).from(clone).save();
 }
 
