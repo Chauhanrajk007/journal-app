@@ -17,9 +17,9 @@ def auth_page():
 def diary_page():
     return render_template('entry.html')
 
-@app.route('/calendar')
-def calendar():
-    return render_template('calendar.html')
+@app.route('/timeline')
+def timeline():
+    return render_template('timeline.html') 
 
 
 @app.route('/verify_token', methods=['POST'])
@@ -52,4 +52,4 @@ def save_entry():
     return jsonify({"status": "success", "message": "Entry saved"})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
