@@ -134,8 +134,14 @@ function createEntryCard(data, dateStr) {
   header.appendChild(dateElem);
   card.appendChild(header);
 
+  // NEW: Eye icon for toggling content visibility
+  const eyeIcon = document.createElement("span");
+  eyeIcon.className = "eye-icon";
+  eyeIcon.textContent = "👁️";
+  header.appendChild(eyeIcon);
+
   const contentElem = document.createElement("p");
-  contentElem.className = "entry-content";
+  contentElem.className = "entry-content entry-text";
   contentElem.textContent = data.content;
 
   const downloadBtn = document.createElement("button");
@@ -218,5 +224,15 @@ auth.onAuthStateChanged(async user => {
   } catch (error) {
     console.error("Error:", error);
     container.innerHTML = `<p>Error loading entries: ${error.message}</p>`;
+  }
+});
+
+// === NEW CODE: Toggle entry text visibility on eye icon click ===
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("eye-icon")) {
+    const entryText = e.target.closest(".entry-card").querySelector(".entry-text");
+    if (entryText) {
+      entryText.classList.toggle("hidden");  // Toggle visibility
+    }
   }
 });
