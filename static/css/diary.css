@@ -1,4 +1,3 @@
-/* -------------------- RESET & BASE -------------------- */
 * {
   margin: 0;
   padding: 0;
@@ -7,93 +6,93 @@
 
 body {
   font-family: 'Caveat', cursive;
-  background: #ede0c8; /* Warm paper‐like background */
+  background: #ede0c8;
   color: #4e3b2c;
-  overflow: hidden; /* Prevent scrollbars; the flipbook fills the viewport */
   height: 100vh;
+  padding: 40px;
   display: flex;
   flex-direction: column;
 }
 
-/* -------------------- HEADER -------------------- */
 header {
-  text-align: center;
-  background: #f5efe0;
-  padding: 15px 0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  position: relative;
-  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 header h1 {
-  font-size: 2.5rem;
+  font-size: 3rem;
   color: #5a4331;
 }
 
-/* Profile menu in top‐right */
-.profile-menu {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
 }
 
-.profile-menu span {
-  font-size: 1.5rem; 
-  cursor: default; /* Hover to see email in tooltip */
-}
-
-.profile-menu #logoutBtn {
-  background: #c77;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  font-family: 'Caveat', cursive;
-  font-size: 1rem;
-  border-radius: 6px;
+#user-email {
+  font-size: 1.8rem;
   cursor: pointer;
 }
 
-.profile-menu #logoutBtn:hover {
-  background: #a55;
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #fff9ee;
+  min-width: 180px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  padding: 10px;
+  border-radius: 10px;
+  z-index: 1;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* -------------------- FLIPBOOK LAYOUT -------------------- */
-.flipbook-container {
+.dropdown-content p {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.dropdown-content a {
+  text-decoration: none;
+  color: #5a4331;
+  padding: 5px 0;
+  display: block;
+  border-bottom: 1px solid #e0d4c0;
+}
+
+.profile-dropdown:hover .dropdown-content {
+  display: flex;
+}
+
+main {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: flex-start;
 }
 
-/* This is where PageFlip renders the book */
-.flip-book {
-  width: 500px;
-  height: 700px;
-  margin-bottom: 20px;
-  transform-origin: center;
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-
-/* -------------------- PAGE CONTENT -------------------- */
-.page-content {
-  padding: 30px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* The writing area (textarea): lined, paper‐like style */
-.page textarea {
+.journal {
   width: 100%;
-  height: 100%;
+  max-width: 800px;
+  background-color: #f5efe0;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 25px rgba(100, 80, 50, 0.3);
+}
+
+#journalEntry {
+  width: 100%;
+  height: 70vh;
+  padding: 10px 20px 0 20px;
   font-family: 'Caveat', cursive;
   font-size: 24px;
   line-height: 40px;
+  color: #4e3b2c;
   background: repeating-linear-gradient(
     to bottom,
     #f5efe0,
@@ -103,72 +102,17 @@ header h1 {
   );
   border: 1px solid #d4c4aa;
   border-radius: 8px;
-  resize: none;
+  resize: vertical;
   outline: none;
-  padding: 20px;
-  color: #4e3b2c;
 }
 
-.page textarea::placeholder {
+#journalEntry::placeholder {
   color: #a99a87;
 }
 
-/* Centered text (covers) */
-.center-text {
-  text-align: center;
-  margin: auto;
-}
-
-/* Zoom‐in effect when you focus a page’s textarea */
-.zoomed {
-  transform: scale(1.1);
-  transition: transform 0.3s ease-in-out;
-  z-index: 10;
-}
-
-/* Small “pulse” animation on auto‐save */
-.pulse-save {
-  animation: pulse 0.5s ease-in-out;
-}
-
-@keyframes pulse {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(0.97); }
-  100% { transform: scale(1); }
-}
-
-/* Opening animation for the covers */
-.flip-book.open-book .page-cover {
-  animation: book-open 1s ease-in-out forwards;
-}
-
-/* Closing animation for the covers */
-.flip-book.close-book .page-cover {
-  animation: book-close 0.8s ease-in-out forwards;
-}
-
-@keyframes book-open {
-  0%   { transform: scaleX(0.2); opacity: 0; }
-  100% { transform: scaleX(1); opacity: 1; }
-}
-
-@keyframes book-close {
-  0%   { transform: scaleX(1); }
-  100% { transform: scaleX(0.9); opacity: 0.7; }
-}
-
-/* “Close Journal” button style */
-#closeBookBtn {
-  background: #a55;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  font-family: 'Caveat', cursive;
-  font-size: 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#closeBookBtn:hover {
-  background: #822;
+#message {
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  min-height: 24px;
 }
