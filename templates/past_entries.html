@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Past Journal Entries</title>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/past_entries.css') }}">
@@ -14,7 +14,6 @@
   </header>
 
   <main id="main-content">
-    <!-- Changed from entriesContainer to entries-container for consistency -->
     <div id="entries-container">
       <div id="loading-state">
         <div class="spinner"></div>
@@ -23,7 +22,7 @@
     </div>
   </main>
 
-  <!-- Add this modal for error messages -->
+  <!-- Error modal -->
   <div id="error-modal" class="hidden">
     <div class="modal-content">
       <h3>Error</h3>
@@ -32,7 +31,10 @@
     </div>
   </div>
 
+  <!-- PDF library -->
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+
+  <!-- Your JS module -->
   <script type="module" src="{{ url_for('static', filename='js/past_entries.js') }}"></script>
 </body>
 </html>
