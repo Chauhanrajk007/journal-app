@@ -75,6 +75,9 @@ body {
 .entry-date {
   font-size: 1.8rem;
   margin-bottom: 25px;
+  text-align: left;           /* <-- Align to the left */
+  padding-left: 0;            /* <-- No left padding */
+  font-weight: bold;
 }
 
 .entry-content {
