@@ -1,24 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Past Journal Entries</title>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/past_entries.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/past_entries.css') }}">
 </head>
 <body>
   <header>
-    <h1>📓 Past Journal Entries</h1>
-    <button class="back-btn" onclick="window.location.href='/diary'">← Back to Diary</button>
+    <h1 id="page-title">📜 Past Journal Entries</h1>
+    <button id="back-button" onclick="window.location.href='/diary'">← Back to Diary</button>
   </header>
 
-  <main>
-    <div id="entriesContainer">
-      <p class="loading">Loading your entries...</p>
+  <main id="main-content">
+    <!-- Changed from entriesContainer to entries-container for consistency -->
+    <div id="entries-container">
+      <div id="loading-state">
+        <div class="spinner"></div>
+        <p>Loading your journal entries...</p>
+      </div>
     </div>
   </main>
 
+  <!-- Add this modal for error messages -->
+  <div id="error-modal" class="hidden">
+    <div class="modal-content">
+      <h3>Error</h3>
+      <p id="error-message"></p>
+      <button id="close-modal">OK</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
   <script type="module" src="{{ url_for('static', filename='js/past_entries.js') }}"></script>
 </body>
 </html>
