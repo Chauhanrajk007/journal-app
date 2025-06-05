@@ -1,5 +1,5 @@
 import { auth, db } from './firebase-config.js';
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { doc, setDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
 const textarea = document.getElementById("journalEntry");
@@ -32,19 +32,23 @@ textarea.addEventListener("input", () => {
 async function autoSave() {
   const user = auth.currentUser;
   const content = textarea.value;
-  const dateKey = new Date().toISOString().split('T')[0];
+  const now = new Date();
 
   if (!user || !content.trim()) return;
 
   try {
-    await setDoc(doc(db, "journals", user.uid + "_" + dateKey), {
+    // Create a new document with auto-generated ID
+    await addDoc(collection(db, "journals"), {
       content,
-      date: dateKey,
-      uid: user.uid
+      date: now.toISOString(),  // Full timestamp
+      dateKey: now.toISOString().split('T')[0], // Just the date part
+      uid: user.uid,
+      createdAt: now.getTime() // Timestamp for sorting
     });
+    
     message.textContent = "Saved ✔️";
   } catch (err) {
     message.textContent = "Failed to save ❌";
-    console.error("Save failed:", err.message);
+    console.error("Save failed:", err);
   }
 }
