@@ -266,3 +266,8 @@ main {
   transform: scale(1.05);
   background: linear-gradient(to right, #8b6849, #6d4f3b);
 }
+.entry {
+  display: block;
+  margin-bottom: 40px;
+}
+
