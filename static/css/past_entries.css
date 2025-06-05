@@ -271,3 +271,50 @@ main {
   margin-bottom: 40px;
 }
 
+/* Popup Confirmation */
+.hide-popup {
+  position: absolute;
+  background: #fffefc;
+  border: 1px solid #ccbbaa;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  padding: 14px;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.popup-card p {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #4e3b2c;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.popup-actions button {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #ccc;
+  color: #333;
+}
+
+.confirm-btn {
+  background: #c95d4e;
+  color: white;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
