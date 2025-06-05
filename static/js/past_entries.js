@@ -99,9 +99,16 @@ function createEntryCard(data, dateStr) {
   const card = document.createElement("div");
   card.className = "entry-card";
 
-  const dateElem = document.createElement("h3");
-  dateElem.className = "entry-date";
-  dateElem.textContent = dateStr;
+  const header = document.createElement("div");
+header.className = "entry-header";
+
+const dateElem = document.createElement("h3");
+dateElem.className = "entry-date";
+dateElem.textContent = dateStr;
+
+header.appendChild(dateElem);
+card.appendChild(header);
+
 
   const contentElem = document.createElement("p");
   contentElem.className = "entry-content";
@@ -115,9 +122,11 @@ function createEntryCard(data, dateStr) {
     const printable = document.createElement("div");
     printable.className = "entry-card";
     printable.innerHTML = `
-      <h3 class="entry-date">${dateStr}</h3>
-      <p class="entry-content">${data.content}</p>
-    `;
+  <div class="entry-header">
+    <h3 class="entry-date">${dateStr}</h3>
+  </div>
+  <p class="entry-content">${data.content}</p>
+`;
 
     printable.style.background = card.style.background;
 
