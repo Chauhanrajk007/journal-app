@@ -7,27 +7,9 @@ import {
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
   const signupForm = document.getElementById("signupForm");
+  const loginError = document.getElementById("login-error");
+  const signupError = document.getElementById("signup-error");
 
-  // Error box helper
-  function showError(message) {
-    const box = document.getElementById("auth-error");
-    const text = document.getElementById("error-text");
-    if (!box || !text) return;
-
-    text.textContent = message;
-    box.classList.remove("hidden");
-    box.classList.add("show");
-
-    // Auto-hide after 5 seconds
-    setTimeout(() => {
-      if (box.classList.contains("show")) {
-        box.classList.remove("show");
-        box.classList.add("hidden");
-      }
-    }, 5000);
-  }
-
-  // UI Navigation
   window.showLogin = () => {
     document.getElementById("welcome-section").classList.add("hidden");
     document.getElementById("login-section").classList.remove("hidden");
@@ -44,53 +26,46 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("welcome-section").classList.remove("hidden");
   };
 
-  // Login handler
   loginForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
+    loginError.textContent = ''; // Clear any previous error
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      Swal.fire({
-        icon: 'success',
-        title: 'Welcome back!',
-        text: 'You have logged in successfully.',
-        showConfirmButton: false,
-        timer: 2000
-      }).then(() => {
-        window.location.href = "/diary";
-      });
+      window.location.href = "/diary";
     } catch (err) {
-      showError("Login failed: " + err.message);
+      loginError.textContent = formatAuthError(err.message);
     }
   });
 
-  // Signup handler
   signupForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
+    signupError.textContent = ''; // Clear previous error
     const email = document.getElementById("signupEmail").value;
     const password = document.getElementById("signupPassword").value;
     const confirm = document.getElementById("confirmPassword").value;
 
     if (password !== confirm) {
-      showError("Passwords do not match!");
+      signupError.textContent = "Passwords do not match!";
       return;
     }
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      Swal.fire({
-        icon: 'success',
-        title: 'Account Created!',
-        text: 'You’ve joined the journal guild 📖✨',
-        showConfirmButton: false,
-        timer: 2000
-      }).then(() => {
-        window.location.href = "/diary";
-      });
+      window.location.href = "/diary";
     } catch (err) {
-      showError("Signup failed: " + err.message);
+      signupError.textContent = formatAuthError(err.message);
     }
   });
+
+  function formatAuthError(message) {
+    if (message.includes("auth/invalid-email")) return "Invalid email address.";
+    if (message.includes("auth/user-not-found")) return "No account found with this email.";
+    if (message.includes("auth/wrong-password")) return "Incorrect password.";
+    if (message.includes("auth/email-already-in-use")) return "Email is already in use.";
+    if (message.includes("auth/weak-password")) return "Password should be at least 6 characters.";
+    return "Something went wrong. Please try again.";
+  }
 });
