@@ -4,110 +4,107 @@ import {
   doc,
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-import { PageFlip } from 'https://cdn.jsdelivr.net/npm/page-flip@2.0.6/dist/js/page-flip.browser.min.js';
 
-document.addEventListener("DOMContentLoaded", () => {
-  const diaryBook = document.getElementById("diaryBook");
-  const userEmail = document.getElementById("user-email");
-  const logoutBtn = document.getElementById("logoutBtn");
+import { PageFlip } from 'https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js';
 
-  const pageFlip = new PageFlip(diaryBook, {
-    width: 550,
+const flipBook = document.getElementById("diaryBook");
+const logoutBtn = document.getElementById("logoutBtn");
+const userEmail = document.getElementById("user-email");
+
+let pageFlip;
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    alert("Not logged in.");
+    window.location.href = "/";
+  } else {
+    userEmail.textContent = user.email || "👤";
+  }
+});
+
+logoutBtn.addEventListener("click", () => {
+  closeBook().then(() => signOut(auth).then(() => window.location.href = "/"));
+});
+
+document.addEventListener("DOMContentLoaded", async () => {
+  pageFlip = new PageFlip(flipBook, {
+    width: 500,
     height: 700,
     size: "stretch",
     minWidth: 315,
     maxWidth: 1000,
     minHeight: 400,
-    maxHeight: 1350,
-    maxShadowOpacity: 0.5,
+    maxHeight: 1500,
     showCover: true,
-    mobileScrollSupport: false
+    mobileScrollSupport: true,
+    swipeDistance: 30,
   });
 
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      alert("Not logged in.");
-      window.location.href = "/";
-    } else {
-      userEmail.textContent = user.email || "👤";
-    }
+  pageFlip.loadFromHTML(document.querySelectorAll(".page"));
+
+  addNewPage(); // Inject first editable page
+
+  openBook(); // Animation
+});
+
+function addNewPage() {
+  const wrapper = document.createElement("div");
+  wrapper.className = "page";
+  wrapper.innerHTML = `
+    <div class="page-content">
+      <textarea placeholder="Start writing your story..."></textarea>
+    </div>
+  `;
+
+  flipBook.insertBefore(wrapper, flipBook.children[flipBook.children.length - 1]);
+  pageFlip.loadFromHTML(document.querySelectorAll(".page"));
+
+  const textarea = wrapper.querySelector("textarea");
+  bindTextareaEvents(textarea);
+}
+
+function bindTextareaEvents(textarea) {
+  textarea.addEventListener("focus", () => {
+    textarea.classList.add("zoomed");
   });
 
-  logoutBtn.addEventListener("click", () => {
-    signOut(auth).then(() => window.location.href = "/");
+  textarea.addEventListener("blur", () => {
+    textarea.classList.remove("zoomed");
   });
 
-  const today = new Date().toISOString().split('T')[0];
+  textarea.addEventListener("input", async () => {
+    const content = textarea.value.trim();
+    const dateKey = new Date().toISOString().split('T')[0];
 
-  const createPage = (placeholder = "Start writing here...") => {
-    const textarea = document.createElement("textarea");
-    textarea.placeholder = placeholder;
-    textarea.addEventListener("input", () => {
-      saveContent(textarea.value);
-      checkOverflow(textarea);
-    });
-    return `<div class="page"><div class="page-content">${textarea.outerHTML}</div></div>`;
-  };
+    if (!auth.currentUser || !content) return;
 
-  const saveContent = async (text) => {
-    if (!auth.currentUser || !text.trim()) return;
     try {
-      const content = text.trim();
-      await setDoc(doc(db, "journals", auth.currentUser.uid + "_" + today), {
+      await setDoc(doc(db, "journals", auth.currentUser.uid + "_" + dateKey), {
         content,
-        date: today,
+        date: dateKey,
         uid: auth.currentUser.uid
       });
-      // Only visual pulse on save (no close)
-diaryBook.classList.add("pulse-save");
-setTimeout(() => diaryBook.classList.remove("pulse-save"), 500);
 
-    } catch (e) {
-      console.error("Auto-save failed:", e);
+      if (textarea.scrollHeight > textarea.clientHeight + 40) {
+        addNewPage();
+      }
+
+    } catch (err) {
+      console.error("Auto-save error:", err.message);
     }
-  };
-
-  const checkOverflow = (textarea) => {
-    if (textarea.scrollHeight > textarea.clientHeight + 30) {
-      const newPageHTML = createPage("Continued...");
-      const wrapper = document.createElement("div");
-      wrapper.innerHTML = newPageHTML;
-      pageFlip.loadFromHTML([wrapper.firstChild], "append");
-    }
-  };
-
-  const initialPages = [
-    `<div class="page page-cover page-cover-top" data-density="hard">
-       <div class="page-content center-text"><h2>📔 My Journal</h2><p>Click to begin writing...</p></div>
-     </div>`,
-    createPage(),
-    `<div class="page page-cover page-cover-bottom" data-density="hard">
-       <div class="page-content center-text"><h2>📕 The End</h2></div>
-     </div>`
-  ];
-
-  pageFlip.loadFromHTML(initialPages);
-
-  document.getElementById("prevPage").addEventListener("click", () => {
-    diaryBook.style.transform = "scale(0.95)";
-    setTimeout(() => {
-      pageFlip.flipPrev();
-      diaryBook.style.transform = "scale(1)";
-    }, 300);
   });
+}
 
-  document.getElementById("nextPage").addEventListener("click", () => {
-    diaryBook.style.transform = "scale(0.95)";
-    setTimeout(() => {
-      pageFlip.flipNext();
-      diaryBook.style.transform = "scale(1)";
-    }, 300);
-  });
+function openBook() {
+  flipBook.classList.add("open-book");
+}
 
-  document.getElementById("closeBookBtn").addEventListener("click", () => {
-    diaryBook.classList.add("close-animation");
+function closeBook() {
+  return new Promise((resolve) => {
+    flipBook.classList.add("close-book");
     setTimeout(() => {
-      window.location.href = "/";
-    }, 1000);
+      flipBook.classList.remove("close-book");
+      resolve();
+    }, 800);
   });
-});
+}
