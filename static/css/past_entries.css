@@ -1,56 +1,116 @@
-/* === Global Styles === */
+/* === Reset & Base === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Caveat', cursive;
-  background: #f5efe0;
+  background: #ede0c8;
   color: #4e3b2c;
-  padding: 20px;
-}
-
-#page-title {
-  font-size: 2.5rem;
-  color: #5a4331;
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-#back-button {
-  background-color: #7a5c3d;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  display: block;
-  margin: 0 auto;
-}
-
-#main-content {
-  max-width: 800px;
-  margin: 30px auto;
-}
-
-#entries-container {
-  width: 100%;
-  margin-top: 20px;
-}
-
-#loading-state {
-  text-align: center;
   padding: 40px;
+  min-height: 100vh;
 }
 
-.spinner {
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #7a5c3d;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
+/* === Header === */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
-/* === Journal Card === */
+header h1 {
+  font-size: 3rem;
+  color: #5a4331;
+}
+
+.profile-dropdown {
+  position: relative;
+}
+
+#user-email {
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #fff9ee;
+  min-width: 180px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  padding: 10px;
+  border-radius: 10px;
+  z-index: 1;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dropdown-content p {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.dropdown-content a {
+  text-decoration: none;
+  color: #5a4331;
+  padding: 5px 0;
+  display: block;
+  border-bottom: 1px solid #e0d4c0;
+}
+
+.profile-dropdown:hover .dropdown-content {
+  display: flex;
+}
+
+/* === Main Layout === */
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+/* === Search Bar === */
+.search-bar-container {
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#searchBar {
+  width: 90%;
+  padding: 14px 22px;
+  font-size: 1.3rem;
+  font-family: 'Caveat', cursive;
+  background-color: #f5efe0;
+  border: 2px solid #d4c4aa;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(100, 80, 50, 0.15);
+  outline: none;
+  color: #4e3b2c;
+  transition: 0.2s ease;
+}
+
+#searchBar:focus {
+  border-color: #b89e78;
+  box-shadow: 0 0 5px rgba(100, 80, 50, 0.2);
+}
+
+#secret-reveal {
+  text-align: center;
+  margin: 10px auto;
+  color: #7d5e42;
+  font-family: 'Caveat', cursive;
+}
+
+/* === A4 Entry Card === */
 .entry-card {
   background: repeating-linear-gradient(
     to bottom,
@@ -62,20 +122,18 @@ body {
   border: 1px solid #d4c4aa;
   border-radius: 10px;
   padding: 25px 30px;
-  margin: 40px auto;
-  box-shadow: 0 0 15px rgba(100, 80, 50, 0.2);
-  position: relative;
+  box-shadow: 0 0 15px rgba(100, 80, 50, 0.25);
   width: 794px;
   min-height: 1123px;
-  box-sizing: border-box;
   page-break-after: always;
-  font-family: 'Caveat', cursive;
-  font-size: 1.2rem;
-  line-height: 1.7;
+  font-size: 1.3rem;
+  line-height: 1.8;
   white-space: pre-wrap;
+  position: relative;
+  box-sizing: border-box;
 }
 
-/* === Header and Date Line === */
+/* === Entry Header and Date === */
 .entry-header {
   display: flex;
   justify-content: space-between;
@@ -86,12 +144,10 @@ body {
 .entry-date {
   font-size: 1.8rem;
   font-weight: bold;
-  margin: 0;
-  padding: 0;
   color: #4e3b2c;
 }
 
-/* === Themed Eye Icon (Hide Button) === */
+/* === Eye Icon (Hide Button) === */
 .hide-entry-btn {
   background: none;
   border: none;
@@ -129,13 +185,14 @@ body {
   transform: translate(-50%, -50%);
 }
 
-/* === Entry Text === */
+/* === Entry Content === */
 .entry-content {
   font-size: 1.3rem;
   line-height: 1.8;
+  color: #4e3b2c;
 }
 
-/* === Buttons === */
+/* === Download Button === */
 .download-btn {
   margin-top: 20px;
   padding: 8px 16px;
@@ -151,112 +208,36 @@ body {
   bottom: 20px;
 }
 
-/* === Search Bar === */
-.search-bar-container {
-  width: 100%;
-  max-width: 800px;
-  margin: 20px auto 10px auto;
-  text-align: center;
+/* === Print Styles === */
+@media print {
+  body {
+    background: white;
+    margin: 0;
+  }
+
+  .download-btn,
+  .hide-entry-btn,
+  header,
+  .search-bar-container,
+  #secret-reveal {
+    display: none !important;
+  }
+
+  .entry-card {
+    box-shadow: none;
+    page-break-after: always;
+  }
 }
 
-#searchBar {
-  width: 90%;
-  padding: 14px 22px;
-  font-size: 1.3rem;
-  font-family: 'Caveat', cursive;
-  background-color: #f5efe0;
-  border: 2px solid #d4c4aa;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(100, 80, 50, 0.15);
-  outline: none;
-  color: #4e3b2c;
-  transition: 0.2s ease;
-}
-
-#searchBar:focus {
-  border-color: #b89e78;
-  box-shadow: 0 0 5px rgba(100, 80, 50, 0.2);
-}
-
-#secret-reveal {
-  text-align: center;
-  margin: 10px auto;
-  color: #7d5e42;
-  font-family: 'Caveat', cursive;
-}
-
-/* === Modals === */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.modal.hidden {
-  display: none;
-}
-
-.modal-content {
-  background: #fff9ed;
-  padding: 30px;
-  border-radius: 12px;
-  text-align: center;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
-  font-family: 'Caveat', cursive;
-  color: #4e3b2c;
-}
-
-.modal-content input {
-  width: 90%;
-  padding: 10px;
-  font-size: 1.1rem;
-  margin: 10px 0;
-  border: 2px solid #d4c4aa;
-  border-radius: 8px;
-  background-color: #fff;
-  font-family: 'Caveat', cursive;
-}
-
-.modal-content button {
-  margin-top: 15px;
-  padding: 8px 16px;
-  font-size: 1.1rem;
-  border: none;
-  border-radius: 8px;
-  background-color: #a68560;
-  color: white;
-  cursor: pointer;
-  font-family: 'Caveat', cursive;
-  margin: 8px;
-}
-
-/* === Spinner Animation === */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* === Responsive Styles === */
+/* === Responsive === */
 @media (max-width: 768px) {
   body {
     padding: 15px;
   }
 
-  #page-title {
-    font-size: 2rem;
-  }
-
   .entry-card {
     padding: 20px;
+    width: 100%;
   }
 
   .entry-date {
@@ -266,28 +247,4 @@ body {
   .entry-content {
     font-size: 1.1rem;
   }
-}
-
-/* === Print Styles === */
-@media print {
-  body {
-    background: white;
-    margin: 0;
-  }
-
-  .download-btn, #back-button, #page-title {
-    display: none;
-  }
-}
-.eye-icon {
-  font-size: 1.4rem;
-  cursor: pointer;
-  display: inline-block;
-  margin-top: 10px;
-  transition: transform 0.2s;
-  text-align: center;
-}
-
-.eye-icon:hover {
-  transform: scale(1.1);
 }
