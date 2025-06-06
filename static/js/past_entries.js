@@ -171,7 +171,6 @@ confirmHideBtn.onclick = async () => {
       if (entryToHide) entryToHide.remove();
       hidePopup.classList.remove("active");
       hidePopupOverlay.style.display = "none";
-      window.location.href = "/hidden";
     });
   }
 
