@@ -1,4 +1,3 @@
-// --- past_entries.js ---
 import { auth, db } from './firebase-config.js';
 import {
   collection, getDocs, setDoc, doc, query, where, orderBy
@@ -37,6 +36,9 @@ if (clearBtn) {
     searchInput.value = "";
     handleSearch("");
     searchInput.classList.remove("highlighted");
+    clearBtn.style.display = "none";
+    const existingNoMatch = document.querySelector(".no-match-message");
+    if (existingNoMatch) existingNoMatch.remove();
   });
 }
 
@@ -98,6 +100,9 @@ function shareEntry(content, date) {
 // Search Logic
 window.handleSearch = function (term) {
   const entries = document.querySelectorAll(".entry");
+  const existingNoMatch = document.querySelector(".no-match-message");
+  if (existingNoMatch) existingNoMatch.remove();
+
   let found = false;
   entries.forEach(entry => {
     const text = entry.textContent.toLowerCase();
@@ -108,13 +113,20 @@ window.handleSearch = function (term) {
       entry.style.display = "none";
     }
   });
+
   if (term.length > 0) {
     searchInput.classList.add("highlighted");
+    clearBtn.style.display = "inline-block";
   } else {
     searchInput.classList.remove("highlighted");
+    clearBtn.style.display = "none";
   }
+
   if (!found && term.trim()) {
-    entriesContainer.innerHTML += `<p>No matching entries found for: <strong>${term}</strong></p>`;
+    const noMatch = document.createElement("p");
+    noMatch.className = "no-match-message";
+    noMatch.innerHTML = `No matching entries found for: <strong>${term}</strong>`;
+    entriesContainer.appendChild(noMatch);
   }
 };
 
