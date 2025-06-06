@@ -13,8 +13,18 @@
     <button id="back-button" onclick="window.location.href='/diary'">← Back to Diary</button>
   </header>
 
- <div class="search-bar-container">
-  <button id="search-toggle" aria-label="Open search"><span class="search-icon">🔍</span></button>
+<div class="search-bar-container">
+  <button id="search-toggle" aria-label="Open search">
+    <span class="search-icon">
+      <!-- Book SVG icon -->
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <rect x="2" y="4" width="10" height="20" rx="3" fill="#e6d3b3" stroke="#b1946e" stroke-width="2"/>
+        <rect x="16" y="4" width="10" height="20" rx="3" fill="#f5efe0" stroke="#b1946e" stroke-width="2"/>
+        <path d="M12 6L16 6" stroke="#b1946e" stroke-width="2"/>
+        <path d="M12 22L16 22" stroke="#b1946e" stroke-width="2"/>
+      </svg>
+    </span>
+  </button>
   <input
     type="text"
     id="search"
