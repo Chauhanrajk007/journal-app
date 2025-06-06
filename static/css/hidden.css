@@ -216,3 +216,24 @@ body {
     font-size: 1rem;
   }
 }
+#unhide-pin-input {
+  font-size: 1.25rem;
+  padding: 12px 18px;
+  border: 1.5px solid #d4c4aa;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 220px;
+  margin-bottom: 18px;
+  margin-top: 8px;
+  outline: none;
+  background: #fff9ed;
+  box-sizing: border-box;
+  text-align: center;
+  letter-spacing: 0.25em; /* space out characters for PIN look */
+  color: #5a4331;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+#unhide-pin-input:focus {
+  border-color: #c2852e;
+  box-shadow: 0 0 8px #ffeec2cc;
+}
