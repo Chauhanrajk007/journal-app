@@ -161,6 +161,7 @@ main {
 .entry-card {
   width: 794px;
   min-height: 1123px; 
+  margin: 0 auto;
   background: linear-gradient(to bottom, transparent 96%, #e9d5b4 97%);
   background-size: 100% 2.5em;
   background-repeat: repeat-y;
@@ -309,9 +310,9 @@ mark {
     padding: 15px;
   }
   .entry-card {
-    padding: 18px;
-    width: 100%;
-    min-width: 0;
+    width: 794px;
+    min-height: 1123px;
+    margin: 0 auto;
   }
   .entry-date {
     font-size: 1.3rem;
@@ -482,4 +483,44 @@ mark {
 
 .dropdown-options.show {
   display: flex;
+}
+/* --- Three-dot menu placement for entry card wrapper --- */
+.entry-card-wrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+
+.options-menu {
+  position: absolute;
+  right: -36px; /* Adjust as needed to touch the card */
+  top: 16px;    /* Adjust to align vertically */
+  z-index: 5;
+}
+
+@media (max-width: 900px) {
+  .options-menu {
+    right: -16px;
+    top: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .entry-card-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .options-menu {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    transform: none;
+  }
+  .entry-card {
+     width: 794px;
+      min-width: 0;
+      max-width: 100vw;
+      overflow-x: auto;
+  }
 }
