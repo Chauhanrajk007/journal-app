@@ -176,7 +176,31 @@ main {
   page-break-after: always;
   transition: box-shadow 0.2s;
 }
-
+.options-menu {
+  position: absolute;
+  top: 24px; /* adjust as needed */
+  right: -34px; /* negative value pushes outside the card, adjust as needed */
+  z-index: 2;
+}
+.menu-btn {
+  background: linear-gradient(135deg, #e6d3b3 90%, #b1946e 100%);
+  border: none;
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 2px 10px #c7a16e33;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  position: relative;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+.menu-btn:hover {
+  background: linear-gradient(135deg, #ffdca8 90%, #e0bb72 100%);
+  box-shadow: 0 4px 16px #d4a76066;
+}
 .entry-card:hover {
   box-shadow: 0 0 40px #e0bb72aa;
 }
@@ -484,4 +508,23 @@ mark {
   justify-content: center;
   width: 22px;
   height: 22px;
+}
+
+.dropdown-options {
+  display: none; /* Default hidden, show when needed */
+  position: absolute;
+  top: 54px;
+  right: 8px;
+  background: #fff9ee;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px #efd7b688;
+  padding: 12px 0;
+  min-width: 140px;
+  z-index: 1060;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.dropdown-options.show {
+  display: flex;
 }
