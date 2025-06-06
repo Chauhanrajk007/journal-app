@@ -505,12 +505,15 @@ mark {
   grid-row: date;
   margin-bottom: 0 !important;
   padding-bottom: 0 !important;
-  height: min-content;
+  position: relative;
+  top: 2px; 
 }
 
 .entry-content {
   grid-row: content;
   margin-top: 0 !important;
   padding-top: 0 !important;
-  transform: translateY(-0.3em); /* Fine-tune vertical position */
+    position: relative;
+  top: 4px; /* This creates the 2px downward shift you want */
+  line-height: 2.5em;
 }
