@@ -13,17 +13,17 @@
     <button id="back-button" onclick="window.location.href='/diary'">← Back to Diary</button>
   </header>
 
-  <main id="main-content">
-    <div class="search-bar-container">
-      <input
-        type="text"
-        id="search"
-        placeholder="🔍 Search entries by date or words..."
-        oninput="handleSearch(this.value)"
-      />
-      <button id="clear-search">✖</button>
-    </div>
-
+ <div class="search-bar-container">
+  <button id="search-toggle" aria-label="Open search"><span class="search-icon">🔍</span></button>
+  <input
+    type="text"
+    id="search"
+    class="collapsed"
+    placeholder="Search entries by date or words..."
+    oninput="handleSearch(this.value)"
+  />
+  <button id="clear-search">✖</button>
+</div>
     <div id="entries-container">
       <div id="loading-state" class="loading-spinner-container">
         <div class="spinner"></div>
