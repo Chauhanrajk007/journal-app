@@ -1,3 +1,6 @@
+if (!sessionStorage.getItem('allowedToViewHidden')) {
+  window.location.href = '/';
+}
 import { auth, db } from './firebase-config.js';
 import {
   collection, doc, getDocs, getDoc, query, where, orderBy, updateDoc
