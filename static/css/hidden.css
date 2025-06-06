@@ -240,54 +240,6 @@ body {
   box-shadow: 0 0 8px #ffeec2cc;
 }
 
-.entry-header {
-  grid-row: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 !important; /* Force remove any existing margins */
-  padding: 0 !important; /* Force remove any existing padding */
-  line-height: 1;
-}
-
-.entry-content {
-  grid-row: 3;
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-  align-self: start;
-}
-
-/* Preserve all your existing styles */
-.entry-card {
-  /* Your existing styles remain untouched */
-  background: repeating-linear-gradient(...);
-  border: 1.5px solid #d4c4aa;
-  /* etc... */
-}
-/* Fix for perfect line alignment */
-.entry-card {
-  display: flex;
-  flex-direction: column;
-  gap: 0 !important;
-}
-
-.entry-header {
-  min-height: auto !important;
-  height: 1lh !important; /* Exactly one line height */
-  margin-bottom: 0 !important;
-}
-
-.entry-content {
-  margin-top: 1lh !important; /* Push content to start on line 3 */
-  white-space: pre-wrap;
-  line-height: 1.6;
-}
-/* Journal Entry Alignment Fix */
-.entry-card {
-  display: flex;
-  flex-direction: column;
-  padding-top: 1.5em; /* Adjust this value to move content down */
-}
 
 .entry-header {
   margin-bottom: -0.5em !important; /* Pulls content up slightly */
@@ -297,4 +249,19 @@ body {
   margin-top: 0 !important;
   padding-top: 0.5em !important; /* Fine-tune spacing */
   transform: translateY(-0.3em); /* Micro-adjustment */
+}
+.entry-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.entry-header {
+  margin-bottom: -0.4em; /* Pulls content up slightly */
+  padding-bottom: 0;
+}
+
+.entry-content {
+  margin-top: 0;
+  padding-top: 0.3em; /* Fine-tune spacing */
+  transform: translateY(-0.2em); /* Micro-adjustment */
 }
