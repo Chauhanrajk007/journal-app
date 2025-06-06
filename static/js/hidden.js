@@ -49,12 +49,13 @@ auth.onAuthStateChanged(async user => {
       const card = document.createElement("div");
       card.className = "entry-card";
       card.innerHTML = `
-        <div class="entry-header">
-          <h3>${date}</h3>
-          <button class="unhide-btn" data-id="${docSnap.id}">🔓</button>
-        </div>
-        <p class="entry-content">${data.content}</p>
-      `;
+  <div class="entry-header">
+    <span class="entry-date">${date}</span>
+    <button class="unhide-btn" data-id="${docSnap.id}">🔓</button>
+  </div>
+  <div style="height:1em;"></div> <!-- This is the blank line (line 2) -->
+  <div class="entry-content">${data.content}</div>
+`;
       container.appendChild(card);
     });
 
