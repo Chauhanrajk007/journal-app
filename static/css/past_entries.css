@@ -440,4 +440,28 @@ mark {
   color: #b1946e;
   /* ...other styles remain... */
 }
-/* END */
+.popup-btns {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.popup-btn {
+  padding: 10px 32px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ffdca8, #e0bb72);
+  color: #5a4331;
+  font-size: 1.1em;
+  font-family: 'Caveat', cursive, sans-serif;
+  cursor: pointer;
+  transition: background 0.16s, box-shadow 0.16s;
+  box-shadow: 0 2px 10px #efd7b6aa;
+  margin: 0 4px;
+}
+
+.popup-btn:hover {
+  background: linear-gradient(90deg, #e0bb72, #ffdca8);
+  box-shadow: 0 0 18px #ffe8b0cc;
+}
