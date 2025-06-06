@@ -230,8 +230,8 @@ body {
   outline: none;
   background: #fff9ed;
   box-sizing: border-box;
-  text-align: center;
-  letter-spacing: 0.25em; /* space out characters for PIN look */
+  text-align: left;
+  letter-spacing: normal; /* space out characters for PIN look */
   color: #5a4331;
   transition: border-color 0.18s, box-shadow 0.18s;
 }
