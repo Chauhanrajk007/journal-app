@@ -103,6 +103,23 @@ main {
   box-shadow: 0 0 5px rgba(100, 80, 50, 0.2);
 }
 
+/* Highlight search bar on typing */
+#search.highlighted {
+  outline: 2px solid #c7a16e;
+  background-color: #fff6e3;
+  transition: all 0.3s ease;
+}
+
+/* Clear button */
+#clear-search {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 5px;
+  color: #6b4b33;
+}
+
 #secret-reveal {
   text-align: center;
   margin: 10px auto;
@@ -112,16 +129,16 @@ main {
 
 /* === A4 Entry Card === */
 .entry-card {
-  background: repeating-linear-gradient(
-    to bottom,
-    #f5efe0,
-    #f5efe0 39px,
-    #d7cbb2 40px,
-    #f5efe0 40px
-  );
+  background-image: linear-gradient(to bottom, transparent 95%, #e9d5b4 96%);
+  background-size: 100% 2.5em;
+  background-repeat: repeat-y;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  position: relative;
+
+  /* Retain original styles as needed */
   border: 1px solid #d4c4aa;
-  border-radius: 10px;
-  padding: 25px 30px;
   box-shadow: 0 0 15px rgba(100, 80, 50, 0.25);
   width: 794px;
   min-height: 1123px;
@@ -129,7 +146,6 @@ main {
   font-size: 1.3rem;
   line-height: 1.8;
   white-space: pre-wrap;
-  position: relative;
   box-sizing: border-box;
 }
 
@@ -147,17 +163,12 @@ main {
   color: #4e3b2c;
 }
 
-
-
-
 /* === Entry Content === */
 .entry-content {
   font-size: 1.3rem;
   line-height: 1.8;
   color: #4e3b2c;
 }
-
-
 
 /* === Print Styles === */
 @media print {
@@ -199,6 +210,7 @@ main {
     font-size: 1.1rem;
   }
 }
+
 #back-button {
   display: inline-block;
   margin: 20px auto;
@@ -217,6 +229,7 @@ main {
   transform: scale(1.05);
   background: linear-gradient(to right, #8b6849, #6d4f3b);
 }
+
 .entry {
   display: block;
   margin-bottom: 40px;
@@ -269,6 +282,7 @@ main {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
+
 .modal {
   position: fixed;
   inset: 0;
@@ -292,42 +306,28 @@ main {
   max-width: 90%;
   width: 400px;
 }
+
 /* === 3-Dot Options Menu === */
+/* Ensure dropdown and icons look clean */
 .options-menu {
   position: relative;
   display: inline-block;
-  margin-left: auto;
-}
-
-.menu-btn {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: #5a4331;
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 50%;
-  transition: background 0.2s ease;
-}
-
-.menu-btn:hover {
-  background-color: rgba(90, 67, 49, 0.1);
 }
 
 .dropdown-options {
   position: absolute;
   top: 30px;
   right: 0;
-  background-color: #fff9ee;
+  display: none;
+  background: #fff9ee;
   border: 1px solid #d4c4aa;
   border-radius: 10px;
   padding: 10px;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
-  display: none;
-  flex-direction: column;
-  gap: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
   z-index: 10;
   min-width: 130px;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .dropdown-options button {
