@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hidden Diary Entries</title>
+  <title>Hidden Journal Entries</title>
   <link href="https://fonts.googleapis.com/css2?family=Caveat&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/hidden.css') }}">
 </head>
@@ -13,8 +13,10 @@
   <!-- Unhide Confirmation Modal -->
   <div class="modal hidden" id="unhide-modal">
     <div class="modal-content">
-      <p class="modal-message">Are you sure you want to unhide this entry?</p>
-      <button id="confirm-unhide" class="modal-btn confirm">Yes, Unhide</button>
+      <p class="modal-message">Enter your PIN to unhide this entry:</p>
+      <input id="unhide-pin-input" type="text" placeholder="PIN (letters, symbols, emoji)" autocomplete="off" />
+      <div id="unhide-pin-error" class="modal-error"></div>
+      <button id="confirm-unhide" class="modal-btn confirm">Unhide</button>
       <button id="cancel-unhide" class="modal-btn cancel">Cancel</button>
     </div>
   </div>
