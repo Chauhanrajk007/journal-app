@@ -345,3 +345,26 @@ main {
 .dropdown-options button:hover {
   background-color: #f0e6d2;
 }
+/* Add to your existing CSS */
+#search.highlighted {
+  border-color: #d4a760;
+  box-shadow: 0 0 6px #ffdca8;
+}
+
+#clear-search {
+  display: none;
+  margin-left: 8px;
+  background: #fff4d8;
+  border: 1px solid #d4a760;
+  color: #7b604a;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.no-match-message {
+  text-align: center;
+  color: #888;
+  margin-top: 1rem;
+}
