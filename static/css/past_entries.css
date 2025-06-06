@@ -348,3 +348,26 @@ mark {
 .hide-popup-overlay[style*="display: block"] {
   display: block;
 }
+.toast {
+  visibility: hidden;
+  min-width: 160px;
+  background-color: #d4a760;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 16px 24px;
+  position: fixed;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%) scale(0.9);
+  font-size: 1.1rem;
+  opacity: 0;
+  z-index: 9999;
+  transition: opacity 0.4s cubic-bezier(.62,.01,.35,1.13), transform 0.4s cubic-bezier(.62,.01,.35,1.13);
+}
+
+.toast.show {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) scale(1.05);
+}
