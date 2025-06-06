@@ -330,8 +330,8 @@ mark {
 
 .options-menu {
   position: absolute;
-  right: -36px; /* Adjust as needed to touch the card */
-  top: 16px;    /* Adjust to align vertically */
+  right: 0px; /* Adjust as needed to touch the card */
+  top: 0px;    /* Adjust to align vertically */
   z-index: 5;
 }
 
