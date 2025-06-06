@@ -21,8 +21,8 @@ def diary_page():
 def past_entries():
     return render_template('past_entries.html') 
 
-@app.route('/dftba')
-def dftba():
+@app.route('/hidden.html')
+def hidden.html():
     return render_template('hidden.html')
 
 @app.route('/get_entries', methods=['GET'])
