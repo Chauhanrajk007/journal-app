@@ -485,3 +485,34 @@ mark {
   transform: translateY(-0.3em); /* Subtler adjustment */
   line-height: 2.5em; /* Maintains your background line alignment */
 }
+/* === Diary Line Alignment Fix === */
+.entry-card {
+  /* Maintain your existing dimensions and layout */
+  width: 794px;
+  min-height: 1123px;
+  padding: 60px 70px;
+  
+  /* Key alignment properties: */
+  background: 
+    /* Paper color */
+    linear-gradient(#f5efe0, #f5efe0),
+    /* Ruled lines (adjust color/thickness as needed) */
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 39px,
+      #e3d5bb 40px,
+      #e3d5bb 40px
+    );
+  background-attachment: local;
+  line-height: 40px !important; /* Must match the gradient spacing */
+}
+
+.entry-content {
+  /* Critical alignment adjustments */
+  margin-top: 0;
+  padding-top: 0;
+  transform: translateY(-0.35em); /* Fine-tune baseline */
+  font-size: 1.4rem; /* Match your desired size */
+  white-space: pre-wrap; /* Preserve line breaks like in your image */
+}
