@@ -13,7 +13,34 @@ const loadingState = document.getElementById("loading-state");
 const searchInput = document.getElementById("search");
 const clearBtn = document.getElementById("clear-search");
 
-// PIN Modal (created only if needed)
+// Hide Popup Elements
+let hidePopup = document.getElementById('hidePopup');
+let hidePopupOverlay = document.querySelector('.hide-popup-overlay');
+if (!hidePopup) {
+  hidePopup = document.createElement('div');
+  hidePopup.className = "hide-popup";
+  hidePopup.id = "hidePopup";
+  hidePopup.innerHTML = `
+    <div class="popup-title">Are you sure you want to hide this entry?</div>
+    <div class="popup-btns">
+      <button class="popup-btn" id="confirmHideBtn">Hide</button>
+      <button class="popup-btn" id="cancelHideBtn">Cancel</button>
+    </div>
+  `;
+  document.body.appendChild(hidePopup);
+}
+if (!hidePopupOverlay) {
+  hidePopupOverlay = document.createElement('div');
+  hidePopupOverlay.className = "hide-popup-overlay";
+  document.body.appendChild(hidePopupOverlay);
+}
+const confirmHideBtn = hidePopup.querySelector("#confirmHideBtn");
+const cancelHideBtn = hidePopup.querySelector("#cancelHideBtn");
+
+let entryToHide = null;
+let docIdToHide = null;
+
+// PIN Modal (for first time)
 let pinModal = document.getElementById('pin-modal');
 if (!pinModal) {
   pinModal = document.createElement('div');
@@ -123,26 +150,45 @@ function showEnterPinModal(onSuccess) {
   };
 }
 
-// Hide logic: only prompt for PIN when "Hide" clicked
+// Hide logic
 async function handleHideEntry(entryEl, docId) {
+  entryToHide = entryEl;
+  docIdToHide = docId;
+  // Show confirmation popup (centered)
+  hidePopup.classList.add("active");
+  hidePopupOverlay.style.display = "block";
+}
+
+// Confirm/Cancel hide
+confirmHideBtn.onclick = async () => {
+  // PIN check before hiding
   const userDocRef = doc(db, "users", currentUser.uid);
   const userSnap = await getDoc(userDocRef);
   userPin = userSnap.exists() ? userSnap.data().pin : null;
 
-  if (!userPin) {
-    showPinModal(async () => {
-      await updateDoc(doc(db, "journals", docId), { hidden: true });
-      entryEl.remove();
-      window.location.href = "hidden.html";
-    });
-  } else {
-    showEnterPinModal(async () => {
-      await updateDoc(doc(db, "journals", docId), { hidden: true });
-      entryEl.remove();
+  function doHide() {
+    updateDoc(doc(db, "journals", docIdToHide), { hidden: true }).then(() => {
+      if (entryToHide) entryToHide.remove();
+      hidePopup.classList.remove("active");
+      hidePopupOverlay.style.display = "none";
       window.location.href = "hidden.html";
     });
   }
-}
+
+  if (!userPin) {
+    showPinModal(doHide);
+  } else {
+    showEnterPinModal(doHide);
+  }
+};
+
+cancelHideBtn.onclick = () => {
+  hidePopup.classList.remove("active");
+  hidePopupOverlay.style.display = "none";
+  entryToHide = null;
+  docIdToHide = null;
+};
+hidePopupOverlay.onclick = cancelHideBtn.onclick;
 
 // PDF Download
 function downloadAsPDF(entryEl, date) {
@@ -158,7 +204,7 @@ function downloadAsPDF(entryEl, date) {
 
 // Share Link
 function shareEntry(content, date) {
-  const text = `📓 Journal Entry - ${date}\n\n${content}`;
+  const text = `Journal Entry - ${date}\n\n${content}`;
   navigator.clipboard.writeText(text).then(() => {
     alert("Copied entry to clipboard!");
   }).catch(() => {
@@ -236,11 +282,11 @@ onAuthStateChanged(auth, async user => {
         <div class="entry-header">
           <div class="entry-date">${data.date}</div>
           <div class="options-menu">
-            <button class="menu-btn">⋮</button>
+            <button class="menu-btn" aria-label="Show options">⋮</button>
             <div class="dropdown-options">
-              <button class="download-btn">📥 Download</button>
-              <button class="share-btn">🔗 Share</button>
-              <button class="hide-entry-btn">🙈 Hide</button>
+              <button class="journal-btn download-btn">Download</button>
+              <button class="journal-btn share-btn">Share</button>
+              <button class="journal-btn hide-btn">Hide</button>
             </div>
           </div>
         </div>
@@ -250,7 +296,10 @@ onAuthStateChanged(auth, async user => {
       // Dropdown menu logic
       const dropdown = entryEl.querySelector(".dropdown-options");
       const menuBtn = entryEl.querySelector(".menu-btn");
-      menuBtn.addEventListener("click", () => toggleDropdown(dropdown));
+      menuBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleDropdown(dropdown);
+      });
       document.addEventListener("click", function(event) {
         if (!menuBtn.contains(event.target) && !dropdown.contains(event.target)) {
           dropdown.style.display = "none";
@@ -265,7 +314,7 @@ onAuthStateChanged(auth, async user => {
         shareEntry(data.content, data.date);
       });
 
-      entryEl.querySelector(".hide-entry-btn").addEventListener("click", () => {
+      entryEl.querySelector(".hide-btn").addEventListener("click", () => {
         handleHideEntry(entryEl, docSnap.id);
       });
 
