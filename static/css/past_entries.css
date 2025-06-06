@@ -181,6 +181,7 @@ main {
   max-width: 794px;
   max-height: 1123px;
   overflow: hidden;
+  border-right: 4px solid #c7a16e; /* Right border for desktop and mobile */
 }
 
 .options-menu {
