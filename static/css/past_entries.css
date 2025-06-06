@@ -159,28 +159,32 @@ main {
 
 /* === Entry Card (for dynamically loaded entries) === */
 .entry-card {
-  background-image: linear-gradient(to bottom, transparent 95%, #e9d5b4 96%);
+  width: 794px;
+  min-height: 1123px; 
+  background: linear-gradient(to bottom, transparent 96%, #e9d5b4 97%);
   background-size: 100% 2.5em;
   background-repeat: repeat-y;
-  padding: 20px;
+  padding: 60px 70px;
+  margin-bottom: 40px;
   border-radius: 12px;
-  margin-bottom: 20px;
-  position: relative;
-  border: 1px solid #d4c4aa;
-  box-shadow: 0 0 18px 0 #ffdca880, 0 2px 16px #bfa06833;
-  width: 100%;
-  min-height: 80px;
-  font-size: 1.3rem;
-  line-height: 1.8;
-  white-space: pre-wrap;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 12px 48px rgba(0,0,0,0.08);
+  font-size: 1.4rem;
+  font-family: 'Caveat', cursive;
+  color: #4e3b2c;
+  line-height: 2;
   box-sizing: border-box;
+  page-break-after: always;
   transition: box-shadow 0.2s;
 }
 
 .entry-card:hover {
-  box-shadow: 0 0 36px #e0bb72cc;
+  box-shadow: 0 0 40px #e0bb72aa;
 }
-
+#entries-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 /* === Entry Header and Date === */
 .entry-header {
   display: flex;
