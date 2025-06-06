@@ -270,3 +270,21 @@ body {
   border: 1.5px solid #d4c4aa;
   /* etc... */
 }
+/* Fix for perfect line alignment */
+.entry-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0 !important;
+}
+
+.entry-header {
+  min-height: auto !important;
+  height: 1lh !important; /* Exactly one line height */
+  margin-bottom: 0 !important;
+}
+
+.entry-content {
+  margin-top: 1lh !important; /* Push content to start on line 3 */
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
