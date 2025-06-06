@@ -1,4 +1,3 @@
-// --- past_entries.js ---
 import { auth, db } from './firebase-config.js';
 import {
   collection, getDocs, setDoc, doc, query, where, orderBy
@@ -10,6 +9,14 @@ const entriesContainer = document.getElementById("entries-container");
 const errorModal = document.getElementById("error-modal");
 const errorMessage = document.getElementById("error-message");
 const closeModalBtn = document.getElementById("close-modal");
+const loadingState = document.getElementById("loading-state");
+
+function showLoading() {
+  if (loadingState) loadingState.style.display = 'block';
+}
+function hideLoading() {
+  if (loadingState) loadingState.style.display = 'none';
+}
 
 // Error Modal
 function showError(message) {
@@ -20,49 +27,20 @@ function showError(message) {
     alert(message);
   }
 }
-
 if (closeModalBtn) {
   closeModalBtn.addEventListener("click", () => {
     errorModal.classList.add("hidden");
   });
 }
 
-
-// Show hide confirm popup near button
-function confirmHide(entryEl, docId, btnEl) {
-  // Remove old popup
-  document.querySelectorAll(".hide-popup").forEach(el => el.remove());
-
-  const popup = document.createElement("div");
-  popup.className = "hide-popup";
-  popup.innerHTML = `
-    <div class="popup-card">
-      <p>Hide this entry?</p>
-      <div class="popup-actions">
-        <button class="cancel-btn">Cancel</button>
-        <button class="confirm-btn">Hide</button>
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(popup);
-
-  // Position near eye button
-  const rect = btnEl.getBoundingClientRect();
-  popup.style.top = `${window.scrollY + rect.bottom + 8}px`;
-  popup.style.left = `${rect.left}px`;
-
-  popup.querySelector(".cancel-btn").onclick = () => popup.remove();
-  popup.querySelector(".confirm-btn").onclick = async () => {
-    try {
-      await setDoc(doc(db, "journals", docId), { hidden: true }, { merge: true });
-      entryEl.remove();
-    } catch (e) {
-      showError("Failed to hide entry. Try again.");
-    } finally {
-      popup.remove();
-    }
-  };
+// Hide Entry
+async function hideEntry(entryEl, docId) {
+  try {
+    await setDoc(doc(db, "journals", docId), { hidden: true }, { merge: true });
+    entryEl.remove();
+  } catch (e) {
+    showError("Failed to hide entry. Try again.");
+  }
 }
 
 // PDF Download
@@ -76,6 +54,74 @@ function downloadAsPDF(entryEl, date) {
   }).save();
 }
 
+// Share Entry (copy content to clipboard)
+function shareEntry(content, date) {
+  const text = `📝 Journal Entry (${date}):\n\n${content}`;
+  navigator.clipboard.writeText(text).then(() => {
+    alert("Entry copied to clipboard!");
+  }).catch(() => {
+    showError("Failed to copy content.");
+  });
+}
+
+// Dropdown Close on Outside Click
+document.addEventListener("click", function (e) {
+  document.querySelectorAll(".dropdown-menu").forEach(menu => {
+    if (!menu.contains(e.target)) {
+      menu.style.display = "none";
+    }
+  });
+});
+
+// Create Entry Card
+function createEntryCard(data, docId) {
+  const entryEl = document.createElement("div");
+  entryEl.className = "entry entry-card";
+
+  const contentText = data.content.replace(/\n/g, "<br>");
+
+  entryEl.innerHTML = `
+    <div class="entry-header">
+      <div class="entry-date">${data.date}</div>
+      <div class="entry-menu">
+        <button class="menu-btn">⋮</button>
+        <div class="dropdown-menu" style="display: none;">
+          <button class="menu-item hide-btn">🔒 Hide</button>
+          <button class="menu-item download-btn">📥 Download</button>
+          <button class="menu-item share-btn">🔗 Share</button>
+        </div>
+      </div>
+    </div>
+    <div class="entry-content">${contentText}</div>
+  `;
+
+  const menuBtn = entryEl.querySelector(".menu-btn");
+  const dropdown = entryEl.querySelector(".dropdown-menu");
+
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.querySelectorAll(".dropdown-menu").forEach(m => m.style.display = "none");
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+  });
+
+  entryEl.querySelector(".hide-btn").addEventListener("click", () => {
+    dropdown.style.display = "none";
+    hideEntry(entryEl, docId);
+  });
+
+  entryEl.querySelector(".download-btn").addEventListener("click", () => {
+    dropdown.style.display = "none";
+    downloadAsPDF(entryEl, data.date);
+  });
+
+  entryEl.querySelector(".share-btn").addEventListener("click", () => {
+    dropdown.style.display = "none";
+    shareEntry(data.content, data.date);
+  });
+
+  return entryEl;
+}
+
 // Search Filter
 window.handleSearch = function (term) {
   const entries = document.querySelectorAll(".entry");
@@ -85,10 +131,10 @@ window.handleSearch = function (term) {
   });
 };
 
-// Load entries from Firestore
+// Load entries
 onAuthStateChanged(auth, async user => {
   if (!user) return (window.location.href = "/");
-
+  showLoading();
   try {
     const q = query(
       collection(db, "journals"),
@@ -106,31 +152,13 @@ onAuthStateChanged(auth, async user => {
     snapshot.forEach(docSnap => {
       const data = docSnap.data();
       if (data.hidden) return;
-
-      const entryEl = document.createElement("div");
-      entryEl.className = "entry entry-card";
-
-      entryEl.innerHTML = `
-        <div class="entry-header">
-          <div class="entry-date">${data.date}</div>
-          <button class="hide-entry-btn" title="Hide Entry"></button>
-        </div>
-        <div class="entry-content">${data.content.replace(/\n/g, "<br>")}</div>
-        <button class="download-btn">📥 Download</button>
-      `;
-
-      entryEl.querySelector(".hide-entry-btn").addEventListener("click", (e) => {
-        confirmHide(entryEl, docSnap.id, e.currentTarget);
-      });
-
-      entryEl.querySelector(".download-btn").addEventListener("click", () => {
-        downloadAsPDF(entryEl, data.date);
-      });
-
+      const entryEl = createEntryCard(data, docSnap.id);
       entriesContainer.appendChild(entryEl);
     });
   } catch (err) {
     console.error(err);
     showError("Failed to load journal entries.");
+  } finally {
+    hideLoading();
   }
 });
