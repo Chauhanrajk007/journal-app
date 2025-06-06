@@ -433,5 +433,12 @@ mark {
   width: 22px;
   height: 22px;
 }
-
+.menu-btn {
+  font-size: 2rem;
+  border-radius: 0 0 16px 16px;
+  /* Optionally, for a bookmark look: */
+  background: linear-gradient(135deg, #ffdca8 80%, #e0bb72 100%);
+  color: #b1946e;
+  /* ...other styles remain... */
+}
 /* END */
