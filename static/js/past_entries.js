@@ -1,9 +1,10 @@
 import { auth, db } from './firebase-config.js';
 import {
-  collection, getDocs, setDoc, doc, query, where, orderBy, getDoc, addDoc, deleteDoc
+  collection, getDocs, setDoc, doc, query, where, orderBy, getDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
+// DOM elements
 const entriesContainer = document.getElementById("entries-container");
 const errorModal = document.getElementById("error-modal");
 const errorMessage = document.getElementById("error-message");
@@ -12,7 +13,7 @@ const loadingState = document.getElementById("loading-state");
 const searchInput = document.getElementById("search");
 const clearBtn = document.getElementById("clear-search");
 
-// --- PIN Modal DOM ---
+// PIN Modal (created only if needed)
 let pinModal = document.getElementById('pin-modal');
 if (!pinModal) {
   pinModal = document.createElement('div');
@@ -20,10 +21,10 @@ if (!pinModal) {
   pinModal.className = "modal hidden";
   pinModal.innerHTML = `
     <div class="modal-content">
-      <h2 id="pin-modal-title">Create a PIN to access hidden pages</h2>
-      <input type="text" id="pin-input" minlength="3" placeholder="Enter your secret key (3+ characters)">
-      <button id="set-pin-btn">Set PIN</button>
-      <p id="pin-error" style="color:#ff2f55; display:none; margin-top:1em"></p>
+      <h2 id="pin-modal-title">Create a PIN to access hidden entries</h2>
+      <input type="text" id="pin-input" minlength="1" placeholder="PIN (letters, symbols, emoji)">
+      <div id="pin-error" class="modal-error"></div>
+      <button id="set-pin-btn" class="modal-btn confirm">Set PIN</button>
     </div>
   `;
   document.body.appendChild(pinModal);
@@ -33,6 +34,7 @@ const setPinBtn = pinModal.querySelector("#set-pin-btn");
 const pinError = pinModal.querySelector("#pin-error");
 const pinModalTitle = pinModal.querySelector("#pin-modal-title");
 
+// Loading and error
 function showLoading() {
   if (loadingState) loadingState.style.display = 'block';
 }
@@ -69,79 +71,77 @@ function toggleDropdown(dropdown) {
   dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
 }
 
-// --- Hide logic updated ---
+// PIN logic
 let currentUser = null;
 let userPin = null;
 
-// Check and set PIN if not set
-async function ensureUserPin() {
-  if (!currentUser) return false;
-  const userDocRef = doc(db, "users", currentUser.uid);
-  const userSnap = await getDoc(userDocRef);
-  if (!userSnap.exists() || !userSnap.data().pin) {
-    // Prompt to set PIN
-    pinModalTitle.textContent = "Create a PIN to access hidden pages";
-    setPinBtn.textContent = "Set PIN";
-    pinInput.type = "text";
-    pinInput.value = "";
-    pinInput.placeholder = "Enter your secret key (3+ characters)";
-    pinError.style.display = "none";
-    pinModal.classList.remove("hidden");
-    return new Promise(resolve => {
-      setPinBtn.onclick = async () => {
-        const pin = pinInput.value.trim();
-        if (!pin || pin.length < 3) {
-          pinError.textContent = "PIN must be at least 3 characters.";
-          pinError.style.display = "block";
-          return;
-        }
-        await setDoc(userDocRef, { pin }, { merge: true });
-        userPin = pin;
-        pinModal.classList.add("hidden");
-        resolve(true);
-      };
-    });
-  } else {
-    userPin = userSnap.data().pin;
-    return true;
-  }
-}
-
-function promptPinAndHide(entryEl, docId, entryData) {
-  pinModalTitle.textContent = "Enter your PIN to hide this entry";
-  setPinBtn.textContent = "Submit";
-  pinInput.type = "text";
-  pinInput.value = "";
-  pinInput.placeholder = "Enter your secret key";
-  pinError.style.display = "none";
+// Show modal to set PIN (for first time)
+function showPinModal(onSet) {
+  pinModalTitle.textContent = "Create a PIN to access hidden entries";
+  pinInput.value = '';
+  pinInput.type = 'text';
+  pinError.textContent = '';
   pinModal.classList.remove("hidden");
+  pinInput.focus();
+  setPinBtn.textContent = "Set PIN";
   setPinBtn.onclick = async () => {
-    const enteredPin = pinInput.value.trim();
-    if (enteredPin === userPin) {
-      pinModal.classList.add("hidden");
-      await sendEntryToHidden(entryEl, docId, entryData);
-      window.location.href = "hidden.html";
-    } else {
-      pinError.textContent = "Incorrect PIN. Try again.";
-      pinError.style.display = "block";
+    const newPin = pinInput.value.trim();
+    if (!newPin || newPin.length < 1) {
+      pinError.textContent = "PIN cannot be empty.";
+      return;
     }
+    await setDoc(doc(db, "users", currentUser.uid), { pin: newPin }, { merge: true });
+    userPin = newPin;
+    pinModal.classList.add("hidden");
+    onSet();
+  };
+  pinInput.onkeydown = (e) => {
+    if (e.key === 'Enter') setPinBtn.click();
   };
 }
 
-async function sendEntryToHidden(entryEl, docId, entryData) {
-  try {
-    // Set hidden: true in the main journals collection
-    await setDoc(doc(db, "journals", docId), { hidden: true }, { merge: true });
-    entryEl.remove();
-  } catch (e) {
-    showError("Failed to hide entry. Try again.");
-  }
+// Show modal to enter PIN (for subsequent "Hide" actions)
+function showEnterPinModal(onSuccess) {
+  pinModalTitle.textContent = "Enter your PIN to hide this entry";
+  pinInput.value = '';
+  pinInput.type = 'text';
+  pinError.textContent = '';
+  pinModal.classList.remove("hidden");
+  pinInput.focus();
+  setPinBtn.textContent = "Submit";
+  setPinBtn.onclick = () => {
+    const enteredPin = pinInput.value.trim();
+    if (enteredPin !== userPin) {
+      pinError.textContent = "Incorrect PIN. Please try again.";
+      return;
+    }
+    pinModal.classList.add("hidden");
+    onSuccess();
+  };
+  pinInput.onkeydown = (e) => {
+    if (e.key === 'Enter') setPinBtn.click();
+  };
 }
 
-function confirmHide(entryEl, docId, entryData) {
-  ensureUserPin().then(() => {
-    promptPinAndHide(entryEl, docId, entryData);
-  });
+// Hide logic: only prompt for PIN when "Hide" clicked
+async function handleHideEntry(entryEl, docId) {
+  const userDocRef = doc(db, "users", currentUser.uid);
+  const userSnap = await getDoc(userDocRef);
+  userPin = userSnap.exists() ? userSnap.data().pin : null;
+
+  if (!userPin) {
+    showPinModal(async () => {
+      await updateDoc(doc(db, "journals", docId), { hidden: true });
+      entryEl.remove();
+      window.location.href = "hidden.html";
+    });
+  } else {
+    showEnterPinModal(async () => {
+      await updateDoc(doc(db, "journals", docId), { hidden: true });
+      entryEl.remove();
+      window.location.href = "hidden.html";
+    });
+  }
 }
 
 // PDF Download
@@ -209,7 +209,6 @@ window.handleSearch = function (term) {
 onAuthStateChanged(auth, async user => {
   if (!user) return (window.location.href = "/");
   currentUser = user;
-  await ensureUserPin();
   showLoading();
   try {
     const q = query(
@@ -248,9 +247,15 @@ onAuthStateChanged(auth, async user => {
         <div class="entry-content">${data.content.replace(/\n/g, "<br>")}</div>
       `;
 
+      // Dropdown menu logic
       const dropdown = entryEl.querySelector(".dropdown-options");
       const menuBtn = entryEl.querySelector(".menu-btn");
       menuBtn.addEventListener("click", () => toggleDropdown(dropdown));
+      document.addEventListener("click", function(event) {
+        if (!menuBtn.contains(event.target) && !dropdown.contains(event.target)) {
+          dropdown.style.display = "none";
+        }
+      });
 
       entryEl.querySelector(".download-btn").addEventListener("click", () => {
         downloadAsPDF(entryEl, data.date);
@@ -261,7 +266,7 @@ onAuthStateChanged(auth, async user => {
       });
 
       entryEl.querySelector(".hide-entry-btn").addEventListener("click", () => {
-        confirmHide(entryEl, docSnap.id, {...data, originalId: docSnap.id});
+        handleHideEntry(entryEl, docSnap.id);
       });
 
       entriesContainer.appendChild(entryEl);
@@ -273,3 +278,10 @@ onAuthStateChanged(auth, async user => {
     hideLoading();
   }
 });
+
+// Live search
+if (searchInput) {
+  searchInput.addEventListener("input", function() {
+    handleSearch(this.value);
+  });
+}
