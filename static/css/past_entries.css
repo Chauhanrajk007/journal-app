@@ -494,3 +494,23 @@ mark {
   background-size: 100% 2.5em;
   /* etc... */
 }
+/* Fix for perfect entry alignment */
+.entry-card {
+  display: grid;
+  grid-template-rows: [date] auto [content] auto;
+  row-gap: 0.5em; /* Adjust this value to control spacing */
+}
+
+.entry-header {
+  grid-row: date;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  height: min-content;
+}
+
+.entry-content {
+  grid-row: content;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  transform: translateY(-0.3em); /* Fine-tune vertical position */
+}
