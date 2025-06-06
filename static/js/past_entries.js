@@ -20,9 +20,9 @@ if (!pinModal) {
   pinModal.className = "modal hidden";
   pinModal.innerHTML = `
     <div class="modal-content">
-      <h2 id="pin-modal-title">Enter Security PIN</h2>
-      <input type="password" id="pin-input" maxlength="6" placeholder="Enter 4-6 digit PIN">
-      <button id="set-pin-btn">Submit</button>
+      <h2 id="pin-modal-title">Create a PIN to access hidden pages</h2>
+      <input type="text" id="pin-input" minlength="3" placeholder="Enter your secret key (3+ characters)">
+      <button id="set-pin-btn">Set PIN</button>
       <p id="pin-error" style="color:#ff2f55; display:none; margin-top:1em"></p>
     </div>
   `;
@@ -71,9 +71,6 @@ function toggleDropdown(dropdown) {
 
 // --- Hide logic updated ---
 let currentUser = null;
-let currentEntryToHide = null;
-let currentEntryEl = null;
-let currentEntryDocId = null;
 let userPin = null;
 
 // Check and set PIN if not set
@@ -83,16 +80,18 @@ async function ensureUserPin() {
   const userSnap = await getDoc(userDocRef);
   if (!userSnap.exists() || !userSnap.data().pin) {
     // Prompt to set PIN
-    pinModalTitle.textContent = "Set Security PIN";
+    pinModalTitle.textContent = "Create a PIN to access hidden pages";
     setPinBtn.textContent = "Set PIN";
+    pinInput.type = "text";
     pinInput.value = "";
+    pinInput.placeholder = "Enter your secret key (3+ characters)";
     pinError.style.display = "none";
     pinModal.classList.remove("hidden");
     return new Promise(resolve => {
       setPinBtn.onclick = async () => {
         const pin = pinInput.value.trim();
-        if (!/^\d{4,6}$/.test(pin)) {
-          pinError.textContent = "PIN must be 4-6 digits.";
+        if (!pin || pin.length < 3) {
+          pinError.textContent = "PIN must be at least 3 characters.";
           pinError.style.display = "block";
           return;
         }
@@ -109,9 +108,11 @@ async function ensureUserPin() {
 }
 
 function promptPinAndHide(entryEl, docId, entryData) {
-  pinModalTitle.textContent = "Enter Security PIN";
+  pinModalTitle.textContent = "Enter your PIN to hide this entry";
   setPinBtn.textContent = "Submit";
+  pinInput.type = "text";
   pinInput.value = "";
+  pinInput.placeholder = "Enter your secret key";
   pinError.style.display = "none";
   pinModal.classList.remove("hidden");
   setPinBtn.onclick = async () => {
@@ -128,11 +129,9 @@ function promptPinAndHide(entryEl, docId, entryData) {
 }
 
 async function sendEntryToHidden(entryEl, docId, entryData) {
-  // Save to users/{uid}/hidden_journals
   try {
-    const hiddenRef = collection(db, "users", currentUser.uid, "hidden_journals");
-    await addDoc(hiddenRef, entryData); // Copy data
-    await deleteDoc(doc(db, "journals", docId)); // Remove from journals
+    // Set hidden: true in the main journals collection
+    await setDoc(doc(db, "journals", docId), { hidden: true }, { merge: true });
     entryEl.remove();
   } catch (e) {
     showError("Failed to hide entry. Try again.");
@@ -140,9 +139,7 @@ async function sendEntryToHidden(entryEl, docId, entryData) {
 }
 
 function confirmHide(entryEl, docId, entryData) {
-  // First ensure PIN exists
   ensureUserPin().then(() => {
-    // Then prompt for PIN and on success move entry
     promptPinAndHide(entryEl, docId, entryData);
   });
 }
@@ -218,6 +215,7 @@ onAuthStateChanged(auth, async user => {
     const q = query(
       collection(db, "journals"),
       where("uid", "==", user.uid),
+      where("hidden", "==", false),
       orderBy("date", "desc")
     );
     const snapshot = await getDocs(q);
