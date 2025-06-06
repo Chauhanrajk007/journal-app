@@ -178,9 +178,10 @@ main {
 }
 .options-menu {
   position: absolute;
-  top: 24px; /* adjust as needed */
-  right: -34px; /* negative value pushes outside the card, adjust as needed */
-  z-index: 2;
+  top: -28px; 
+  right: -36px; 
+  z-index: 5;
+  transform: rotate(-10deg) skewY(-4deg);
 }
 .menu-btn {
   background: linear-gradient(135deg, #e6d3b3 90%, #b1946e 100%);
