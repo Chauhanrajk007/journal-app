@@ -88,9 +88,11 @@ main {
   box-shadow: 0 0 25px rgba(100, 80, 50, 0.3);
   margin: 0 auto;
   overflow: hidden;
+  /* Right border for A4 look */
+  border-right: 4px solid #c7a16e;
 }
 
-/* --- Responsive code removed --- */
+/* No responsive code! Desktop look stays even on mobile */
 
 #journalEntry {
   width: 100%;
