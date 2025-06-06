@@ -498,22 +498,26 @@ mark {
 .entry-card {
   display: grid;
   grid-template-rows: [date] auto [content] auto;
-  row-gap: 0.5em; /* Adjust this value to control spacing */
+  row-gap: 0;
+  background: linear-gradient(to bottom, transparent 96%, #e9d5b4 97%);
+  background-size: 100% 2.5em;
+  /* etc... */
 }
 
 .entry-header {
   grid-row: date;
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
+  margin-bottom: 0;
+  padding-bottom: 0;
   position: relative;
-  top: 2px; 
+  top: 0; /* Removed 2px upward shift - let's handle this differently */
 }
 
 .entry-content {
   grid-row: content;
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-    position: relative;
-  top: 4px; /* This creates the 2px downward shift you want */
-  line-height: 2.5em;
+  margin-top: 0;
+  padding-top: 0;
+  position: relative;
+  top: 2px; /* Pure 2px downward shift */
+  line-height: 2.5em; /* Must match background-size */
+  transform: none; /* Remove if you had transform elsewhere */
 }
