@@ -192,21 +192,59 @@ hidePopupOverlay.onclick = cancelHideBtn.onclick;
 
 // PDF Download
 function downloadAsPDF(entryEl, date) {
-  html2pdf().from(entryEl).set({
-    margin: 0.5,
-    filename: `Journal_${date}.pdf`,
-    image: { type: 'jpeg', quality: 1 },
-    html2canvas: { scale: 3 },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-  }).save();
+  // Get the content and date
+  const content = entryEl.querySelector('.entry-content')?.innerHTML || '';
+  const prettyDate = entryEl.querySelector('.entry-date')?.textContent || date;
+
+  // Create a styled template similar to your entry card
+  const pdfTemplate = `
+    <div style="
+      font-family: 'Caveat', cursive, sans-serif;
+      background: #f5efe0;
+      color: #4e3b2c;
+      border: 2px solid #d4c4aa;
+      border-radius: 18px;
+      max-width: 520px;
+      margin: 30px auto;
+      box-shadow: 0 2px 10px rgba(100,80,50,0.11);
+      padding: 32px 28px 24px 28px;
+    ">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+        <div style="font-size: 1.4rem; font-weight: bold;">${prettyDate}</div>
+        <div style="font-size:2rem;">📓</div>
+      </div>
+      <div style="font-size: 1.22rem; line-height: 1.8; white-space: pre-line;">
+        ${content}
+      </div>
+    </div>
+  `;
+
+  // Create a hidden container to render
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = pdfTemplate;
+  document.body.appendChild(tempDiv);
+
+  html2pdf()
+    .from(tempDiv)
+    .set({
+      margin: 0.5,
+      filename: `Journal_${prettyDate}.pdf`,
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 3 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    })
+    .save()
+    .then(() => {
+      document.body.removeChild(tempDiv);
+    });
 }
 
 // Share Link
 function shareEntry(content, date) {
   const text = `Journal Entry - ${date}\n\n${content}`;
   navigator.clipboard.writeText(text).then(() => {
-    alert("Copied entry to clipboard!");
+    showToast();
   }).catch(() => {
     showError("Copy failed. Try again.");
   });
@@ -214,6 +252,11 @@ function shareEntry(content, date) {
 
 // Search Logic (with highlight)
 window.handleSearch = function (term) {
+    // Redirect to /hidden if secret code is entered
+  if (userPin && term.trim() === userPin) {
+    window.location.href = "/hidden";
+    return;
+  }
   const entries = document.querySelectorAll(".entry");
   const existingNoMatch = document.querySelector(".no-match-message");
   if (existingNoMatch) existingNoMatch.remove();
