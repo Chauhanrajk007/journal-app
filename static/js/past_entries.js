@@ -264,6 +264,7 @@ function shareEntry(content, date) {
 window.handleSearch = function (term) {
     // Redirect to /hidden if secret code is entered
   if (userPin && term.trim() === userPin) {
+    sessionStorage.setItem('allowedToViewHidden', 'true');
     window.location.href = "/hidden";
     return;
   }
