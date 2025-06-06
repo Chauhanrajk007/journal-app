@@ -1,58 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Past Journal Entries</title>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>My Journal Diary</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/past_entries.css') }}">
 </head>
 <body>
-  <header>
-    <h1 id="page-title">Past Journal Entries</h1>
-    <button id="back-button" onclick="window.location.href='/diary'">← Back to Diary</button>
-  </header>
+  <!-- ... your header, back button, search bar, entries, etc ... -->
 
-<div class="search-bar-container">
- <button id="search-toggle" aria-label="Open search">
-  <span class="search-icon">
-    <!-- Search/Magnifying Glass SVG icon -->
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-      <circle cx="13" cy="13" r="8" stroke="#b1946e" stroke-width="2" fill="#fff9ee"/>
-      <line x1="19" y1="19" x2="25" y2="25" stroke="#b1946e" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-  </span>
-</button>
-  <input
-    type="text"
-    id="search"
-    class="collapsed"
-    placeholder="Search entries by date or words..."
-    oninput="handleSearch(this.value)"
-  />
-  <button id="clear-search">✖</button>
-</div>
+  <main>
+    <!-- Example of what your entries might look like -->
     <div id="entries-container">
-      <div id="loading-state" class="loading-spinner-container">
-        <div class="spinner"></div>
-        <p>Loading your journal entries...</p>
+      {% for entry in entries %}
+      <div class="entry-card">
+        <div class="entry-header">
+          <span class="entry-date">{{ entry.date }}</span>
+        </div>
+        <div class="entry-content">
+          {{ entry.content }}
+        </div>
       </div>
+      {% endfor %}
     </div>
   </main>
 
-  <!-- Error modal -->
-  <div id="error-modal" class="modal hidden">
-    <div class="modal-content">
-      <h3>Error</h3>
-      <p id="error-message"></p>
-      <button id="close-modal">OK</button>
-    </div>
+  <!-- Floating global 3-dots dropdown menu (add only ONCE per page) -->
+  <div id="ellipsis-dropdown-container">
+    <button id="ellipsis-btn" aria-label="Open menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="ellipsis-dropdown" class="hidden" role="menu">
+      <li><a href="/edit" role="menuitem">Edit Entry</a></li>
+      <li><a href="/delete" role="menuitem">Delete Entry</a></li>
+      <li><a href="/share" role="menuitem">Share Entry</a></li>
+    </ul>
   </div>
-<div id="toast" class="toast">Copied to clipboard!</div>
-  <!-- PDF library -->
-  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
 
-  <!-- JS module -->
-  <script type="module" src="{{ url_for('static', filename='js/past_entries.js') }}"></script>
+  <!-- JS for the 3-dots dropdown -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById('ellipsis-btn');
+      const menu = document.getElementById('ellipsis-dropdown');
+      btn.addEventListener('click', function(e) {
+        menu.classList.toggle('hidden');
+        e.stopPropagation();
+      });
+      // Close menu when clicking outside
+      document.addEventListener('click', function() {
+        menu.classList.add('hidden');
+      });
+      // Close on escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') menu.classList.add('hidden');
+      });
+    });
+  </script>
 </body>
 </html>
