@@ -239,12 +239,6 @@ body {
   border-color: #c2852e;
   box-shadow: 0 0 8px #ffeec2cc;
 }
-/* Add these new rules - they won't affect existing styles */
-.entry-card {
-  display: grid;
-  grid-template-rows: auto 1em auto; /* 3 rows: date, empty space, content */
-  gap: 0; /* No space between grid items */
-}
 
 .entry-header {
   grid-row: 1;
@@ -287,4 +281,20 @@ body {
   margin-top: 1lh !important; /* Push content to start on line 3 */
   white-space: pre-wrap;
   line-height: 1.6;
+}
+/* Journal Entry Alignment Fix */
+.entry-card {
+  display: flex;
+  flex-direction: column;
+  padding-top: 1.5em; /* Adjust this value to move content down */
+}
+
+.entry-header {
+  margin-bottom: -0.5em !important; /* Pulls content up slightly */
+}
+
+.entry-content {
+  margin-top: 0 !important;
+  padding-top: 0.5em !important; /* Fine-tune spacing */
+  transform: translateY(-0.3em); /* Micro-adjustment */
 }
