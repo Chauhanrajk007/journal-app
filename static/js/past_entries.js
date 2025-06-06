@@ -339,7 +339,7 @@ onAuthStateChanged(auth, async user => {
   <div class="entry-header">
     <div class="entry-date">${data.date}</div>
     <div class="options-menu">
-      <button class="menu-btn" aria-label="Bookmark">&#128278;</button> <!-- 🔖 Unicode -->
+      <button class="menu-btn" aria-label="Show options">⋮</button> <!-- 🔖 Unicode -->
       <div class="dropdown-options">
         <button class="journal-btn download-btn">Download</button>
         <button class="journal-btn share-btn">Share</button>
