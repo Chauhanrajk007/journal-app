@@ -103,6 +103,8 @@ main {
   position: absolute;
   right: 7%;
   top: 50%;
+  right: 7%;
+  z-index: 3;
   transform: translateY(-50%);
 }
 #clear-search:hover {
@@ -112,11 +114,13 @@ main {
 
 /* === Entries Container === */
 #entries-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  max-width: 600px; /* Adjust as needed */
   width: 100%;
-  max-width: 820px;
-  min-height: 200px;
 }
-
 /* === Loading Spinner === */
 .loading-spinner-container {
   display: flex;
@@ -305,4 +309,42 @@ mark {
     box-shadow: none;
     page-break-after: always;
   }
+}
+.dropdown-options {
+  display: none; /* Ensure dropdown is hidden by default */
+  position: absolute; /* Add positioning for better control */
+  right: 0;
+  top: 100%;
+  z-index: 10;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.options-menu {
+  position: relative; /* So dropdown is positioned relative to menu */
+}
+.hide-popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  background: #fff;
+  padding: 32px 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+}
+.hide-popup.active {
+  display: block;
+}
+.hide-popup-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+.hide-popup.active ~ .hide-popup-overlay,
+.hide-popup-overlay[style*="display: block"] {
+  display: block;
 }
