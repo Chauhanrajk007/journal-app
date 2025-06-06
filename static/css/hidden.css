@@ -240,11 +240,20 @@ body {
   box-shadow: 0 0 8px #ffeec2cc;
 }
 
-
 .entry-header {
-  margin-bottom: -0.5em !important; /* Pulls content up slightly */
+  margin-bottom: 0;
+  padding-bottom: 0;
+  height: 40px; /* Exactly one line height */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
+.entry-header::after {
+  content: "";
+  display: block;
+  height: 40px; /* Creates 1-line gap after date */
+  width: 100%;
+}
 .entry-content {
   margin-top: 0 !important;
   padding-top: 0.5em !important; /* Fine-tune spacing */
@@ -266,7 +275,6 @@ body {
   transform: translateY(-0.2em); /* Micro-adjustment */
 }
 .entry-card {
-  /* Ensure the gradient lines match text lines */
   background: repeating-linear-gradient(
     to bottom, 
     #f5efe0,    /* Background color */
@@ -274,8 +282,23 @@ body {
     #e3d5bb 40px, /* Line color (1px thick) */
     #f5efe0 40px  /* Reset to background */
   );
-  line-height: 40px; /* Match gradient spacing */
-  padding-top: 10px; /* Push first line down to align with first rule */
+  line-height: 40px; /* Must match gradient spacing */
+  padding-top: 10px; /* Aligns first line with first rule */
+  padding-bottom: 10px;
+  border: 1.5px solid #d4c4aa;
+  border-radius: 13px;
+  padding-left: 30px;
+  padding-right: 30px;
+  margin: 40px auto;
+  box-shadow: 0 4px 32px 0 #ffeec280, 0 2px 16px #bfa06833;
+  width: 794px;
+  min-height: 1123px;
+  box-sizing: border-box;
+  position: relative;
+  font-size: 1.2rem;
+  white-space: pre-wrap;
+  transition: box-shadow 0.35s cubic-bezier(.24,1.17,.42,.94), transform 0.28s cubic-bezier(.24,1.17,.42,.94);
+  animation: fadeInEntry 0.9s cubic-bezier(.15,.71,.2,1.01);
 }
 
 .entry-content {
