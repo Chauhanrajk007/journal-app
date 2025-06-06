@@ -239,3 +239,34 @@ body {
   border-color: #c2852e;
   box-shadow: 0 0 8px #ffeec2cc;
 }
+/* Add these new rules - they won't affect existing styles */
+.entry-card {
+  display: grid;
+  grid-template-rows: auto 1em auto; /* 3 rows: date, empty space, content */
+  gap: 0; /* No space between grid items */
+}
+
+.entry-header {
+  grid-row: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 !important; /* Force remove any existing margins */
+  padding: 0 !important; /* Force remove any existing padding */
+  line-height: 1;
+}
+
+.entry-content {
+  grid-row: 3;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  align-self: start;
+}
+
+/* Preserve all your existing styles */
+.entry-card {
+  /* Your existing styles remain untouched */
+  background: repeating-linear-gradient(...);
+  border: 1.5px solid #d4c4aa;
+  /* etc... */
+}
