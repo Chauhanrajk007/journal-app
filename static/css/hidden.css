@@ -265,3 +265,23 @@ body {
   padding-top: 0.3em; /* Fine-tune spacing */
   transform: translateY(-0.2em); /* Micro-adjustment */
 }
+.entry-card {
+  /* Ensure the gradient lines match text lines */
+  background: repeating-linear-gradient(
+    to bottom, 
+    #f5efe0,    /* Background color */
+    #f5efe0 39px, /* Spacing between lines */
+    #e3d5bb 40px, /* Line color (1px thick) */
+    #f5efe0 40px  /* Reset to background */
+  );
+  line-height: 40px; /* Match gradient spacing */
+  padding-top: 10px; /* Push first line down to align with first rule */
+}
+
+.entry-content {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  transform: translateY(-0.1em); /* Micro-adjust for baseline */
+  font-size: 1.25rem; /* Adjust if text appears too large/small */
+  letter-spacing: 0.5px; /* Optional: Mimic handwriting */
+}
