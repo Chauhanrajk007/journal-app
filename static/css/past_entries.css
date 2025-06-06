@@ -84,7 +84,7 @@ main {
   text-align: center;
 }
 
-#searchBar {
+#searchBar, #search {
   width: 90%;
   padding: 14px 22px;
   font-size: 1.3rem;
@@ -95,31 +95,78 @@ main {
   box-shadow: 0 2px 6px rgba(100, 80, 50, 0.15);
   outline: none;
   color: #4e3b2c;
-  transition: 0.2s ease;
+  transition: 0.2s ease, box-shadow 0.2s;
 }
 
-#searchBar:focus {
+#searchBar:focus, #search:focus {
   border-color: #b89e78;
-  box-shadow: 0 0 5px rgba(100, 80, 50, 0.2);
+  box-shadow: 0 0 12px 2px #ffdca8, 0 0 6px #ffecb6;
 }
 
 /* Highlight search bar on typing */
 #search.highlighted {
   outline: 2px solid #c7a16e;
   background-color: #fff6e3;
+  border-color: #d4a760;
+  box-shadow: 0 0 12px #ffdca8, 0 0 6px #f9c66a;
   transition: all 0.3s ease;
+}
+
+/* Glow effect for suggestions dropdown */
+.dropdown {
+  position: absolute;
+  top: 110%;
+  left: 5%;
+  width: 90%;
+  background: #fff9ee;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 8px 32px #ffecb6cc;
+  z-index: 10;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  display: none;
+}
+
+.dropdown li {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  border-bottom: 1px solid #e0d4c0;
+}
+
+.dropdown li:last-child {
+  border-bottom: none;
+}
+
+.dropdown li:hover, .dropdown li.active {
+  background: #ffe8b0;
+  color: #c2852e;
+  box-shadow: 0 0 14px #ffdca8bb;
 }
 
 /* Clear button */
 #clear-search {
-  background: none;
-  border: none;
-  font-size: 1rem;
+  display: none;
+  margin-left: 8px;
+  background: #fff4d8;
+  border: 1px solid #d4a760;
+  color: #7b604a;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
   cursor: pointer;
-  margin-left: 5px;
-  color: #6b4b33;
+  transition: box-shadow 0.2s;
 }
 
+#clear-search:hover {
+  box-shadow: 0 0 12px #ffdca8cc;
+  background: #ffe8b0;
+}
+
+/* Secret reveal text */
 #secret-reveal {
   text-align: center;
   margin: 10px auto;
@@ -136,10 +183,8 @@ main {
   border-radius: 12px;
   margin-bottom: 20px;
   position: relative;
-
-  /* Retain original styles as needed */
   border: 1px solid #d4c4aa;
-  box-shadow: 0 0 15px rgba(100, 80, 50, 0.25);
+  box-shadow: 0 0 18px 0 #ffdca880, 0 2px 16px #bfa06833;
   width: 794px;
   min-height: 1123px;
   page-break-after: always;
@@ -147,6 +192,11 @@ main {
   line-height: 1.8;
   white-space: pre-wrap;
   box-sizing: border-box;
+  transition: box-shadow 0.2s;
+}
+
+.entry-card:hover {
+  box-shadow: 0 0 36px #e0bb72cc;
 }
 
 /* === Entry Header and Date === */
@@ -168,6 +218,15 @@ main {
   font-size: 1.3rem;
   line-height: 1.8;
   color: #4e3b2c;
+  word-break: break-word;
+}
+
+/* === Highlighted Search Terms === */
+mark {
+  background: #ffda8b;
+  color: #4e3b2c;
+  border-radius: 4px;
+  padding: 0 4px;
 }
 
 /* === Print Styles === */
@@ -211,6 +270,7 @@ main {
   }
 }
 
+/* === Back Button === */
 #back-button {
   display: inline-block;
   margin: 20px auto;
@@ -221,13 +281,14 @@ main {
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  transition: transform 0.2s, background 0.3s;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.2s, background 0.3s, box-shadow 0.2s;
+  box-shadow: 0 4px 18px #efd7b6cc;
 }
 
 #back-button:hover {
   transform: scale(1.05);
   background: linear-gradient(to right, #8b6849, #6d4f3b);
+  box-shadow: 0 0 18px #ffe8b0cc;
 }
 
 .entry {
@@ -235,12 +296,12 @@ main {
   margin-bottom: 40px;
 }
 
-/* Popup Confirmation */
+/* === Popup Confirmation === */
 .hide-popup {
   position: absolute;
   background: #fffefc;
   border: 1px solid #ccbbaa;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 18px #e0bb7280;
   border-radius: 8px;
   padding: 14px;
   z-index: 9999;
@@ -276,6 +337,12 @@ main {
 .confirm-btn {
   background: #c95d4e;
   color: white;
+  box-shadow: 0 0 10px #c95d4e33;
+}
+
+.confirm-btn:hover {
+  background: #ff6f61;
+  box-shadow: 0 0 18px #ffbba777;
 }
 
 @keyframes fadeIn {
@@ -283,6 +350,7 @@ main {
   to { opacity: 1; transform: scale(1); }
 }
 
+/* === Modal === */
 .modal {
   position: fixed;
   inset: 0;
@@ -298,17 +366,52 @@ main {
 }
 
 .modal-content {
-  background: #fff;
-  padding: 20px 30px;
-  border-radius: 10px;
+  background: #fff9ee;
+  padding: 32px 24px;
+  border-radius: 16px;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 0 32px #ffdca8cc;
   max-width: 90%;
   width: 400px;
+  color: #4e3b2c;
+}
+
+#pin-input {
+  padding: 10px;
+  width: 60%;
+  font-size: 1.2em;
+  border-radius: 8px;
+  border: 1px solid #d4c4aa;
+  margin-bottom: 16px;
+  outline: none;
+  background: #fff6e3;
+  color: #4e3b2c;
+  box-shadow: 0 0 8px #ffdca888;
+  transition: box-shadow 0.2s;
+}
+#pin-input:focus {
+  box-shadow: 0 0 12px #ffdca8cc;
+}
+
+#set-pin-btn {
+  background: linear-gradient(90deg,#ffdca8,#e0bb72);
+  color: #5a4331;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 12px #ffdca866;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+#set-pin-btn:hover {
+  background: linear-gradient(90deg,#e0bb72,#ffdca8);
+  box-shadow: 0 0 24px #ffdca8bb;
 }
 
 /* === 3-Dot Options Menu === */
-/* Ensure dropdown and icons look clean */
 .options-menu {
   position: relative;
   display: inline-block;
@@ -323,7 +426,7 @@ main {
   border: 1px solid #d4c4aa;
   border-radius: 10px;
   padding: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 4px 18px #ffdca8cc;
   z-index: 10;
   min-width: 130px;
   flex-direction: column;
@@ -340,29 +443,16 @@ main {
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
+  transition: background 0.15s, box-shadow 0.15s;
 }
 
 .dropdown-options button:hover {
-  background-color: #f0e6d2;
-}
-/* Add to your existing CSS */
-#search.highlighted {
-  border-color: #d4a760;
-  box-shadow: 0 0 6px #ffdca8;
+  background-color: #ffe8b0;
+  color: #c2852e;
+  box-shadow: 0 0 10px #ffdca8cc;
 }
 
-#clear-search {
-  display: none;
-  margin-left: 8px;
-  background: #fff4d8;
-  border: 1px solid #d4a760;
-  color: #7b604a;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
+/* === No Match Message === */
 .no-match-message {
   text-align: center;
   color: #888;
