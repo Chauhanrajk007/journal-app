@@ -25,6 +25,10 @@ def past_entries():
 def hidden():
     return render_template('hidden.html')
 
+@app.route('/dftba')
+def dftba():
+    return render_template('under_construction.html')
+    
 @app.route('/get_entries', methods=['GET'])
 def get_entries():
     uid = request.args.get('uid')  # Get user ID from frontend
