@@ -17,18 +17,18 @@
     <div class="search-bar-container">
       <input
         type="text"
-        id="searchBar"
-        placeholder="🔍 Search entries by date or words...."
+        id="search"
+        placeholder="🔍 Search entries by date or words..."
         oninput="handleSearch(this.value)"
       />
+      <button id="clear-search">✖</button>
     </div>
 
     <div id="entries-container">
-     <div id="loading-state" class="loading-spinner-container">
-  <div class="spinner"></div>
-  <p>Loading your journal entries...</p>
-</div>
-
+      <div id="loading-state" class="loading-spinner-container">
+        <div class="spinner"></div>
+        <p>Loading your journal entries...</p>
+      </div>
     </div>
   </main>
 
@@ -44,7 +44,7 @@
   <!-- PDF library -->
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
 
-  <!-- Your JS module -->
+  <!-- JS module -->
   <script type="module" src="{{ url_for('static', filename='js/past_entries.js') }}"></script>
 </body>
 </html>
