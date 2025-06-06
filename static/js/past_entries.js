@@ -240,6 +240,17 @@ function downloadAsPDF(entryEl, date) {
     });
 }
 
+
+// Toast notification for copy-to-clipboard
+function showToast(message = "Copied to clipboard!") {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 1800);
+}
+
 // Share Link
 function shareEntry(content, date) {
   const text = `Journal Entry - ${date}\n\n${content}`;
