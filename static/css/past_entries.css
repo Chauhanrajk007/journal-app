@@ -120,15 +120,16 @@ main {
 #search.highlighted + #clear-search {
   display: inline;
 }
+
 /* === Entries Container === */
 #entries-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
-  max-width: 600px; /* Adjust as needed */
-  width: 100%;
+  /* max-width and width removed for fixed A4 look */
 }
+
 /* === Loading Spinner === */
 .loading-spinner-container {
   display: flex;
@@ -160,13 +161,12 @@ main {
 /* === Entry Card (for dynamically loaded entries) === */
 .entry-card {
   width: 794px;
-  min-height: 1123px; 
-  margin: 0 auto;
+  min-height: 1123px;
   background: linear-gradient(to bottom, transparent 96%, #e9d5b4 97%);
   background-size: 100% 2.5em;
   background-repeat: repeat-y;
   padding: 60px 70px;
-  margin-bottom: 40px;
+  margin: 0 auto 40px auto;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 12px 48px rgba(0,0,0,0.08);
   font-size: 1.4rem;
@@ -176,11 +176,17 @@ main {
   box-sizing: border-box;
   page-break-after: always;
   transition: box-shadow 0.2s;
+  /* prevent resizing on small screens */
+  min-width: 794px;
+  max-width: 794px;
+  max-height: 1123px;
+  overflow: hidden;
 }
+
 .options-menu {
   position: absolute;
-  top: -28px; 
-  right: -36px; 
+  top: -28px;
+  right: -36px;
   z-index: 5;
   transform: rotate(-10deg) skewY(-4deg);
 }
@@ -293,42 +299,6 @@ mark {
   box-shadow: 0 0 24px #ffdca8bb;
 }
 
-/* === Responsive === */
-@media (max-width: 900px) {
-  #entries-container, .entry-card {
-    width: 100%;
-    min-width: 0;
-    max-width: 100vw;
-  }
-  .search-bar-container {
-    max-width: 100vw;
-  }
-}
-
-@media (max-width: 768px) {
-  body {
-    padding: 15px;
-  }
-  .entry-card {
-    width: 794px;
-    min-height: 1123px;
-    margin: 0 auto;
-  }
-  .entry-date {
-    font-size: 1.3rem;
-  }
-  .entry-content {
-    font-size: 1.1rem;
-  }
-  header h1 {
-    font-size: 2rem;
-  }
-  #back-button {
-    font-size: 1rem;
-    padding: 8px 16px;
-  }
-}
-
 /* === Print Styles === */
 @media print {
   body {
@@ -347,6 +317,21 @@ mark {
     box-shadow: none;
     page-break-after: always;
   }
+}
+
+/* --- Three-dot menu placement for entry card wrapper --- */
+.entry-card-wrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+
+.options-menu {
+  position: absolute;
+  right: -36px; /* Adjust as needed to touch the card */
+  top: 16px;    /* Adjust to align vertically */
+  z-index: 5;
 }
 
 .hide-popup {
@@ -399,7 +384,6 @@ mark {
   transform: translateX(-50%) scale(1.05);
 }
 
-
 .dropdown-options {
   display: none;
   position: absolute;
@@ -426,32 +410,15 @@ mark {
   padding: 12px 24px;
   text-align: left;
   font-family: 'Caveat', cursive;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-
-.dropdown-options button:hover {
-  background: #ffda8b33;
-  color: #b1946e;
-}
-.dropdown-options button {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: none;
-  border: none;
-  color: #5a4331;
-  padding: 12px 24px;
-  text-align: left;
-  font-family: 'Caveat', cursive;
   font-size: 1.12rem;
   cursor: pointer;
   border-radius: 8px;
   transition: background 0.18s, color 0.18s, box-shadow 0.18s;
   box-shadow: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-
 .dropdown-options button:hover {
   background: #ffda8b44;
   color: #b1946e;
@@ -466,61 +433,4 @@ mark {
   height: 22px;
 }
 
-.dropdown-options {
-  display: none; /* Default hidden, show when needed */
-  position: absolute;
-  top: 54px;
-  right: 8px;
-  background: #fff9ee;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px #efd7b688;
-  padding: 12px 0;
-  min-width: 140px;
-  z-index: 1060;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.dropdown-options.show {
-  display: flex;
-}
-/* --- Three-dot menu placement for entry card wrapper --- */
-.entry-card-wrapper {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 40px;
-}
-
-.options-menu {
-  position: absolute;
-  right: -36px; /* Adjust as needed to touch the card */
-  top: 16px;    /* Adjust to align vertically */
-  z-index: 5;
-}
-
-@media (max-width: 900px) {
-  .options-menu {
-    right: -16px;
-    top: 8px;
-  }
-}
-
-@media (max-width: 600px) {
-  .entry-card-wrapper {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .options-menu {
-    position: absolute;
-    right: 6px;
-    top: 6px;
-    transform: none;
-  }
-  .entry-card {
-     width: 794px;
-      min-width: 0;
-      max-width: 100vw;
-      overflow-x: auto;
-  }
-}
+/* END */
