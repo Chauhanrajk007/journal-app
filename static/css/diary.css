@@ -76,23 +76,42 @@ main {
   align-items: flex-start;
 }
 
-/* --- JOURNAL --- */
 .journal {
-  width: 794px;
-  min-height: 1123px;
-  max-width: 794px;
-  max-height: 1123px;
+  width: 100%;
+  max-width: 800px;
   background-color: #f5efe0;
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 0 25px rgba(100, 80, 50, 0.3);
-  margin: 0 auto;
-  overflow: hidden;
-  /* Right border for A4 look */
-  border-right: 4px solid #c7a16e;
 }
 
-/* No responsive code! Desktop look stays even on mobile */
+/* --- JOURNAL DESKTOP --- */
+.journal {
+    width: 794px;
+    min-height: 1123px;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+/* --- JOURNAL TABLET --- */
+@media (max-width: 900px) {
+  .journal {
+      width: 794px;
+      min-width: 0;
+      max-width: 100vw;
+      overflow-x: auto;
+  }
+}
+
+/* --- JOURNAL MOBILE --- */
+@media (max-width: 600px) {
+  .journal {
+      width: 794px;
+      min-width: 0;
+      max-width: 100vw;
+      overflow-x: auto;
+  }
+}
 
 #journalEntry {
   width: 100%;
