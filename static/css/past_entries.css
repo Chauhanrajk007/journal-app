@@ -455,3 +455,33 @@ mark {
   background: #ffda8b33;
   color: #b1946e;
 }
+.dropdown-options button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: none;
+  color: #5a4331;
+  padding: 12px 24px;
+  text-align: left;
+  font-family: 'Caveat', cursive;
+  font-size: 1.12rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  box-shadow: none;
+}
+
+.dropdown-options button:hover {
+  background: #ffda8b44;
+  color: #b1946e;
+  box-shadow: 0 1px 6px #efd7b655;
+}
+
+.button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+}
