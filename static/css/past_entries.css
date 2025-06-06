@@ -58,7 +58,6 @@ main {
 /* === Search Bar === */
 .search-bar-container {
   width: 100%;
-  max-width: 800px;
   margin-bottom: 10px;
   text-align: center;
   position: relative;
