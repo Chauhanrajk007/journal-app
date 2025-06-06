@@ -1,15 +1,17 @@
+// --- past_entries.js ---
 import { auth, db } from './firebase-config.js';
 import {
   collection, getDocs, setDoc, doc, query, where, orderBy
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-// DOM Elements
 const entriesContainer = document.getElementById("entries-container");
 const errorModal = document.getElementById("error-modal");
 const errorMessage = document.getElementById("error-message");
 const closeModalBtn = document.getElementById("close-modal");
 const loadingState = document.getElementById("loading-state");
+const searchInput = document.getElementById("search");
+const clearBtn = document.getElementById("clear-search");
 
 function showLoading() {
   if (loadingState) loadingState.style.display = 'block';
@@ -17,8 +19,6 @@ function showLoading() {
 function hideLoading() {
   if (loadingState) loadingState.style.display = 'none';
 }
-
-// Error Modal
 function showError(message) {
   if (errorModal && errorMessage) {
     errorMessage.textContent = message;
@@ -32,15 +32,45 @@ if (closeModalBtn) {
     errorModal.classList.add("hidden");
   });
 }
+if (clearBtn) {
+  clearBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    handleSearch("");
+    searchInput.classList.remove("highlighted");
+  });
+}
 
-// Hide Entry
-async function hideEntry(entryEl, docId) {
-  try {
-    await setDoc(doc(db, "journals", docId), { hidden: true }, { merge: true });
-    entryEl.remove();
-  } catch (e) {
-    showError("Failed to hide entry. Try again.");
-  }
+// Dropdown logic
+function toggleDropdown(dropdown) {
+  document.querySelectorAll(".dropdown-options").forEach(el => el !== dropdown && (el.style.display = "none"));
+  dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
+}
+
+// Hide logic
+function confirmHide(entryEl, docId) {
+  const popup = document.createElement("div");
+  popup.className = "hide-popup";
+  popup.innerHTML = `
+    <div class="popup-card">
+      <p>Hide this entry?</p>
+      <div class="popup-actions">
+        <button class="cancel-btn">Cancel</button>
+        <button class="confirm-btn">Hide</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(popup);
+  popup.querySelector(".cancel-btn").onclick = () => popup.remove();
+  popup.querySelector(".confirm-btn").onclick = async () => {
+    try {
+      await setDoc(doc(db, "journals", docId), { hidden: true }, { merge: true });
+      entryEl.remove();
+    } catch (e) {
+      showError("Failed to hide entry. Try again.");
+    } finally {
+      popup.remove();
+    }
+  };
 }
 
 // PDF Download
@@ -48,90 +78,47 @@ function downloadAsPDF(entryEl, date) {
   html2pdf().from(entryEl).set({
     margin: 0.5,
     filename: `Journal_${date}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: { scale: 3 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
   }).save();
 }
 
-// Share Entry (copy content to clipboard)
+// Share Link
 function shareEntry(content, date) {
-  const text = `📝 Journal Entry (${date}):\n\n${content}`;
+  const text = `📓 Journal Entry - ${date}\n\n${content}`;
   navigator.clipboard.writeText(text).then(() => {
-    alert("Entry copied to clipboard!");
+    alert("Copied entry to clipboard!");
   }).catch(() => {
-    showError("Failed to copy content.");
+    showError("Copy failed. Try again.");
   });
 }
 
-// Dropdown Close on Outside Click
-document.addEventListener("click", function (e) {
-  document.querySelectorAll(".dropdown-menu").forEach(menu => {
-    if (!menu.contains(e.target)) {
-      menu.style.display = "none";
-    }
-  });
-});
-
-// Create Entry Card
-function createEntryCard(data, docId) {
-  const entryEl = document.createElement("div");
-  entryEl.className = "entry entry-card";
-
-  const contentText = data.content.replace(/\n/g, "<br>");
-
-  entryEl.innerHTML = `
-    <div class="entry-header">
-      <div class="entry-date">${data.date}</div>
-      <div class="entry-menu">
-        <button class="menu-btn">⋮</button>
-        <div class="dropdown-menu" style="display: none;">
-          <button class="menu-item hide-btn">🔒 Hide</button>
-          <button class="menu-item download-btn">📥 Download</button>
-          <button class="menu-item share-btn">🔗 Share</button>
-        </div>
-      </div>
-    </div>
-    <div class="entry-content">${contentText}</div>
-  `;
-
-  const menuBtn = entryEl.querySelector(".menu-btn");
-  const dropdown = entryEl.querySelector(".dropdown-menu");
-
-  menuBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    document.querySelectorAll(".dropdown-menu").forEach(m => m.style.display = "none");
-    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-  });
-
-  entryEl.querySelector(".hide-btn").addEventListener("click", () => {
-    dropdown.style.display = "none";
-    hideEntry(entryEl, docId);
-  });
-
-  entryEl.querySelector(".download-btn").addEventListener("click", () => {
-    dropdown.style.display = "none";
-    downloadAsPDF(entryEl, data.date);
-  });
-
-  entryEl.querySelector(".share-btn").addEventListener("click", () => {
-    dropdown.style.display = "none";
-    shareEntry(data.content, data.date);
-  });
-
-  return entryEl;
-}
-
-// Search Filter
+// Search Logic
 window.handleSearch = function (term) {
   const entries = document.querySelectorAll(".entry");
+  let found = false;
   entries.forEach(entry => {
     const text = entry.textContent.toLowerCase();
-    entry.style.display = text.includes(term.toLowerCase()) ? "block" : "none";
+    if (text.includes(term.toLowerCase())) {
+      entry.style.display = "block";
+      found = true;
+    } else {
+      entry.style.display = "none";
+    }
   });
+  if (term.length > 0) {
+    searchInput.classList.add("highlighted");
+  } else {
+    searchInput.classList.remove("highlighted");
+  }
+  if (!found && term.trim()) {
+    entriesContainer.innerHTML += `<p>No matching entries found for: <strong>${term}</strong></p>`;
+  }
 };
 
-// Load entries
+// Load Entries
 onAuthStateChanged(auth, async user => {
   if (!user) return (window.location.href = "/");
   showLoading();
@@ -152,7 +139,41 @@ onAuthStateChanged(auth, async user => {
     snapshot.forEach(docSnap => {
       const data = docSnap.data();
       if (data.hidden) return;
-      const entryEl = createEntryCard(data, docSnap.id);
+
+      const entryEl = document.createElement("div");
+      entryEl.className = "entry entry-card";
+
+      entryEl.innerHTML = `
+        <div class="entry-header">
+          <div class="entry-date">${data.date}</div>
+          <div class="options-menu">
+            <button class="menu-btn">⋮</button>
+            <div class="dropdown-options">
+              <button class="download-btn">📥 Download</button>
+              <button class="share-btn">🔗 Share</button>
+              <button class="hide-entry-btn">🙈 Hide</button>
+            </div>
+          </div>
+        </div>
+        <div class="entry-content">${data.content.replace(/\n/g, "<br>")}</div>
+      `;
+
+      const dropdown = entryEl.querySelector(".dropdown-options");
+      const menuBtn = entryEl.querySelector(".menu-btn");
+      menuBtn.addEventListener("click", () => toggleDropdown(dropdown));
+
+      entryEl.querySelector(".download-btn").addEventListener("click", () => {
+        downloadAsPDF(entryEl, data.date);
+      });
+
+      entryEl.querySelector(".share-btn").addEventListener("click", () => {
+        shareEntry(data.content, data.date);
+      });
+
+      entryEl.querySelector(".hide-entry-btn").addEventListener("click", () => {
+        confirmHide(entryEl, docSnap.id);
+      });
+
       entriesContainer.appendChild(entryEl);
     });
   } catch (err) {
