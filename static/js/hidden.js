@@ -4,11 +4,15 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const container = document.getElementById("hidden-entries-container");
+// Modal elements
 const modal = document.getElementById("unhide-modal");
 const confirmBtn = document.getElementById("confirm-unhide");
 const cancelBtn = document.getElementById("cancel-unhide");
+const pinInput = document.getElementById("unhide-pin-input");
+const pinError = document.getElementById("unhide-pin-error");
 
 let selectedDocId = null;
+let storedPin = null;
 
 auth.onAuthStateChanged(async user => {
   if (!user) {
@@ -17,39 +21,17 @@ auth.onAuthStateChanged(async user => {
   }
 
   try {
-    // Consistent PIN field (use 'pin')
+    // Retrieve stored PIN from /users/{uid}
     const pinDoc = await getDoc(doc(db, "users", user.uid));
-    let storedPin = pinDoc.exists() ? pinDoc.data().pin : null;
+    storedPin = pinDoc.exists() ? pinDoc.data().pin : null;
 
-    let typedPin = new URLSearchParams(window.location.search).get("pin");
-    if (!typedPin) {
-      typedPin = prompt("Enter your PIN to view hidden entries:");
-    }
-
-    if (!storedPin) {
-      if (typedPin && typedPin.length >= 3) {
-        await updateDoc(doc(db, "users", user.uid), { pin: typedPin });
-        storedPin = typedPin;
-      } else {
-        alert("No PIN set. Please reload and enter a PIN.");
-        return;
-      }
-    }
-
-    if (typedPin !== storedPin) {
-      alert("Wrong PIN. Redirecting...");
-      window.location.href = "/";
-      return;
-    }
-
-    // Load hidden entries from journals collection where hidden == true
+    // Load hidden entries
     const q = query(
       collection(db, "journals"),
       where("uid", "==", user.uid),
       where("hidden", "==", true),
       orderBy("date", "desc")
     );
-
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
@@ -57,14 +39,12 @@ auth.onAuthStateChanged(async user => {
       return;
     }
 
+    container.innerHTML = "";
     querySnapshot.forEach(docSnap => {
       const data = docSnap.data();
-      // Format date if present
       const date = data.date ? new Date(data.date).toLocaleString() : '';
-
       const card = document.createElement("div");
       card.className = "entry-card";
-
       card.innerHTML = `
         <div class="entry-header">
           <h3>${date}</h3>
@@ -72,20 +52,31 @@ auth.onAuthStateChanged(async user => {
         </div>
         <p class="entry-content">${data.content}</p>
       `;
-
       container.appendChild(card);
     });
 
-    // Add unhide button logic
+    // Unhide logic
     container.addEventListener("click", e => {
       if (e.target.classList.contains("unhide-btn")) {
         selectedDocId = e.target.dataset.id;
+        pinInput.value = "";
+        pinError.textContent = "";
         modal.classList.remove("hidden");
+        pinInput.focus();
       }
     });
 
     confirmBtn.addEventListener("click", async () => {
       if (!selectedDocId) return;
+      if (!storedPin) {
+        pinError.textContent = "No PIN set. Please use the hide feature in your main journal page first.";
+        return;
+      }
+      const enteredPin = pinInput.value.trim();
+      if (enteredPin !== storedPin) {
+        pinError.textContent = "Incorrect PIN. Please try again.";
+        return;
+      }
       await updateDoc(doc(db, "journals", selectedDocId), { hidden: false });
       modal.classList.add("hidden");
       document.querySelector(`[data-id="${selectedDocId}"]`).closest(".entry-card").remove();
@@ -95,6 +86,10 @@ auth.onAuthStateChanged(async user => {
     cancelBtn.addEventListener("click", () => {
       modal.classList.add("hidden");
       selectedDocId = null;
+    });
+
+    pinInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") confirmBtn.click();
     });
 
   } catch (err) {
