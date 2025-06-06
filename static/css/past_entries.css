@@ -330,9 +330,9 @@ mark {
 
 .options-menu {
   position: absolute;
-  right: 0px; /* Adjust as needed to touch the card */
-  top: 0px;    /* Adjust to align vertically */
-  z-index: 5;
+  right: -12px; /* Adjust as needed to touch the card */
+  top: -10px;    /* Adjust to align vertically */
+  z-index: 10;
 }
 
 .hide-popup {
