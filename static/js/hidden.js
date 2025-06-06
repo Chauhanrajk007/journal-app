@@ -21,14 +21,13 @@ auth.onAuthStateChanged(async user => {
     const pinDoc = await getDoc(doc(db, "users", user.uid));
     let storedPin = pinDoc.exists() ? pinDoc.data().pin : null;
 
-    // Ask for pin if not passed in query
     let typedPin = new URLSearchParams(window.location.search).get("pin");
     if (!typedPin) {
-      typedPin = prompt("Enter your security PIN to view hidden entries:");
+      typedPin = prompt("Enter your PIN to view hidden entries:");
     }
 
     if (!storedPin) {
-      if (typedPin) {
+      if (typedPin && typedPin.length >= 3) {
         await updateDoc(doc(db, "users", user.uid), { pin: typedPin });
         storedPin = typedPin;
       } else {
