@@ -405,3 +405,17 @@ if (searchToggle && searchInput) {
     }
   });
 }
+// Bookmark-style three-dots options menu logic
+const trigger = document.getElementById('options-menu-trigger');
+const dropdown = document.getElementById('options-dropdown');
+
+if (trigger && dropdown) {
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('show');
+  });
+  document.addEventListener('click', () => {
+    dropdown.classList.remove('show');
+  });
+  dropdown.addEventListener('click', e => e.stopPropagation());
+}
