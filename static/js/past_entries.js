@@ -12,7 +12,7 @@ const closeModalBtn = document.getElementById("close-modal");
 const loadingState = document.getElementById("loading-state");
 const searchInput = document.getElementById("search");
 const clearBtn = document.getElementById("clear-search");
-
+const searchToggle = document.getElementById("search-toggle");
 // Hide Popup Elements
 let hidePopup = document.getElementById('hidePopup');
 let hidePopupOverlay = document.querySelector('.hide-popup-overlay');
@@ -255,6 +255,9 @@ window.handleSearch = function (term) {
 onAuthStateChanged(auth, async user => {
   if (!user) return (window.location.href = "/");
   currentUser = user;
+  const userDocRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userDocRef);
+  userPin = userSnap.exists() ? userSnap.data().pin : null;
   showLoading();
   try {
     const q = query(
@@ -332,5 +335,19 @@ onAuthStateChanged(auth, async user => {
 if (searchInput) {
   searchInput.addEventListener("input", function() {
     handleSearch(this.value);
+  });
+}
+// Collapsible search bar toggle logic
+if (searchToggle && searchInput) {
+  searchToggle.addEventListener("click", () => {
+    searchInput.classList.toggle("expanded");
+    searchInput.classList.toggle("collapsed");
+    if (searchInput.classList.contains("expanded")) {
+      setTimeout(() => searchInput.focus(), 150); // Smooth focus after animation
+    } else {
+      searchInput.value = "";
+      handleSearch("");
+      searchInput.blur();
+    }
   });
 }
