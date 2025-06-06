@@ -275,12 +275,21 @@ window.handleSearch = function (term) {
   let found = false;
   entries.forEach(entry => {
     const text = entry.textContent.toLowerCase();
-    if (text.includes(term.toLowerCase())) {
+    const dateDiv = entry.querySelector('.entry-date');
+    const entryDate = dateDiv ? dateDiv.textContent.trim().toLowerCase() : '';
+    const searchTerm = term.trim().toLowerCase();
+
+    // Normalize dates: replace `/` with `-` so 06/06/2024 matches 2024-06-06
+    const normalizedSearch = searchTerm.replace(/\//g, '-');
+    const normalizedEntryDate = entryDate.replace(/\//g, '-');
+
+    // Match if text OR normalized date includes search term
+    if (text.includes(searchTerm) || normalizedEntryDate.includes(normalizedSearch)) {
       entry.style.display = "block";
-      // Highlight
+      // Highlight (optional, only in .entry-content)
       const contentDiv = entry.querySelector('.entry-content');
-      if (contentDiv && term) {
-        const regex = new RegExp(`(${term})`, 'gi');
+      if (contentDiv && searchTerm) {
+        const regex = new RegExp(`(${searchTerm})`, 'gi');
         contentDiv.innerHTML = contentDiv.textContent.replace(regex, '<mark>$1</mark>');
       }
       found = true;
@@ -342,7 +351,7 @@ onAuthStateChanged(auth, async user => {
       <button class="menu-btn" aria-label="Show options">⋮</button> <!-- 🔖 Unicode -->
       <div class="dropdown-options">
         <button class="journal-btn download-btn">Download</button>
-        <button class="journal-btn share-btn">Share</button>
+        <button class="journal-btn share-btn">Copy</button>
         <button class="journal-btn hide-btn">Hide</button>
       </div>
     </div>
