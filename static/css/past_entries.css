@@ -57,60 +57,69 @@ main {
 
 /* === Search Bar === */
 .search-bar-container {
-  width: 100%;
-  margin-bottom: 10px;
-  text-align: center;
+  display: flex;
+  align-items: center;
   position: relative;
+  min-height: 52px;
+  margin: 24px 0 28px 0;
+}
+
+#search-toggle {
+  background: none;
+  border: none;
+  padding: 0 10px 0 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  height: 48px;
+}
+
+.search-icon svg {
+  display: block;
+  height: 36px;
+  width: 36px;
+  transition: transform 0.3s;
 }
 
 #search {
-  width: 90%;
-  padding: 14px 22px;
-  font-size: 1.3rem;
-  font-family: 'Caveat', cursive;
-  background-color: #f5efe0;
-  border: 2px solid #d4c4aa;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(100, 80, 50, 0.15);
-  outline: none;
-  color: #4e3b2c;
-  transition: 0.2s ease, box-shadow 0.2s;
+  width: 0;
+  opacity: 0;
+  padding: 0;
+  border: 2px solid #e6d3b3;
+  border-radius: 12px;
+  background: #f5efe0;
+  color: #7b604a;
+  font-family: 'Caveat', cursive, sans-serif;
+  font-size: 1.18rem;
+  margin-left: 5px;
+  transition: width 0.5s cubic-bezier(.87,-0.41,.19,1.44), opacity 0.3s, padding 0.3s, border-width 0.3s;
+  height: 48px;
+  box-sizing: border-box;
 }
-#search:focus {
-  border-color: #b89e78;
-  box-shadow: 0 0 12px 2px #ffdca8, 0 0 6px #ffecb6;
-}
-#search.highlighted {
-  outline: 2px solid #c7a16e;
-  background-color: #fff6e3;
-  border-color: #d4a760;
-  box-shadow: 0 0 12px #ffdca8, 0 0 6px #f9c66a;
-  transition: all 0.3s ease;
+
+#search.expanded {
+  width: 320px;
+  opacity: 1;
+  padding: 0 20px;
+  border-width: 2px;
 }
 
 #clear-search {
-  display: none;
-  margin-left: 8px;
-  background: #fff4d8;
-  border: 1px solid #d4a760;
-  color: #7b604a;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  background: none;
+  border: none;
+  color: #b1946e;
+  font-size: 1.3rem;
+  margin-left: 6px;
   cursor: pointer;
-  transition: box-shadow 0.2s;
-  position: absolute;
-  right: 7%;
-  top: 50%;
-  right: 7%;
-  z-index: 3;
-  transform: translateY(-50%);
-}
-#clear-search:hover {
-  box-shadow: 0 0 12px #ffdca8cc;
-  background: #ffe8b0;
+  transition: color 0.2s;
+  height: 48px;
+  display: none;
 }
 
+/* Show clear button only when there is text in the search bar */
+#search.highlighted + #clear-search {
+  display: inline;
+}
 /* === Entries Container === */
 #entries-container {
   display: flex;
