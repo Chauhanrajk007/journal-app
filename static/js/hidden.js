@@ -17,32 +17,33 @@ auth.onAuthStateChanged(async user => {
   }
 
   try {
-    const codeDoc = await getDoc(doc(db, "users", user.uid));
-    let storedCode = codeDoc.exists() ? codeDoc.data().code : null;
+    // Consistent PIN field (use 'pin')
+    const pinDoc = await getDoc(doc(db, "users", user.uid));
+    let storedPin = pinDoc.exists() ? pinDoc.data().pin : null;
 
-    // Ask for code if not passed in query
-    let typedCode = new URLSearchParams(window.location.search).get("code");
-    if (!typedCode) {
-      typedCode = prompt("Enter your secret code to view hidden entries:");
+    // Ask for pin if not passed in query
+    let typedPin = new URLSearchParams(window.location.search).get("pin");
+    if (!typedPin) {
+      typedPin = prompt("Enter your security PIN to view hidden entries:");
     }
 
-    if (!storedCode) {
-      if (typedCode) {
-        await updateDoc(doc(db, "users", user.uid), { code: typedCode });
-        storedCode = typedCode;
+    if (!storedPin) {
+      if (typedPin) {
+        await updateDoc(doc(db, "users", user.uid), { pin: typedPin });
+        storedPin = typedPin;
       } else {
-        alert("No code set. Please reload and enter a code.");
+        alert("No PIN set. Please reload and enter a PIN.");
         return;
       }
     }
 
-    if (typedCode !== storedCode) {
-      alert("Wrong code. Redirecting...");
+    if (typedPin !== storedPin) {
+      alert("Wrong PIN. Redirecting...");
       window.location.href = "/";
       return;
     }
 
-    // Load hidden entries
+    // Load hidden entries from journals collection where hidden == true
     const q = query(
       collection(db, "journals"),
       where("uid", "==", user.uid),
@@ -59,7 +60,8 @@ auth.onAuthStateChanged(async user => {
 
     querySnapshot.forEach(docSnap => {
       const data = docSnap.data();
-      const date = new Date(data.date).toLocaleString();
+      // Format date if present
+      const date = data.date ? new Date(data.date).toLocaleString() : '';
 
       const card = document.createElement("div");
       card.className = "entry-card";
@@ -67,7 +69,7 @@ auth.onAuthStateChanged(async user => {
       card.innerHTML = `
         <div class="entry-header">
           <h3>${date}</h3>
-          <button class="unhide-btn" data-id="${docSnap.id}">🔓 Unlock</button>
+          <button class="unhide-btn" data-id="${docSnap.id}">🔓 Unhide</button>
         </div>
         <p class="entry-content">${data.content}</p>
       `;
