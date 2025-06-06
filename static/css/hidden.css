@@ -60,9 +60,11 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
-
+.entry-spacer {
+  height: 1.5em; /* or adjust for your preferred spacing */
+}
 .entry-header h3, .entry-date {
   font-size: 1.5rem;
   font-weight: bold;
