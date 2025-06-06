@@ -51,7 +51,7 @@ auth.onAuthStateChanged(async user => {
       card.innerHTML = `
         <div class="entry-header">
           <h3>${date}</h3>
-          <button class="unhide-btn" data-id="${docSnap.id}">🔓 Unhide</button>
+          <button class="unhide-btn" data-id="${docSnap.id}">🔓</button>
         </div>
         <p class="entry-content">${data.content}</p>
       `;
