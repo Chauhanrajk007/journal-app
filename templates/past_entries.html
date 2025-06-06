@@ -32,12 +32,31 @@
   />
   <button id="clear-search">✖</button>
 </div>
-    <div id="entries-container">
-      <div id="loading-state" class="loading-spinner-container">
-        <div class="spinner"></div>
-        <p>Loading your journal entries...</p>
+   <div id="entries-container">
+  {% for entry in entries %}
+  <div class="entry-card">
+    <div class="entry-header">
+      <span class="entry-date">{{ entry.date }}</span>
+      <!-- Entry-specific ellipsis dropdown -->
+      <div class="ellipsis-dropdown-container">
+        <button class="ellipsis-btn" aria-label="Open menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <ul class="ellipsis-dropdown hidden" role="menu">
+          <li><a href="/edit/{{ entry.id }}" role="menuitem">Edit Entry</a></li>
+          <li><a href="/delete/{{ entry.id }}" role="menuitem">Delete Entry</a></li>
+          <li><a href="/share/{{ entry.id }}" role="menuitem">Share Entry</a></li>
+        </ul>
       </div>
     </div>
+    <div class="entry-content">
+      {{ entry.content }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
   </main>
 
   <!-- Error modal -->
