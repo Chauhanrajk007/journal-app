@@ -335,20 +335,20 @@ onAuthStateChanged(auth, async user => {
       const entryEl = document.createElement("div");
       entryEl.className = "entry entry-card";
 
-      entryEl.innerHTML = `
-        <div class="entry-header">
-          <div class="entry-date">${data.date}</div>
-          <div class="options-menu">
-            <button class="menu-btn" aria-label="Show options">⋮</button>
-            <div class="dropdown-options">
-              <button class="journal-btn download-btn">Download</button>
-              <button class="journal-btn share-btn">Share</button>
-              <button class="journal-btn hide-btn">Hide</button>
-            </div>
-          </div>
-        </div>
-        <div class="entry-content">${data.content.replace(/\n/g, "<br>")}</div>
-      `;
+     entryEl.innerHTML = `
+  <div class="entry-header">
+    <div class="entry-date">${data.date}</div>
+    <div class="options-menu">
+      <button class="menu-btn" aria-label="Bookmark">&#128278;</button> <!-- 🔖 Unicode -->
+      <div class="dropdown-options">
+        <button class="journal-btn download-btn">Download</button>
+        <button class="journal-btn share-btn">Share</button>
+        <button class="journal-btn hide-btn">Hide</button>
+      </div>
+    </div>
+  </div>
+  <div class="entry-content">${data.content.replace(/\n/g, "<br>")}</div>
+`;
 
       // Dropdown menu logic
       const dropdown = entryEl.querySelector(".dropdown-options");
@@ -375,7 +375,10 @@ onAuthStateChanged(auth, async user => {
         handleHideEntry(entryEl, docSnap.id);
       });
 
-      entriesContainer.appendChild(entryEl);
+      const wrapper = document.createElement("div");
+wrapper.className = "entry-card-wrapper";
+wrapper.appendChild(entryEl);
+entriesContainer.appendChild(wrapper);
     });
   } catch (err) {
     console.error(err);
