@@ -13,7 +13,6 @@ const loadingState = document.getElementById("loading-state");
 const searchInput = document.getElementById("search");
 const clearBtn = document.getElementById("clear-search");
 const searchToggle = document.getElementById("search-toggle");
-
 // Hide Popup Elements
 let hidePopup = document.getElementById('hidePopup');
 let hidePopupOverlay = document.querySelector('.hide-popup-overlay');
@@ -91,6 +90,12 @@ if (clearBtn) {
     const existingNoMatch = document.querySelector(".no-match-message");
     if (existingNoMatch) existingNoMatch.remove();
   });
+}
+
+// Dropdown logic
+function toggleDropdown(dropdown) {
+  document.querySelectorAll(".dropdown-options").forEach(el => el !== dropdown && (el.style.display = "none"));
+  dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
 }
 
 // PIN logic
@@ -187,9 +192,11 @@ hidePopupOverlay.onclick = cancelHideBtn.onclick;
 
 // PDF Download
 function downloadAsPDF(entryEl, date) {
+  // Get the content and date
   const content = entryEl.querySelector('.entry-content')?.innerHTML || '';
   const prettyDate = entryEl.querySelector('.entry-date')?.textContent || date;
 
+  // Create a styled template similar to your entry card
   const pdfTemplate = `
     <div style="
       font-family: 'Caveat', cursive, sans-serif;
@@ -212,6 +219,7 @@ function downloadAsPDF(entryEl, date) {
     </div>
   `;
 
+  // Create a hidden container to render
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = pdfTemplate;
   document.body.appendChild(tempDiv);
@@ -231,6 +239,7 @@ function downloadAsPDF(entryEl, date) {
       document.body.removeChild(tempDiv);
     });
 }
+
 
 // Toast notification for copy-to-clipboard
 function showToast(message = "Copied to clipboard!") {
@@ -329,12 +338,42 @@ onAuthStateChanged(auth, async user => {
       entryEl.innerHTML = `
         <div class="entry-header">
           <div class="entry-date">${data.date}</div>
+          <div class="options-menu">
+            <button class="menu-btn" aria-label="Show options">⋮</button>
+            <div class="dropdown-options">
+              <button class="journal-btn download-btn">Download</button>
+              <button class="journal-btn share-btn">Share</button>
+              <button class="journal-btn hide-btn">Hide</button>
+            </div>
+          </div>
         </div>
         <div class="entry-content">${data.content.replace(/\n/g, "<br>")}</div>
       `;
 
-      // You can add per-entry actions here if needed (e.g., buttons for download/share/hide)
-      // But the dropdown menu is now global and floating—handled separately
+      // Dropdown menu logic
+      const dropdown = entryEl.querySelector(".dropdown-options");
+      const menuBtn = entryEl.querySelector(".menu-btn");
+      menuBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleDropdown(dropdown);
+      });
+      document.addEventListener("click", function(event) {
+        if (!menuBtn.contains(event.target) && !dropdown.contains(event.target)) {
+          dropdown.style.display = "none";
+        }
+      });
+
+      entryEl.querySelector(".download-btn").addEventListener("click", () => {
+        downloadAsPDF(entryEl, data.date);
+      });
+
+      entryEl.querySelector(".share-btn").addEventListener("click", () => {
+        shareEntry(data.content, data.date);
+      });
+
+      entryEl.querySelector(".hide-btn").addEventListener("click", () => {
+        handleHideEntry(entryEl, docSnap.id);
+      });
 
       entriesContainer.appendChild(entryEl);
     });
@@ -366,40 +405,17 @@ if (searchToggle && searchInput) {
     }
   });
 }
+// Bookmark-style three-dots options menu logic
+const trigger = document.getElementById('options-menu-trigger');
+const dropdown = document.getElementById('options-dropdown');
 
-// --- Floating 3-dots menu global logic ---
-document.addEventListener('DOMContentLoaded', function() {
-  const btn = document.getElementById('ellipsis-btn');
-  const menu = document.getElementById('ellipsis-dropdown');
-  if (btn && menu) {
-    btn.addEventListener('click', function(e) {
-      menu.classList.toggle('hidden');
-      e.stopPropagation();
-    });
-    // Close menu when clicking outside
-    document.addEventListener('click', function() {
-      menu.classList.add('hidden');
-    });
-    // Close on escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') menu.classList.add('hidden');
-    });
-
-    // EXAMPLE: Connect dropdown actions
-    menu.addEventListener('click', function(e) {
-      if (e.target.matches('a[role="menuitem"]')) {
-        e.preventDefault();
-        const action = e.target.getAttribute('href');
-        if (action === '/edit') {
-          // Example: alert or route
-          alert('Edit feature not yet implemented!');
-        } else if (action === '/delete') {
-          alert('Delete feature not yet implemented!');
-        } else if (action === '/share') {
-          alert('Share feature not yet implemented!');
-        }
-        menu.classList.add('hidden');
-      }
-    });
-  }
-});
+if (trigger && dropdown) {
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('show');
+  });
+  document.addEventListener('click', () => {
+    dropdown.classList.remove('show');
+  });
+  dropdown.addEventListener('click', e => e.stopPropagation());
+}
