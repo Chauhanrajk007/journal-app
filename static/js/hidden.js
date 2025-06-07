@@ -7,7 +7,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const container = document.getElementById("hidden-entries-container");
-// Modal elements
 const modal = document.getElementById("unhide-modal");
 const confirmBtn = document.getElementById("confirm-unhide");
 const cancelBtn = document.getElementById("cancel-unhide");
@@ -53,7 +52,7 @@ auth.onAuthStateChanged(async user => {
     <span class="entry-date">${date}</span>
     <button class="unhide-btn" data-id="${docSnap.id}">🔓</button>
   </div>
-  <div style="entry-spacer"></div> <!-- This is the blank line (line 2) -->
+  <div class="entry-blank"></div>
   <div class="entry-content">${data.content}</div>
 `;
       container.appendChild(card);
