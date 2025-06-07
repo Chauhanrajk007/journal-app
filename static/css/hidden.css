@@ -286,3 +286,27 @@ body {
   font-size: 1.25rem; /* Adjust if text appears too large/small */
   letter-spacing: 0.5px; /* Optional: Mimic handwriting */
 }
+/* Aligns date and button on the same line, left/right */
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Makes sure journal entry text is on its own line */
+.entry-content {
+  margin-top: 8px;
+  display: block;
+  white-space: pre-line; /* preserves line breaks in text */
+}
+
+/* Optional: Style the logout button if you add a global one */
+.logout-btn {
+  background: #f44336;
+  color: #fff;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
