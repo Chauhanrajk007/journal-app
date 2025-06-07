@@ -76,13 +76,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  function formatAuthError(message) {
-    if (message.includes("auth/invalid-email")) return "Invalid email address.";
-    if (message.includes("auth/user-not-found")) return "No account found with this email.";
-    if (message.includes("auth/wrong-password")) return "Incorrect password.";
-    if (message.includes("auth/email-already-in-use")) return "Email is already in use.";
-    if (message.includes("auth/weak-password")) return "Password should be at least 6 characters.";
-    if (message.includes("auth/too-many-requests")) return "Too many login attempts. Try again later.";
-    return "Something went wrong. Please try again.";
-  }
+function formatAuthError(code) {
+  if (code === "auth/invalid-email") return "Invalid email address.";
+  if (code === "auth/user-not-found") return "No account found with this email.";
+  if (code === "auth/wrong-password") return "Incorrect password.";
+  if (code === "auth/email-already-in-use") return "Email is already in use.";
+  if (code === "auth/weak-password") return "Password should be at least 6 characters.";
+  if (code === "auth/too-many-requests") return "Too many login attempts. Try again later.";
+  return "Something went wrong. Please try again.";
+}
 });
