@@ -28,24 +28,24 @@ body {
 
 /* Diary-style alignment */
 .entry-card {
-  background: repeating-linear-gradient(
-    to bottom, #f5efe0, #f5efe0 39px, #e3d5bb 40px, #f5efe0 40px
-  );
-  border: 1.5px solid #d4c4aa;
-  border-radius: 13px;
-  padding: 0 30px;
-  margin: 40px auto;
-  box-shadow: 0 4px 32px 0 #ffeec280, 0 2px 16px #bfa06833;
-  width: 794px;
-  min-height: 1123px;
-  box-sizing: border-box;
+  background: #fff9ec;
+  border-radius: 12px;
+  border: 1px solid #e4d9c1;
+  margin: 2rem auto;
+  max-width: 850px;
+  padding: 1rem 1.5rem;
+  font-family: 'Caveat', cursive;
+  font-size: 1.5rem;
+  line-height: 2.5rem;
   position: relative;
-  font-size: 1.2rem;
-  line-height: 40px; /* Matches the ruled lines */
-  display: flex;
-  flex-direction: column;
-  transition: box-shadow 0.35s cubic-bezier(.24,1.17,.42,.94), transform 0.28s cubic-bezier(.24,1.17,.42,.94);
-  animation: fadeInEntry 0.9s cubic-bezier(.15,.71,.2,1.01);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 2.3rem,
+    #e0d3ba 2.3rem,
+    #e0d3ba 2.4rem
+  );
 }
 
 @keyframes fadeInEntry {
@@ -58,66 +58,35 @@ body {
   transform: translateY(-8px) scale(1.02);
 }
 
-/* Header is on first line */
 .entry-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 40px;           /* exactly 1 line */
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #6d573c;
-  margin: 0;
-  letter-spacing: 0.5px;
-  border: none;
-  background: none;
-  padding: 0;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
 }
 
-/* Blank line for second line */
-.entry-blank {
-  height: 40px;
-  width: 100%;
-  content: '';
-  display: block;
-}
-
-/* Entry content starts exactly on third line */
 .entry-content {
-  white-space: pre-line;
-  margin: 0;
-  padding: 0;
-  color: #4e3b2c;
-  font-size: 1.25rem;
-  line-height: 40px; /* match grid */
-  word-break: break-word;
-  letter-spacing: 0.5px;
+  margin-top: 2rem; /* Moves message to appear on the 3rd line visually */
+  padding-left: 0.5rem;
+  white-space: pre-wrap;
 }
 
 .unhide-btn {
-  font-size: 1.3rem;
   background: none;
   border: none;
-  color: #c2852e;
+  font-size: 1.5rem;
   cursor: pointer;
-  padding: 9px 18px;
-  border-radius: 7px;
-  transition: background 0.18s, box-shadow 0.18s, color 0.18s, transform 0.22s cubic-bezier(.24,1.17,.42,.94);
-  box-shadow: 0 0 0 #ffeec2;
-  outline: none;
-  position: absolute;
-    top: 0;
-    right: 0;
-    margin: 8px 12px;
 }
 
 .unhide-btn:hover {
-  background: #ffeec2;
-  color: #5a4331;
-  box-shadow: 0 0 14px #ffeec2cc;
-  transform: scale(1.1) rotate(-2deg);
-  animation: bounce 0.32s;
+  background: #f3e9d2;
+  color: #3e2f1c;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transform: scale(1.05);
+  transition: all 0.2s ease;
 }
+
 @keyframes bounce {
   0% { transform: scale(1.1) rotate(-2deg);}
   30% { transform: scale(1.12) rotate(3deg);}
