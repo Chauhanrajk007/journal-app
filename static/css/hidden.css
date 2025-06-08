@@ -26,28 +26,27 @@ body {
   margin: 0 auto;
 }
 
-/* Diary-style alignment */
 .entry-card {
-  background: #fff9ec;
-  border-radius: 12px;
-  border: 1px solid #e4d9c1;
+  width: 21cm;
+  height: 29.7cm;
   margin: 2rem auto;
-  max-width: 850px;
-  padding: 1rem 1.5rem;
+  background-color: #fef6e4;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px #e0d9c5;
+  padding: 2rem;
+  box-sizing: border-box;
   font-family: 'Caveat', cursive;
-  font-size: 1.5rem;
-  line-height: 2.5rem;
-  position: relative;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  font-size: 1.4rem;
+  line-height: 2.4rem;
   background-image: repeating-linear-gradient(
     to bottom,
-    transparent,
-    transparent 2.3rem,
-    #e0d3ba 2.3rem,
-    #e0d3ba 2.4rem
+    #fef6e4,
+    #fef6e4 2.3rem,
+    #e6dccd 2.3rem,
+    #e6dccd 2.35rem
   );
+  position: relative;
 }
-
 @keyframes fadeInEntry {
   from { opacity: 0; transform: translateY(60px) scale(0.97);}
   to { opacity: 1; transform: translateY(0) scale(1);}
@@ -62,31 +61,31 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin-bottom: 3rem; /* pushes content to approx line 3 */
 }
 
 .entry-content {
-  margin-top: 2rem; /* Moves message to appear on the 3rd line visually */
-  padding-left: 0.5rem;
+  padding-left: 1.5rem;
   white-space: pre-wrap;
+  font-size: 1.5rem;
 }
 
 .unhide-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .unhide-btn:hover {
-  background: #f3e9d2;
-  color: #3e2f1c;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transform: scale(1.05);
-  transition: all 0.2s ease;
+  background: #f9e4b7;
+  color: #4e3829;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: scale(1.1);
 }
-
 @keyframes bounce {
   0% { transform: scale(1.1) rotate(-2deg);}
   30% { transform: scale(1.12) rotate(3deg);}
