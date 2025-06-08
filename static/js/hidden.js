@@ -52,7 +52,6 @@ auth.onAuthStateChanged(async user => {
     <span class="entry-date">${date}</span>
     <button class="unhide-btn" data-id="${docSnap.id}">🔓</button>
   </div>
-  <div class="entry-blank"></div>
   <div class="entry-content">${data.content}</div>
 `;
       container.appendChild(card);
